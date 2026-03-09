@@ -50,6 +50,8 @@ export async function sendSpecialDayTestEmailAction() {
     headerStore.get("x-forwarded-proto"),
   );
 
+  let redirectUrl = "/admin";
+
   try {
     const response = await fetch(`${baseUrl}/api/cron/special-days`, {
       method: "POST",
@@ -67,19 +69,15 @@ export async function sendSpecialDayTestEmailAction() {
     };
 
     if (!response.ok) {
-      redirect(
-        `/admin?emailTest=error&message=${encodeURIComponent(payload.error ?? "Gửi test email thất bại")}`,
-      );
+      redirectUrl = `/admin?emailTest=error&message=${encodeURIComponent(payload.error ?? "Gửi test email thất bại")}`;
+    } else {
+      redirectUrl = `/admin?emailTest=done&sent=${payload.sent ?? 0}&events=${payload.totalEvents ?? 0}&reason=${encodeURIComponent(payload.reason ?? "")}`;
     }
-
-    redirect(
-      `/admin?emailTest=done&sent=${payload.sent ?? 0}&events=${payload.totalEvents ?? 0}&reason=${encodeURIComponent(payload.reason ?? "")}`,
-    );
   } catch (error) {
-    redirect(
-      `/admin?emailTest=error&message=${encodeURIComponent(
-        (error as Error).message || "Không thể chạy test email",
-      )}`,
-    );
+    redirectUrl = `/admin?emailTest=error&message=${encodeURIComponent(
+      (error as Error).message || "Không thể chạy test email",
+    )}`;
   }
+
+  redirect(redirectUrl);
 }

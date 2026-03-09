@@ -22,11 +22,25 @@ type NotificationEvent = {
   title: string;
   description: string | null;
   dateLabel: string;
+  typeLabel: string;
 };
 
 export const runtime = "nodejs";
 
-const RECURRING_TYPES = new Set(["birthday", "anniversary", "relationship", "holiday"]);
+const RECURRING_TYPES = new Set([
+  "birthday",
+  "anniversary",
+  "relationship",
+  "holiday",
+]);
+
+const TYPE_LABEL: Record<SpecialDayRow["type"], string> = {
+  birthday: "Sinh nhật",
+  anniversary: "Kỷ niệm",
+  relationship: "Mốc yêu nhau",
+  holiday: "Ngày lễ",
+  other: "Khác",
+};
 
 function getTodayParts(timeZone: string) {
   const formatter = new Intl.DateTimeFormat("en-CA", {
@@ -36,8 +50,12 @@ function getTodayParts(timeZone: string) {
     day: "2-digit",
   });
   const parts = formatter.formatToParts(new Date());
-  const year = Number(parts.find((part) => part.type === "year")?.value ?? "1970");
-  const month = Number(parts.find((part) => part.type === "month")?.value ?? "01");
+  const year = Number(
+    parts.find((part) => part.type === "year")?.value ?? "1970",
+  );
+  const month = Number(
+    parts.find((part) => part.type === "month")?.value ?? "01",
+  );
   const day = Number(parts.find((part) => part.type === "day")?.value ?? "01");
   const isoDate = `${year.toString().padStart(4, "0")}-${month
     .toString()
@@ -76,28 +94,41 @@ function buildTodayEvents(
       title: day.title,
       description: day.description,
       dateLabel: day.date,
+      typeLabel: TYPE_LABEL[day.type],
     });
   }
 
   const personOneBirthday = getMonthDay(profile?.person_one_birthday ?? null);
-  if (personOneBirthday && personOneBirthday.month === today.month && personOneBirthday.day === today.day) {
+  if (
+    personOneBirthday &&
+    personOneBirthday.month === today.month &&
+    personOneBirthday.day === today.day
+  ) {
     events.push({
       eventKey: "birthday:person-one",
       specialDayId: null,
       title: `Sinh nhật ${profile?.person_one_name ?? "Người thứ nhất"}`,
-      description: "Hôm nay là ngày sinh nhật. Đừng quên gửi lời chúc thật ngọt ngào.",
+      description:
+        "Hôm nay là ngày sinh nhật. Đừng quên gửi lời chúc thật ngọt ngào.",
       dateLabel: profile?.person_one_birthday ?? today.isoDate,
+      typeLabel: "Sinh nhật",
     });
   }
 
   const personTwoBirthday = getMonthDay(profile?.person_two_birthday ?? null);
-  if (personTwoBirthday && personTwoBirthday.month === today.month && personTwoBirthday.day === today.day) {
+  if (
+    personTwoBirthday &&
+    personTwoBirthday.month === today.month &&
+    personTwoBirthday.day === today.day
+  ) {
     events.push({
       eventKey: "birthday:person-two",
       specialDayId: null,
       title: `Sinh nhật ${profile?.person_two_name ?? "Người thứ hai"}`,
-      description: "Hôm nay là ngày sinh nhật. Đừng quên gửi lời chúc thật ngọt ngào.",
+      description:
+        "Hôm nay là ngày sinh nhật. Đừng quên gửi lời chúc thật ngọt ngào.",
       dateLabel: profile?.person_two_birthday ?? today.isoDate,
+      typeLabel: "Sinh nhật",
     });
   }
 
@@ -118,7 +149,7 @@ function createEmailHtml(recipientName: string, events: NotificationEvent[]) {
       (event) => `
         <li style="margin: 0 0 12px 0; padding: 12px 14px; border-radius: 14px; background: #fff5f8; border: 1px solid #f0d0db;">
           <p style="margin: 0 0 4px 0; font-size: 16px; color: #5a3b45; font-weight: 700;">${escapeHtml(event.title)}</p>
-          <p style="margin: 0 0 4px 0; font-size: 13px; color: #7f5d67;">Ngày: ${escapeHtml(event.dateLabel)}</p>
+          <p style="margin: 0 0 4px 0; font-size: 13px; color: #7f5d67;">${escapeHtml(event.typeLabel)} • Ngày: ${escapeHtml(event.dateLabel)}</p>
           ${
             event.description
               ? `<p style="margin: 0; font-size: 13px; color: #7f5d67;">${escapeHtml(event.description)}</p>`
@@ -131,12 +162,12 @@ function createEmailHtml(recipientName: string, events: NotificationEvent[]) {
 
   return `
     <div style="max-width: 640px; margin: 0 auto; padding: 24px; background: #fff; border-radius: 18px; border: 1px solid #f2dce4; font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
-      <h1 style="margin: 0 0 10px; color: #5a3b45; font-size: 24px;">Nhac nho ngay dac biet</h1>
-      <p style="margin: 0 0 18px; color: #7a5964; font-size: 14px;">Xin chao ${escapeHtml(recipientName)}, hom nay co cac ngay dac biet can nho:</p>
+      <h1 style="margin: 0 0 10px; color: #5a3b45; font-size: 24px;">Nhắc nhở ngày đặc biệt</h1>
+      <p style="margin: 0 0 18px; color: #7a5964; font-size: 14px;">Xin chào ${escapeHtml(recipientName)}, hôm nay có các ngày đặc biệt cần nhớ:</p>
       <ul style="list-style: none; padding: 0; margin: 0;">
         ${items}
       </ul>
-      <p style="margin: 20px 0 0; color: #8e6a75; font-size: 12px;">Duoc gui tu Couple Wishlist.</p>
+      <p style="margin: 20px 0 0; color: #8e6a75; font-size: 12px;">Được gửi từ Couple Wishlist.</p>
     </div>
   `;
 }
@@ -173,7 +204,9 @@ async function sendEmailViaSmtp(params: {
 async function handleCron(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
   const authHeader = request.headers.get("authorization");
-  const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  const bearerToken = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice(7)
+    : "";
 
   if (!cronSecret || bearerToken !== cronSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -181,11 +214,18 @@ async function handleCron(request: NextRequest) {
 
   const smtpHost = process.env.SMTP_HOST;
   const smtpPort = Number(process.env.SMTP_PORT || "465");
-  const smtpSecure = (process.env.SMTP_SECURE || "true").toLowerCase() !== "false";
+  const smtpSecure =
+    (process.env.SMTP_SECURE || "true").toLowerCase() !== "false";
   const smtpUser = process.env.SMTP_USER;
   const smtpPass = process.env.SMTP_PASS;
   const emailFrom = process.env.NOTIFICATION_FROM_EMAIL;
-  if (!smtpHost || !smtpUser || !smtpPass || !emailFrom || Number.isNaN(smtpPort)) {
+  if (
+    !smtpHost ||
+    !smtpUser ||
+    !smtpPass ||
+    !emailFrom ||
+    Number.isNaN(smtpPort)
+  ) {
     return NextResponse.json(
       {
         error:
@@ -199,18 +239,24 @@ async function handleCron(request: NextRequest) {
   const today = getTodayParts(timeZone);
   const supabase = createSupabaseAdminClient();
 
-  const [{ data: specialDays, error: specialDayError }, { data: profile, error: profileError }, { data: admins, error: adminError }] =
-    await Promise.all([
-      supabase.from("special_days").select("id, title, description, date, type"),
-      supabase
-        .from("couple_profile")
-        .select(
-          "id, person_one_name, person_two_name, person_one_birthday, person_two_birthday",
-        )
-        .limit(1)
-        .maybeSingle(),
-      supabase.from("profiles").select("id, name, email, role").eq("role", "admin"),
-    ]);
+  const [
+    { data: specialDays, error: specialDayError },
+    { data: profile, error: profileError },
+    { data: admins, error: adminError },
+  ] = await Promise.all([
+    supabase.from("special_days").select("id, title, description, date, type"),
+    supabase
+      .from("couple_profile")
+      .select(
+        "id, person_one_name, person_two_name, person_one_birthday, person_two_birthday",
+      )
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("profiles")
+      .select("id, name, email, role")
+      .eq("role", "admin"),
+  ]);
 
   if (specialDayError || profileError || adminError) {
     return NextResponse.json(
@@ -231,11 +277,18 @@ async function handleCron(request: NextRequest) {
     .map((value) => value.trim())
     .filter(Boolean);
   const recipients = Array.from(
-    new Set([...(admins?.map((admin) => admin.email).filter(Boolean) ?? []), ...recipientsFromEnv]),
+    new Set([
+      ...(admins?.map((admin) => admin.email).filter(Boolean) ?? []),
+      ...recipientsFromEnv,
+    ]),
   );
 
   if (!recipients.length) {
-    return NextResponse.json({ sent: 0, skipped: 0, reason: "No recipients configured" });
+    return NextResponse.json({
+      sent: 0,
+      skipped: 0,
+      reason: "No recipients configured",
+    });
   }
 
   const events = buildTodayEvents(specialDays ?? [], profile ?? null, today);
@@ -254,11 +307,16 @@ async function handleCron(request: NextRequest) {
     .eq("notify_date", today.isoDate);
 
   if (existingLogError) {
-    return NextResponse.json({ error: existingLogError.message }, { status: 500 });
+    return NextResponse.json(
+      { error: existingLogError.message },
+      { status: 500 },
+    );
   }
 
   const existingKeys = new Set(
-    (existingLogs ?? []).map((row) => `${row.target_email.toLowerCase()}::${row.event_key}`),
+    (existingLogs ?? []).map(
+      (row) => `${row.target_email.toLowerCase()}::${row.event_key}`,
+    ),
   );
 
   let sent = 0;
@@ -277,7 +335,8 @@ async function handleCron(request: NextRequest) {
     }
 
     const recipientName =
-      admins?.find((admin) => admin.email.toLowerCase() === normalized)?.name ?? recipient;
+      admins?.find((admin) => admin.email.toLowerCase() === normalized)?.name ??
+      recipient;
 
     try {
       await sendEmailViaSmtp({
@@ -288,7 +347,7 @@ async function handleCron(request: NextRequest) {
         pass: smtpPass,
         from: emailFrom,
         to: recipient,
-        subject: `Ngay dac biet hom nay (${today.isoDate})`,
+        subject: `Ngày đặc biệt hôm nay (${today.isoDate})`,
         html: createEmailHtml(recipientName, pendingEvents),
       });
 
@@ -304,12 +363,16 @@ async function handleCron(request: NextRequest) {
         .insert(logPayload);
 
       if (insertLogError) {
-        failures.push(`Log insert failed for ${recipient}: ${insertLogError.message}`);
+        failures.push(
+          `Log insert failed for ${recipient}: ${insertLogError.message}`,
+        );
       }
 
       sent += 1;
     } catch (error) {
-      failures.push(`Send failed for ${recipient}: ${(error as Error).message}`);
+      failures.push(
+        `Send failed for ${recipient}: ${(error as Error).message}`,
+      );
     }
   }
 
