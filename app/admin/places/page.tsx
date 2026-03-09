@@ -2,6 +2,7 @@ import { deletePlaceMemoryAction, upsertPlaceMemoryAction } from "@/app/actions/
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
 import { FormSubmitButton } from "@/components/admin/form-submit-button";
 import { PlaceMapPicker } from "@/components/admin/place-map-picker";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { getPlaceMemories } from "@/lib/data/queries";
 import { MapPin } from "lucide-react";
 
@@ -131,8 +132,18 @@ function PlaceForm({
   );
 }
 
-export default async function AdminPlacesPage() {
+export default async function AdminPlacesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
   const places = await getPlaceMemories();
+  const page = Math.max(1, Number(params.page ?? "1") || 1);
+  const pageSize = 3;
+  const totalPages = Math.max(1, Math.ceil(places.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const paginatedPlaces = places.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   return (
     <>
@@ -146,8 +157,9 @@ export default async function AdminPlacesPage() {
         </div>
       </section>
 
-      <section className="space-y-3">
-        {places.map((place) => (
+      <section>
+        <div className="max-h-[72vh] space-y-3 overflow-y-auto pr-1">
+        {paginatedPlaces.map((place) => (
           <div key={place.id} className="card p-4">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
@@ -188,6 +200,13 @@ export default async function AdminPlacesPage() {
             Chưa có địa điểm nào trong Heart Mapping.
           </p>
         ) : null}
+        </div>
+        <PaginationControls
+          basePath="/admin/places"
+          currentPage={safePage}
+          totalPages={totalPages}
+          searchParams={{}}
+        />
       </section>
     </>
   );

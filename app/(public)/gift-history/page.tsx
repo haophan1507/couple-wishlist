@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Gift, Heart, MessageCircleHeart } from "lucide-react";
 import { GiftHistoryCard } from "@/components/gift-history-card";
 import { Container } from "@/components/ui/container";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { getCoupleProfile, getGiftHistoryItems } from "@/lib/data/queries";
 
 export const metadata: Metadata = {
@@ -10,11 +11,21 @@ export const metadata: Metadata = {
     "Nơi lưu lại những món quà đã nhận như một phần ký ức dịu dàng của hai bạn.",
 };
 
-export default async function GiftHistoryPage() {
+export default async function GiftHistoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
   const [profile, items] = await Promise.all([
     getCoupleProfile(),
     getGiftHistoryItems(),
   ]);
+  const page = Math.max(1, Number(params.page ?? "1") || 1);
+  const pageSize = 6;
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const paginatedItems = items.slice((safePage - 1) * pageSize, safePage * pageSize);
   const personOneName = profile?.person_one_name ?? "Bạn";
   const personTwoName = profile?.person_two_name ?? "Người thương";
   const thankedCount = items.filter((item) => item.status === "thanked").length;
@@ -109,17 +120,25 @@ export default async function GiftHistoryPage() {
               </div>
             </div>
 
-            <div className="mt-8 grid gap-6 lg:grid-cols-2">
-              {items.map((item) => (
-                <GiftHistoryCard
-                  key={item.id}
-                  item={item}
-                  recipientName={
-                    item.recipient_owner_type === "me" ? personOneName : personTwoName
-                  }
-                />
-              ))}
+            <div className="mt-8 max-h-[70vh] overflow-y-auto pr-1">
+              <div className="grid gap-6 lg:grid-cols-2">
+                {paginatedItems.map((item) => (
+                  <GiftHistoryCard
+                    key={item.id}
+                    item={item}
+                    recipientName={
+                      item.recipient_owner_type === "me" ? personOneName : personTwoName
+                    }
+                  />
+                ))}
+              </div>
             </div>
+            <PaginationControls
+              basePath="/gift-history"
+              currentPage={safePage}
+              totalPages={totalPages}
+              searchParams={{}}
+            />
           </>
         ) : (
           <div className="card mt-8 p-8 text-center">
