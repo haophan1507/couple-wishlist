@@ -21,7 +21,6 @@ type CoupleProfile = Database["public"]["Tables"]["couple_profile"]["Row"];
 type WishlistItem = Database["public"]["Tables"]["wishlist_items"]["Row"];
 type SpecialDay = Database["public"]["Tables"]["special_days"]["Row"];
 type GalleryItem = Database["public"]["Tables"]["gallery_items"]["Row"];
-const LOVE_MILESTONES = [100, 365, 500, 1000, 1500, 2000] as const;
 type TimelineEvent = {
   id: string;
   title: string;
@@ -45,15 +44,25 @@ function getAnnualOccurrence(dateString: string) {
 }
 
 function getMilestoneTargets(daysInLove: number) {
-  const targets: number[] = [...LOVE_MILESTONES];
-  let next = 2500;
+  const horizon = Math.max(2000, daysInLove + 1500);
+  const targets = new Set<number>();
+  const romanticEarlyMilestones = [30, 60, 90, 100, 180, 270, 365];
 
-  while (next <= daysInLove + 1500) {
-    targets.push(next);
-    next += 500;
+  for (const day of romanticEarlyMilestones) {
+    if (day <= horizon) {
+      targets.add(day);
+    }
   }
 
-  return [...new Set(targets)].sort((a, b) => a - b);
+  for (let day = 500; day <= horizon; day += 500) {
+    targets.add(day);
+  }
+
+  for (let year = 1; year * 365 <= horizon; year += 1) {
+    targets.add(year * 365);
+  }
+
+  return [...targets].sort((a, b) => a - b);
 }
 
 export async function getCoupleProfile() {
