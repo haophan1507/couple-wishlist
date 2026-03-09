@@ -4,10 +4,10 @@ import { Gift } from "lucide-react";
 type WishlistPreviewProps = {
   title: string;
   count: number;
-  reservedCount: number;
+  giftedCount: number;
 };
 
-export function WishlistPreview({ title, count, reservedCount }: WishlistPreviewProps) {
+export function WishlistPreview({ title, count, giftedCount }: WishlistPreviewProps) {
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between">
@@ -15,7 +15,7 @@ export function WishlistPreview({ title, count, reservedCount }: WishlistPreview
         <Gift className="h-5 w-5 text-rose" />
       </div>
       <p className="mt-2 text-sm text-mocha/75">{count} món quà</p>
-      <p className="mt-1 text-sm text-mocha/75">{reservedCount} món đã được đặt trước</p>
+      <p className="mt-1 text-sm text-mocha/75">{giftedCount} món đã được tặng</p>
       <Link href="/wishlist" className="mt-5 inline-block text-sm font-medium text-mocha underline-offset-4 hover:underline">
         Mở wishlist
       </Link>

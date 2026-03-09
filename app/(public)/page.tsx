@@ -13,7 +13,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Trang chủ",
-  description: "Trang wishlist lãng mạn và góc kỷ niệm của tụi mình dành cho gia đình, bạn bè."
+  description: "Trang wishlist riêng tư và góc kỷ niệm của tụi mình."
 };
 
 export default async function HomePage() {
@@ -49,12 +49,12 @@ export default async function HomePage() {
             <WishlistPreview
               title={`Wishlist của ${profile?.person_one_name ?? "mình"}`}
               count={meItems.length}
-              reservedCount={meItems.filter((item) => item.is_reserved).length}
+              giftedCount={meItems.filter((item) => item.is_gifted).length}
             />
             <WishlistPreview
               title={`Wishlist của ${profile?.person_two_name ?? "người thương"}`}
               count={honeyItems.length}
-              reservedCount={honeyItems.filter((item) => item.is_reserved).length}
+              giftedCount={honeyItems.filter((item) => item.is_gifted).length}
             />
           </div>
         </Container>
@@ -75,10 +75,10 @@ export default async function HomePage() {
               </p>
             </div>
             <div className="rounded-3xl bg-blush p-6">
-              <p className="text-sm text-mocha/70">Gợi ý cho bạn bè và người thân</p>
-              <h3 className="mt-2 text-xl font-semibold">Đặt trước trước khi mua</h3>
+              <p className="text-sm text-mocha/70">Không gian riêng cho cặp đôi</p>
+              <h3 className="mt-2 text-xl font-semibold">Cùng nhau chuẩn bị bất ngờ</h3>
               <p className="mt-2 text-sm text-mocha/75">
-                Hãy bấm đặt trước ở mỗi món quà để mọi người phối hợp và tránh mua trùng.
+                Hai bạn có thể thêm món quà, theo dõi trạng thái và đánh dấu khi đã tặng cho nhau.
               </p>
               <Gift className="mt-4 h-5 w-5 text-mocha" />
             </div>

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ExternalLink, Tag } from "lucide-react";
 import type { PublicWishlistItem } from "@/lib/data/queries";
-import { ReserveGiftForm } from "@/components/reserve-gift-form";
 
 function currency(value: number | null) {
   if (value === null) {
@@ -66,10 +65,8 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
 
         {item.status === "gifted" ? (
           <p className="mt-4 rounded-xl bg-green-50 px-3 py-2 text-sm font-medium text-green-700">Đã tặng</p>
-        ) : item.is_reserved ? (
-          <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">Đã đặt trước</p>
         ) : (
-          <ReserveGiftForm itemId={item.id} />
+          <p className="mt-4 rounded-xl bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700">Có sẵn</p>
         )}
       </div>
     </article>

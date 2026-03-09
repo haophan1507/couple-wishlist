@@ -5,7 +5,7 @@ import { getCoupleProfile, getWishlistCategories, getWishlistItems } from "@/lib
 
 export const metadata: Metadata = {
   title: "Danh sách quà",
-  description: "Xem và đặt trước quà trong wishlist của tụi mình."
+  description: "Theo dõi và quản lý danh sách quà riêng tư của tụi mình."
 };
 
 export default async function WishlistPage({
@@ -31,7 +31,7 @@ export default async function WishlistPage({
     <section className="py-10 md:py-12">
       <Container>
         <h1 className="section-title font-[var(--font-heading)]">Danh sách quà</h1>
-        <p className="section-subtitle">Đặt trước quà để tránh mua trùng và giữ bất ngờ thật trọn vẹn.</p>
+        <p className="section-subtitle">Hai bạn cùng cập nhật và theo dõi trạng thái quà dành cho nhau.</p>
 
         <form className="mt-6 grid gap-3 rounded-2xl border border-white/70 bg-white/75 p-4 md:grid-cols-[2fr_1fr_auto]">
           <input name="q" placeholder="Tìm theo tên hoặc mô tả" defaultValue={params.q ?? ""} />

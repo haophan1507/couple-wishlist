@@ -42,7 +42,7 @@ export async function getWishlistItems(filters?: {
 
   return safeData.map((item) => ({
     ...item,
-    is_reserved: item.status !== "available"
+    is_gifted: item.status === "gifted"
   }));
 }
 

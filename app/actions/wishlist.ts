@@ -57,7 +57,6 @@ export async function deleteWishlistItemAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const supabase = createSupabaseAdminClient();
 
-  await supabase.from("reservations").delete().eq("wishlist_item_id", id);
   await supabase.from("wishlist_items").delete().eq("id", id);
 
   revalidatePath("/wishlist");

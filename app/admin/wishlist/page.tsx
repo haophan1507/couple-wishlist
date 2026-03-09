@@ -1,7 +1,7 @@
 import { deleteWishlistItemAction, upsertWishlistItemAction } from "@/app/actions/wishlist";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
 import { FormSubmitButton } from "@/components/admin/form-submit-button";
-import { getWishlistItems } from "@/lib/data/queries";
+import { getCoupleProfile, getWishlistItems } from "@/lib/data/queries";
 
 const defaultValues = {
   id: "",
@@ -33,14 +33,22 @@ type WishlistFormItem = {
   status: string;
 };
 
-function WishlistForm({ item = defaultValues }: { item?: WishlistFormItem }) {
+function WishlistForm({
+  item = defaultValues,
+  personOneName,
+  personTwoName
+}: {
+  item?: WishlistFormItem;
+  personOneName: string;
+  personTwoName: string;
+}) {
   return (
     <form action={upsertWishlistItemAction} className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4">
       <input type="hidden" name="id" defaultValue={item.id ?? ""} />
       <div className="grid gap-2 md:grid-cols-2">
         <select name="owner_type" defaultValue={item.owner_type ?? "me"}>
-          <option value="me">Wishlist của mình</option>
-          <option value="honey">Wishlist người thương</option>
+          <option value="me">Quà cho {personOneName}</option>
+          <option value="honey">Quà cho {personTwoName}</option>
         </select>
         <input name="title" placeholder="Tiêu đề" defaultValue={item.title ?? ""} required />
       </div>
@@ -63,7 +71,6 @@ function WishlistForm({ item = defaultValues }: { item?: WishlistFormItem }) {
         <textarea name="note" rows={2} placeholder="Ghi chú" defaultValue={item.note ?? ""} />
         <select name="status" defaultValue={item.status ?? "available"}>
           <option value="available">Có sẵn</option>
-          <option value="reserved">Đã đặt trước</option>
           <option value="gifted">Đã tặng</option>
         </select>
       </div>
@@ -76,7 +83,9 @@ function WishlistForm({ item = defaultValues }: { item?: WishlistFormItem }) {
 }
 
 export default async function AdminWishlistPage() {
-  const items = await getWishlistItems();
+  const [items, profile] = await Promise.all([getWishlistItems(), getCoupleProfile()]);
+  const personOneName = profile?.person_one_name?.trim() || "Bạn 1";
+  const personTwoName = profile?.person_two_name?.trim() || "Bạn 2";
 
   return (
     <>
@@ -84,7 +93,7 @@ export default async function AdminWishlistPage() {
         <h1 className="text-2xl font-semibold">Quản lý Danh Sách Quà</h1>
         <p className="mt-1 text-sm text-mocha/70">Tạo mới và chỉnh sửa món quà.</p>
         <div className="mt-4">
-          <WishlistForm />
+          <WishlistForm personOneName={personOneName} personTwoName={personTwoName} />
         </div>
       </section>
 
@@ -99,6 +108,8 @@ export default async function AdminWishlistPage() {
               </form>
             </div>
             <WishlistForm
+              personOneName={personOneName}
+              personTwoName={personTwoName}
               item={{
                 id: item.id,
                 owner_type: item.owner_type,
