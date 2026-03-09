@@ -1,11 +1,14 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import type { PlaceMemoryEntry } from "@/lib/data/queries";
 import { cn } from "@/lib/utils/cn";
+
+const WIKIMEDIA_TILE_URL = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=vi";
+const OSM_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
 function createMarkerIcon(status: "visited" | "planned") {
   const style =
@@ -59,6 +62,7 @@ export function RealMapView({
   onSelect: (placeId: string) => void;
   className?: string;
 }) {
+  const [useFallbackTile, setUseFallbackTile] = useState(false);
   const points = places.filter(
     (place) => typeof place.latitude === "number" && typeof place.longitude === "number",
   );
@@ -77,8 +81,17 @@ export function RealMapView({
         className="h-full w-full"
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
-          url="https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=vi"
+          attribution={
+            useFallbackTile
+              ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
+          }
+          url={useFallbackTile ? OSM_TILE_URL : WIKIMEDIA_TILE_URL}
+          eventHandlers={{
+            tileerror: () => {
+              setUseFallbackTile(true);
+            },
+          }}
         />
         <FitBounds places={points} />
         {points.map((place) => (

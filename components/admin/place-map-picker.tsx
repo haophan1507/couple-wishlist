@@ -12,6 +12,9 @@ import {
 import { LoaderCircle, MapPin, Search } from "lucide-react";
 import L from "leaflet";
 
+const WIKIMEDIA_TILE_URL = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=vi";
+const OSM_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
 type SearchResult = {
   displayName: string;
   latitude: number;
@@ -99,6 +102,7 @@ export function PlaceMapPicker({
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const [useFallbackTile, setUseFallbackTile] = useState(false);
 
   const center = useMemo<[number, number]>(
     () =>
@@ -341,8 +345,17 @@ export function PlaceMapPicker({
               className="h-[320px] w-full"
             >
               <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
-                url="https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=vi"
+                attribution={
+                  useFallbackTile
+                    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
+                }
+                url={useFallbackTile ? OSM_TILE_URL : WIKIMEDIA_TILE_URL}
+                eventHandlers={{
+                  tileerror: () => {
+                    setUseFallbackTile(true);
+                  },
+                }}
               />
               <RecenterMap latitude={latitude} longitude={longitude} />
               <ClickHandler
