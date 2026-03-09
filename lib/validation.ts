@@ -27,6 +27,18 @@ export const gallerySchema = z.object({
   image_url: z.string().url().optional().or(z.literal(""))
 });
 
+export const giftHistorySchema = z.object({
+  recipient_owner_type: z.enum(["me", "honey"]),
+  gift_name: z.string().min(2).max(120),
+  giver_name: z.string().min(1).max(120),
+  received_date: z.string().date(),
+  special_day_id: z.string().uuid().optional().or(z.literal("")),
+  note: z.string().max(600).optional(),
+  photo_url: z.string().url().optional().or(z.literal("")),
+  wishlist_item_id: z.string().uuid().optional().or(z.literal("")),
+  status: z.enum(["received", "thanked", "archived"])
+});
+
 export const coupleProfileSchema = z.object({
   person_one_name: z.string().min(1).max(80),
   person_two_name: z.string().min(1).max(80),

@@ -18,6 +18,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
 type CoupleProfile = Database["public"]["Tables"]["couple_profile"]["Row"];
+type GiftHistoryItem = Database["public"]["Tables"]["gift_history_items"]["Row"];
 type WishlistItem = Database["public"]["Tables"]["wishlist_items"]["Row"];
 type SpecialDay = Database["public"]["Tables"]["special_days"]["Row"];
 type GalleryItem = Database["public"]["Tables"]["gallery_items"]["Row"];
@@ -32,6 +33,13 @@ type TimelineEvent = {
   badge?: string;
 };
 
+type MilestoneTarget = {
+  dayCount: number;
+  title: string;
+  description: string;
+  date: Date;
+};
+
 function getAnnualOccurrence(dateString: string) {
   const today = startOfDay(new Date());
   const thisYear = new Date(`${today.getFullYear()}-${dateString.slice(5)}`);
@@ -43,26 +51,51 @@ function getAnnualOccurrence(dateString: string) {
   return thisYear;
 }
 
-function getMilestoneTargets(daysInLove: number) {
-  const horizon = Math.max(2000, daysInLove + 1500);
-  const targets = new Set<number>();
-  const romanticEarlyMilestones = [30, 60, 90, 100, 180, 270, 365];
+function getMilestoneTargets(startedAt: Date, daysInLove: number) {
+  const horizonDays = Math.max(2000, daysInLove + 1500);
+  const horizonDate = addDays(startedAt, horizonDays);
+  const milestoneMap = new Map<number, MilestoneTarget>();
 
-  for (const day of romanticEarlyMilestones) {
-    if (day <= horizon) {
-      targets.add(day);
+  const specialDayMilestones = [99, 500, 999];
+  for (const dayCount of specialDayMilestones) {
+    const date = addDays(startedAt, dayCount);
+
+    if (date <= horizonDate) {
+      milestoneMap.set(dayCount, {
+        dayCount,
+        title: `${dayCount} ngày yêu nhau`,
+        description: `Một mốc số đẹp sau ${dayCount} ngày ở bên nhau.`,
+        date,
+      });
     }
   }
 
-  for (let day = 500; day <= horizon; day += 500) {
-    targets.add(day);
+  for (let dayCount = 1000; dayCount <= horizonDays; dayCount += 500) {
+    milestoneMap.set(dayCount, {
+      dayCount,
+      title: `${dayCount} ngày yêu nhau`,
+      description: `Cột mốc đặc biệt ${dayCount} ngày của hai bạn.`,
+      date: addDays(startedAt, dayCount),
+    });
   }
 
-  for (let year = 1; year * 365 <= horizon; year += 1) {
-    targets.add(year * 365);
+  for (let year = 1; ; year += 1) {
+    const date = addYears(startedAt, year);
+
+    if (date > horizonDate) {
+      break;
+    }
+
+    const dayCount = differenceInCalendarDays(date, startedAt);
+    milestoneMap.set(dayCount, {
+      dayCount,
+      title: `${year} năm yêu nhau`,
+      description: `Kỷ niệm tròn ${year} năm kể từ ngày bắt đầu yêu nhau.`,
+      date,
+    });
   }
 
-  return [...targets].sort((a, b) => a - b);
+  return [...milestoneMap.values()].sort((a, b) => a.dayCount - b.dayCount);
 }
 
 export async function getCoupleProfile() {
@@ -165,6 +198,37 @@ export async function getGalleryItems() {
   return (data as GalleryItem[] | null) ?? [];
 }
 
+export async function getGiftHistoryItems() {
+  const supabase = await createSupabaseServerClient();
+  const [{ data: items }, { data: specialDays }, { data: wishlistItems }] =
+    await Promise.all([
+      supabase
+        .from("gift_history_items")
+        .select("*")
+        .order("received_date", { ascending: false })
+        .order("created_at", { ascending: false }),
+      supabase.from("special_days").select("id, title, date"),
+      supabase.from("wishlist_items").select("id, title, owner_type"),
+    ]);
+
+  const dayMap = new Map(
+    (((specialDays as Array<Pick<SpecialDay, "id" | "title" | "date">> | null) ??
+      [])).map((day) => [day.id, day]),
+  );
+  const wishlistMap = new Map(
+    (((wishlistItems as Array<Pick<WishlistItem, "id" | "title" | "owner_type">> | null) ??
+      [])).map((item) => [item.id, item]),
+  );
+
+  return (((items as GiftHistoryItem[] | null) ?? [])).map((item) => ({
+    ...item,
+    special_day: item.special_day_id ? dayMap.get(item.special_day_id) ?? null : null,
+    wishlist_item: item.wishlist_item_id
+      ? wishlistMap.get(item.wishlist_item_id) ?? null
+      : null,
+  }));
+}
+
 export function getLoveStats(loveStartDate: string | null) {
   if (!loveStartDate) {
     return null;
@@ -174,14 +238,13 @@ export function getLoveStats(loveStartDate: string | null) {
   const startedAt = startOfDay(new Date(loveStartDate));
   const daysInLove = differenceInCalendarDays(today, startedAt);
 
-  const milestones = getMilestoneTargets(daysInLove).map((days) => {
-    const date = addDays(startedAt, days);
+  const milestones = getMilestoneTargets(startedAt, daysInLove).map((milestone) => {
     return {
-      id: `milestone-${days}`,
-      title: `${days} ngày yêu nhau`,
-      description: `Cột mốc ${days} ngày kể từ lúc bắt đầu.`,
-      date,
-      countdown: differenceInCalendarDays(date, today),
+      id: `milestone-${milestone.dayCount}`,
+      title: milestone.title,
+      description: milestone.description,
+      date: milestone.date,
+      countdown: differenceInCalendarDays(milestone.date, today),
       source: "milestone" as const,
       type: "milestone",
       badge: "Cột mốc",
@@ -304,6 +367,9 @@ export function getLoveCalendar(events: TimelineEvent[], monthDate = new Date())
 
 export type PublicWishlistItem = Awaited<
   ReturnType<typeof getWishlistItems>
+>[number];
+export type GiftHistoryEntry = Awaited<
+  ReturnType<typeof getGiftHistoryItems>
 >[number];
 export type LoveTimelineEvent = ReturnType<typeof getTimelineEvents>[number];
 

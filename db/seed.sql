@@ -110,3 +110,26 @@ values
     '2025-09-22'
   )
 on conflict do nothing;
+
+insert into gift_history_items
+  (recipient_owner_type, gift_name, giver_name, received_date, note, photo_url, status)
+values
+  (
+    'honey',
+    'Bó tulip màu kem',
+    'Hào',
+    '2025-10-08',
+    'Một bó hoa cho buổi tối kỷ niệm, vẫn còn ép khô một cánh trong cuốn sổ tay.',
+    'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=1200&q=80',
+    'thanked'
+  ),
+  (
+    'me',
+    'Máy ảnh film bỏ túi',
+    'Trà',
+    '2025-12-24',
+    'Món quà Giáng Sinh để mang theo trong mọi chuyến đi của hai đứa.',
+    'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80',
+    'received'
+  )
+on conflict do nothing;

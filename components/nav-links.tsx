@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils/cn";
 const links = [
   { href: "/", label: "Trang chủ" },
   { href: "/wishlist", label: "Danh sách quà" },
+  { href: "/gift-history", label: "Quà đã nhận" },
   { href: "/special-days", label: "Ngày đặc biệt" },
   { href: "/gallery", label: "Khoảnh khắc" }
 ];

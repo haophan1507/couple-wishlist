@@ -1,6 +1,12 @@
 import { upsertCoupleProfileAction } from "@/app/actions/couple-profile";
 import { FormSubmitButton } from "@/components/admin/form-submit-button";
-import { getCoupleProfile, getGalleryItems, getSpecialDays, getWishlistItems } from "@/lib/data/queries";
+import {
+  getCoupleProfile,
+  getGalleryItems,
+  getGiftHistoryItems,
+  getSpecialDays,
+  getWishlistItems
+} from "@/lib/data/queries";
 import type { ReactNode } from "react";
 
 function Field({
@@ -19,18 +25,19 @@ function Field({
 }
 
 export default async function AdminPage() {
-  const [profile, wishlist, days, gallery] = await Promise.all([
+  const [profile, wishlist, days, gallery, giftHistory] = await Promise.all([
     getCoupleProfile(),
     getWishlistItems(),
     getSpecialDays(),
-    getGalleryItems()
+    getGalleryItems(),
+    getGiftHistoryItems()
   ]);
 
   return (
     <>
       <section className="card p-6">
         <h1 className="text-2xl font-semibold dark:text-white">Bảng điều khiển</h1>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="mt-4 grid gap-3 md:grid-cols-4">
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
             <p className="text-sm text-mocha/70 dark:text-white/55">Món trong wishlist</p>
             <p className="mt-1 text-2xl font-semibold dark:text-white">{wishlist.length}</p>
@@ -42,6 +49,10 @@ export default async function AdminPage() {
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
             <p className="text-sm text-mocha/70 dark:text-white/55">Ảnh kỷ niệm</p>
             <p className="mt-1 text-2xl font-semibold dark:text-white">{gallery.length}</p>
+          </div>
+          <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
+            <p className="text-sm text-mocha/70 dark:text-white/55">Quà đã lưu lịch sử</p>
+            <p className="mt-1 text-2xl font-semibold dark:text-white">{giftHistory.length}</p>
           </div>
         </div>
       </section>

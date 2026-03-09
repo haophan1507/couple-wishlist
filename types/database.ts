@@ -51,6 +51,51 @@ export type Database = {
           updated_at?: string;
         };
       };
+      gift_history_items: {
+        Row: {
+          id: string;
+          recipient_owner_type: "me" | "honey";
+          gift_name: string;
+          giver_name: string;
+          received_date: string;
+          special_day_id: string | null;
+          note: string | null;
+          photo_url: string | null;
+          wishlist_item_id: string | null;
+          wishlist_item_title: string | null;
+          status: "received" | "thanked" | "archived";
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          recipient_owner_type: "me" | "honey";
+          gift_name: string;
+          giver_name: string;
+          received_date: string;
+          special_day_id?: string | null;
+          note?: string | null;
+          photo_url?: string | null;
+          wishlist_item_id?: string | null;
+          wishlist_item_title?: string | null;
+          status?: "received" | "thanked" | "archived";
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          recipient_owner_type?: "me" | "honey";
+          gift_name?: string;
+          giver_name?: string;
+          received_date?: string;
+          special_day_id?: string | null;
+          note?: string | null;
+          photo_url?: string | null;
+          wishlist_item_id?: string | null;
+          wishlist_item_title?: string | null;
+          status?: "received" | "thanked" | "archived";
+          updated_at?: string;
+        };
+      };
       gallery_items: {
         Row: {
           id: string;
