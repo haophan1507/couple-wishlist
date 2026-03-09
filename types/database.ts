@@ -8,6 +8,13 @@ export type Database = {
           id: string;
           person_one_name: string;
           person_two_name: string;
+          love_start_date: string | null;
+          person_one_birthday: string | null;
+          person_two_birthday: string | null;
+          person_one_favorite: string | null;
+          person_two_favorite: string | null;
+          person_one_hobby: string | null;
+          person_two_hobby: string | null;
           story: string | null;
           cover_image_url: string | null;
           created_at: string;
@@ -17,6 +24,13 @@ export type Database = {
           id?: string;
           person_one_name: string;
           person_two_name: string;
+          love_start_date?: string | null;
+          person_one_birthday?: string | null;
+          person_two_birthday?: string | null;
+          person_one_favorite?: string | null;
+          person_two_favorite?: string | null;
+          person_one_hobby?: string | null;
+          person_two_hobby?: string | null;
           story?: string | null;
           cover_image_url?: string | null;
           created_at?: string;
@@ -25,6 +39,13 @@ export type Database = {
         Update: {
           person_one_name?: string;
           person_two_name?: string;
+          love_start_date?: string | null;
+          person_one_birthday?: string | null;
+          person_two_birthday?: string | null;
+          person_one_favorite?: string | null;
+          person_two_favorite?: string | null;
+          person_one_hobby?: string | null;
+          person_two_hobby?: string | null;
           story?: string | null;
           cover_image_url?: string | null;
           updated_at?: string;
@@ -75,27 +96,6 @@ export type Database = {
           role?: "admin" | "viewer";
         };
       };
-      reservations: {
-        Row: {
-          id: string;
-          wishlist_item_id: string;
-          visitor_name: string;
-          visitor_email: string;
-          note: string | null;
-          reserved_at: string;
-        };
-        Insert: {
-          id?: string;
-          wishlist_item_id: string;
-          visitor_name: string;
-          visitor_email: string;
-          note?: string | null;
-          reserved_at?: string;
-        };
-        Update: {
-          note?: string | null;
-        };
-      };
       special_days: {
         Row: {
           id: string;
@@ -133,7 +133,7 @@ export type Database = {
           category: string | null;
           priority: "low" | "medium" | "high";
           note: string | null;
-          status: "available" | "reserved" | "gifted";
+          status: "available" | "gifted";
           created_at: string;
           updated_at: string;
         };
@@ -149,7 +149,7 @@ export type Database = {
           category?: string | null;
           priority?: "low" | "medium" | "high";
           note?: string | null;
-          status?: "available" | "reserved" | "gifted";
+          status?: "available" | "gifted";
           created_at?: string;
           updated_at?: string;
         };
@@ -164,7 +164,7 @@ export type Database = {
           category?: string | null;
           priority?: "low" | "medium" | "high";
           note?: string | null;
-          status?: "available" | "reserved" | "gifted";
+          status?: "available" | "gifted";
           updated_at?: string;
         };
       };

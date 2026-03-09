@@ -1,7 +1,26 @@
-insert into couple_profile (person_one_name, person_two_name, story, cover_image_url)
+insert into couple_profile (
+  person_one_name,
+  person_two_name,
+  love_start_date,
+  person_one_birthday,
+  person_two_birthday,
+  person_one_favorite,
+  person_two_favorite,
+  person_one_hobby,
+  person_two_hobby,
+  story,
+  cover_image_url
+)
 values (
   'Alex',
   'Jamie',
+  '2021-02-20',
+  '1998-08-15',
+  '1999-11-04',
+  'Ca phe sua da, may anh film',
+  'Hoa tulip, spa, do trang suc nho',
+  'Chup anh, di dao cuoi tuan',
+  'Doc sach, cham soc cay, di picnic',
   'We started with coffee dates and now collect memories, little traditions, and ideas for meaningful gifts.',
   'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1400&q=80'
 )

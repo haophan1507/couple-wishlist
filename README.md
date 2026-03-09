@@ -5,8 +5,12 @@ A full-stack romantic wishlist website built with Next.js App Router, TypeScript
 ## Features
 
 - Public landing page with couple intro, cover photo, and wishlist/special-day previews
-- Public wishlist page with search/filter and gift reservation flow
+- Private couple wishlist page with search/filter and gift status tracking
 - Public special days page with countdowns and days-together counter
+- Automatic love milestones from the couple's love start date
+- Automatic birthdays from the couple profile
+- Monthly love calendar with milestone and special-day details
+- Couple profile facts such as age, favorites, and hobbies
 - Public gallery page with memory cards
 - Protected admin dashboard with CRUD for:
   - Couple profile
@@ -121,7 +125,5 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 ## Notes
 
-- Reservation duplicate prevention is enforced by:
-  - app-level checks in server action
-  - database unique constraint on `reservations.wishlist_item_id`
-- Admin pages are protected by middleware + role checks.
+- Admin pages are protected by proxy + role checks.
+- Love milestones are auto-generated from `couple_profile.love_start_date`.

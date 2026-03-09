@@ -4,7 +4,7 @@ create extension if not exists "uuid-ossp";
 -- Enums
 create type owner_type as enum ('me', 'honey');
 create type wishlist_priority as enum ('low', 'medium', 'high');
-create type wishlist_status as enum ('available', 'reserved', 'gifted');
+create type wishlist_status as enum ('available', 'gifted');
 create type special_day_type as enum ('birthday', 'anniversary', 'relationship', 'holiday', 'other');
 create type profile_role as enum ('admin', 'viewer');
 
@@ -22,6 +22,13 @@ create table if not exists couple_profile (
   id uuid primary key default uuid_generate_v4(),
   person_one_name text not null,
   person_two_name text not null,
+  love_start_date date,
+  person_one_birthday date,
+  person_two_birthday date,
+  person_one_favorite text,
+  person_two_favorite text,
+  person_one_hobby text,
+  person_two_hobby text,
   story text,
   cover_image_url text,
   created_at timestamptz not null default timezone('utc', now()),
@@ -54,16 +61,6 @@ create table if not exists special_days (
   created_at timestamptz not null default timezone('utc', now())
 );
 
-create table if not exists reservations (
-  id uuid primary key default uuid_generate_v4(),
-  wishlist_item_id uuid not null references wishlist_items(id) on delete cascade,
-  visitor_name text not null,
-  visitor_email text not null,
-  note text,
-  reserved_at timestamptz not null default timezone('utc', now()),
-  unique (wishlist_item_id)
-);
-
 create table if not exists gallery_items (
   id uuid primary key default uuid_generate_v4(),
   image_url text not null,
@@ -81,24 +78,6 @@ begin
 end;
 $$ language plpgsql;
 
-create or replace function sync_wishlist_status_on_reservation()
-returns trigger as $$
-begin
-  if tg_op = 'INSERT' then
-    update wishlist_items
-    set status = 'reserved', updated_at = timezone('utc', now())
-    where id = new.wishlist_item_id and status = 'available';
-    return new;
-  elsif tg_op = 'DELETE' then
-    update wishlist_items
-    set status = 'available', updated_at = timezone('utc', now())
-    where id = old.wishlist_item_id and status = 'reserved';
-    return old;
-  end if;
-  return null;
-end;
-$$ language plpgsql;
-
 -- Triggers
 create trigger trg_wishlist_updated_at
 before update on wishlist_items
@@ -107,14 +86,6 @@ for each row execute function set_updated_at();
 create trigger trg_couple_profile_updated_at
 before update on couple_profile
 for each row execute function set_updated_at();
-
-create trigger trg_reservation_sync_insert
-after insert on reservations
-for each row execute function sync_wishlist_status_on_reservation();
-
-create trigger trg_reservation_sync_delete
-after delete on reservations
-for each row execute function sync_wishlist_status_on_reservation();
 
 -- Auth profile sync
 create or replace function handle_new_user()
@@ -147,7 +118,6 @@ alter table profiles enable row level security;
 alter table couple_profile enable row level security;
 alter table wishlist_items enable row level security;
 alter table special_days enable row level security;
-alter table reservations enable row level security;
 alter table gallery_items enable row level security;
 
 -- Policies: helper expression for admins
@@ -235,26 +205,6 @@ with check (
     select 1 from profiles p where p.id = auth.uid() and p.role = 'admin'
   )
 );
-
-create policy "admin manage reservations"
-on reservations for all
-to authenticated
-using (
-  exists (
-    select 1 from profiles p where p.id = auth.uid() and p.role = 'admin'
-  )
-)
-with check (
-  exists (
-    select 1 from profiles p where p.id = auth.uid() and p.role = 'admin'
-  )
-);
-
--- Public can reserve gifts without auth
-create policy "public create reservation"
-on reservations for insert
-to anon, authenticated
-with check (true);
 
 -- Storage policies
 create policy "public read storage"
