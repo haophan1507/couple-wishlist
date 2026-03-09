@@ -43,6 +43,57 @@ type MilestoneTarget = {
   date: Date;
 };
 
+const AUTO_HOLIDAY_DEFINITIONS = [
+  {
+    key: "valentine",
+    monthDay: "02-14",
+    title: "Valentine 14/2",
+    description: "Ngày lễ Tình nhân - dịp để gửi lời yêu thương ngọt ngào.",
+  },
+  {
+    key: "womens-day",
+    monthDay: "03-08",
+    title: "Quốc tế Phụ nữ 8/3",
+    description: "Một ngày đặc biệt để gửi lời chúc và sự quan tâm.",
+  },
+  {
+    key: "international-happiness-day",
+    monthDay: "03-21",
+    title: "Ngày Quốc tế Hạnh phúc 21/3",
+    description: "Một ngày để cùng nhau lưu giữ niềm vui và hạnh phúc.",
+  },
+  {
+    key: "girlfriend-day",
+    monthDay: "08-01",
+    title: "Ngày bạn gái 1/8",
+    description: "Dịp để dành những điều dễ thương cho người thương.",
+  },
+  {
+    key: "boyfriend-day",
+    monthDay: "10-03",
+    title: "Ngày bạn trai 3/10",
+    description: "Một ngày nhỏ để nói lời yêu và cảm ơn nửa kia.",
+  },
+  {
+    key: "vn-womens-day",
+    monthDay: "10-20",
+    title: "Phụ nữ Việt Nam 20/10",
+    description: "Ngày tôn vinh phụ nữ Việt Nam với những điều dễ thương.",
+  },
+  {
+    key: "christmas-eve",
+    monthDay: "12-24",
+    title: "Đêm Giáng Sinh 24/12",
+    description: "Đêm ấm áp để hẹn hò và trao nhau quà nhỏ.",
+  },
+  {
+    key: "new-year-day",
+    monthDay: "01-01",
+    title: "Năm mới 1/1",
+    description: "Bắt đầu năm mới cùng nhau với thật nhiều yêu thương.",
+  },
+] as const;
+
 function getAnnualOccurrence(dateString: string) {
   const today = startOfDay(new Date());
   const thisYear = new Date(`${today.getFullYear()}-${dateString.slice(5)}`);
@@ -99,6 +150,23 @@ function getMilestoneTargets(startedAt: Date, daysInLove: number) {
   }
 
   return [...milestoneMap.values()].sort((a, b) => a.dayCount - b.dayCount);
+}
+
+function getAutoHolidayDays(days: SpecialDay[]) {
+  const manualHolidayMonthDays = new Set(
+    days.filter((day) => day.type === "holiday").map((day) => day.date.slice(5)),
+  );
+
+  return AUTO_HOLIDAY_DEFINITIONS.filter(
+    (holiday) => !manualHolidayMonthDays.has(holiday.monthDay),
+  ).map((holiday) => ({
+    id: `auto-holiday-${holiday.key}`,
+    title: holiday.title,
+    description: holiday.description,
+    date: `2000-${holiday.monthDay}`,
+    type: "holiday" as const,
+    created_at: "2000-01-01T00:00:00.000Z",
+  }));
 }
 
 export async function getCoupleProfile() {
@@ -180,8 +248,9 @@ export async function getSpecialDays() {
 
 export function getUpcomingDay(days: SpecialDay[]) {
   const today = startOfDay(new Date());
+  const allDays = [...days, ...getAutoHolidayDays(days)];
 
-  const upcoming = days
+  const upcoming = allDays
     .map((day) => {
       const currentYear = new Date(
         `${new Date().getFullYear()}-${day.date.slice(5)}`,
@@ -378,12 +447,26 @@ export function getTimelineEvents(days: SpecialDay[], profile: CoupleProfile | n
       badge: "Tự thêm",
     };
   });
+  const autoHolidayEvents: TimelineEvent[] = getAutoHolidayDays(days).map((day) => {
+    const nextDate = getAnnualOccurrence(day.date);
+
+    return {
+      id: day.id,
+      title: day.title,
+      description: day.description,
+      date: nextDate,
+      countdown: differenceInCalendarDays(nextDate, today),
+      source: "manual",
+      type: day.type,
+      badge: "Ngày lễ",
+    };
+  });
 
   const loveStats = getLoveStats(profile?.love_start_date ?? null);
   const milestoneEvents = loveStats?.milestones ?? [];
   const birthdayEvents = getBirthdayEvents(profile);
 
-  return [...manualEvents, ...birthdayEvents, ...milestoneEvents].sort(
+  return [...manualEvents, ...autoHolidayEvents, ...birthdayEvents, ...milestoneEvents].sort(
     (a, b) => a.countdown - b.countdown,
   );
 }
