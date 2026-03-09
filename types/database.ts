@@ -1,0 +1,177 @@
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+export type Database = {
+  public: {
+    Tables: {
+      couple_profile: {
+        Row: {
+          id: string;
+          person_one_name: string;
+          person_two_name: string;
+          story: string | null;
+          cover_image_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          person_one_name: string;
+          person_two_name: string;
+          story?: string | null;
+          cover_image_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          person_one_name?: string;
+          person_two_name?: string;
+          story?: string | null;
+          cover_image_url?: string | null;
+          updated_at?: string;
+        };
+      };
+      gallery_items: {
+        Row: {
+          id: string;
+          image_url: string;
+          caption: string | null;
+          memory_date: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          image_url: string;
+          caption?: string | null;
+          memory_date?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          image_url?: string;
+          caption?: string | null;
+          memory_date?: string | null;
+        };
+      };
+      profiles: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          avatar_url: string | null;
+          role: "admin" | "viewer";
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          name: string;
+          email: string;
+          avatar_url?: string | null;
+          role?: "admin" | "viewer";
+          created_at?: string;
+        };
+        Update: {
+          name?: string;
+          email?: string;
+          avatar_url?: string | null;
+          role?: "admin" | "viewer";
+        };
+      };
+      reservations: {
+        Row: {
+          id: string;
+          wishlist_item_id: string;
+          visitor_name: string;
+          visitor_email: string;
+          note: string | null;
+          reserved_at: string;
+        };
+        Insert: {
+          id?: string;
+          wishlist_item_id: string;
+          visitor_name: string;
+          visitor_email: string;
+          note?: string | null;
+          reserved_at?: string;
+        };
+        Update: {
+          note?: string | null;
+        };
+      };
+      special_days: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          date: string;
+          type: "birthday" | "anniversary" | "relationship" | "holiday" | "other";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          date: string;
+          type?: "birthday" | "anniversary" | "relationship" | "holiday" | "other";
+          created_at?: string;
+        };
+        Update: {
+          title?: string;
+          description?: string | null;
+          date?: string;
+          type?: "birthday" | "anniversary" | "relationship" | "holiday" | "other";
+        };
+      };
+      wishlist_items: {
+        Row: {
+          id: string;
+          owner_type: "me" | "honey";
+          title: string;
+          description: string | null;
+          image_url: string | null;
+          product_url: string | null;
+          price_min: number | null;
+          price_max: number | null;
+          category: string | null;
+          priority: "low" | "medium" | "high";
+          note: string | null;
+          status: "available" | "reserved" | "gifted";
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_type: "me" | "honey";
+          title: string;
+          description?: string | null;
+          image_url?: string | null;
+          product_url?: string | null;
+          price_min?: number | null;
+          price_max?: number | null;
+          category?: string | null;
+          priority?: "low" | "medium" | "high";
+          note?: string | null;
+          status?: "available" | "reserved" | "gifted";
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          owner_type?: "me" | "honey";
+          title?: string;
+          description?: string | null;
+          image_url?: string | null;
+          product_url?: string | null;
+          price_min?: number | null;
+          price_max?: number | null;
+          category?: string | null;
+          priority?: "low" | "medium" | "high";
+          note?: string | null;
+          status?: "available" | "reserved" | "gifted";
+          updated_at?: string;
+        };
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
+};

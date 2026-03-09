@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-cream text-mocha antialiased;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(232, 180, 188, 0.24), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(248, 231, 234, 0.7), transparent 30%);
+  min-height: 100vh;
+}
+
+.dark body {
+  @apply bg-[#1e1a1c] text-[#f4e9e7];
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(170, 120, 130, 0.2), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(92, 68, 74, 0.28), transparent 30%);
+}
+
+.card {
+  @apply rounded-3xl border border-white/70 bg-white/80 shadow-soft backdrop-blur;
+}
+
+.dark .card {
+  @apply border-white/10 bg-white/5;
+}
+
+.section-title {
+  @apply text-3xl font-semibold tracking-tight text-mocha md:text-4xl;
+}
+
+.section-subtitle {
+  @apply mt-2 text-base text-mocha/70 md:text-lg;
+}
+
+input,
+select,
+textarea {
+  @apply rounded-xl border border-rose/30 bg-white px-4 py-2 text-sm outline-none transition focus:border-rose focus:ring-2 focus:ring-rose/20;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  @apply border-white/20 bg-white/5 text-white placeholder:text-white/40;
+}
+
+button:disabled {
+  @apply cursor-not-allowed opacity-60;
+}
