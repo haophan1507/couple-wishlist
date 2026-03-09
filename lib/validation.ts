@@ -4,7 +4,8 @@ export const wishlistSchema = z.object({
   owner_type: z.enum(["me", "honey"]),
   title: z.string().min(2).max(120),
   description: z.string().max(400).optional(),
-  image_url: z.string().url().optional().or(z.literal("")),
+  image_alt: z.string().max(160).optional(),
+  existing_image_path: z.string().max(300).optional().or(z.literal("")),
   product_url: z.string().url().optional().or(z.literal("")),
   price_min: z.coerce.number().nonnegative().optional(),
   price_max: z.coerce.number().nonnegative().optional(),
@@ -24,7 +25,8 @@ export const specialDaySchema = z.object({
 export const gallerySchema = z.object({
   caption: z.string().max(200).optional(),
   memory_date: z.string().date().optional().or(z.literal("")),
-  image_url: z.string().url().optional().or(z.literal(""))
+  image_alt: z.string().max(160).optional(),
+  existing_image_path: z.string().max(300).optional().or(z.literal(""))
 });
 
 export const giftHistorySchema = z.object({
@@ -34,7 +36,8 @@ export const giftHistorySchema = z.object({
   received_date: z.string().date(),
   special_day_id: z.string().uuid().optional().or(z.literal("")),
   note: z.string().max(600).optional(),
-  photo_url: z.string().url().optional().or(z.literal("")),
+  photo_alt: z.string().max(160).optional(),
+  existing_photo_path: z.string().max(300).optional().or(z.literal("")),
   wishlist_item_id: z.string().uuid().optional().or(z.literal("")),
   status: z.enum(["received", "thanked", "archived"])
 });
@@ -50,5 +53,6 @@ export const coupleProfileSchema = z.object({
   person_one_hobby: z.string().max(200).optional(),
   person_two_hobby: z.string().max(200).optional(),
   story: z.string().max(1000).optional(),
-  cover_image_url: z.string().url().optional().or(z.literal(""))
+  cover_image_alt: z.string().max(160).optional(),
+  existing_cover_image_path: z.string().max(300).optional().or(z.literal(""))
 });

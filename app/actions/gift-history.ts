@@ -1,41 +1,17 @@
 "use server";
 
-import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
+import { deleteStorageFile } from "@/lib/storage/delete";
+import { uploadImageFile } from "@/lib/storage/upload";
+import { getOptionalFile } from "@/lib/storage/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { giftHistorySchema } from "@/lib/validation";
-
-async function uploadGiftPhotoIfProvided(formData: FormData) {
-  const file = formData.get("photo_file");
-
-  if (!(file instanceof File) || file.size === 0) {
-    return null;
-  }
-
-  const ext = file.name.split(".").pop() || "jpg";
-  const filePath = `gift-history/${randomUUID()}.${ext}`;
-  const supabase = createSupabaseAdminClient();
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const { error } = await supabase.storage
-    .from("couple-assets")
-    .upload(filePath, buffer, {
-      contentType: file.type,
-      upsert: false,
-    });
-
-  if (error) {
-    throw new Error("Không thể tải ảnh quà tặng.");
-  }
-
-  const { data } = supabase.storage.from("couple-assets").getPublicUrl(filePath);
-  return data.publicUrl;
-}
 
 export async function upsertGiftHistoryItemAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
-  const uploadedUrl = await uploadGiftPhotoIfProvided(formData);
+  const photoFile = getOptionalFile(formData, "photo_file");
   const parsed = giftHistorySchema.safeParse({
     recipient_owner_type: formData.get("recipient_owner_type"),
     gift_name: formData.get("gift_name"),
@@ -43,7 +19,8 @@ export async function upsertGiftHistoryItemAction(formData: FormData) {
     received_date: formData.get("received_date"),
     special_day_id: formData.get("special_day_id"),
     note: formData.get("note"),
-    photo_url: uploadedUrl || formData.get("photo_url"),
+    photo_alt: formData.get("photo_alt"),
+    existing_photo_path: formData.get("existing_photo_path"),
     wishlist_item_id: formData.get("wishlist_item_id"),
     status: formData.get("status"),
   });
@@ -53,26 +30,29 @@ export async function upsertGiftHistoryItemAction(formData: FormData) {
   }
 
   const payload = {
-    ...parsed.data,
+    recipient_owner_type: parsed.data.recipient_owner_type,
+    gift_name: parsed.data.gift_name,
+    giver_name: parsed.data.giver_name,
+    received_date: parsed.data.received_date,
     special_day_id: parsed.data.special_day_id || null,
     note: parsed.data.note || null,
-    photo_url: parsed.data.photo_url || null,
     wishlist_item_id: parsed.data.wishlist_item_id || null,
+    status: parsed.data.status,
     updated_at: new Date().toISOString(),
   };
 
   const supabase = createSupabaseAdminClient();
   let wishlistItemTitle: string | null = null;
+  const { data: existing } = id
+    ? await supabase
+        .from("gift_history_items")
+        .select("wishlist_item_title, photo_path")
+        .eq("id", id)
+        .maybeSingle()
+    : { data: null };
+  let nextPhotoPath = parsed.data.existing_photo_path || existing?.photo_path || null;
 
-  if (id) {
-    const { data: existing } = await supabase
-      .from("gift_history_items")
-      .select("wishlist_item_title")
-      .eq("id", id)
-      .maybeSingle();
-
-    wishlistItemTitle = existing?.wishlist_item_title ?? null;
-  }
+  wishlistItemTitle = existing?.wishlist_item_title ?? null;
 
   if (payload.wishlist_item_id) {
     const { data: wishlistItem } = await supabase
@@ -84,8 +64,19 @@ export async function upsertGiftHistoryItemAction(formData: FormData) {
     wishlistItemTitle = wishlistItem?.title ?? wishlistItemTitle;
   }
 
+  if (photoFile) {
+    const uploaded = await uploadImageFile({
+      file: photoFile,
+      target: "giftHistory",
+      entityId: id || undefined,
+    });
+    nextPhotoPath = uploaded.path;
+  }
+
   const finalPayload = {
     ...payload,
+    photo_path: nextPhotoPath,
+    photo_alt: parsed.data.photo_alt || parsed.data.gift_name,
     wishlist_item_title: wishlistItemTitle,
   };
 
@@ -102,6 +93,10 @@ export async function upsertGiftHistoryItemAction(formData: FormData) {
       .eq("id", payload.wishlist_item_id);
   }
 
+  if (photoFile && existing?.photo_path && existing.photo_path !== nextPhotoPath) {
+    await deleteStorageFile(existing.photo_path);
+  }
+
   revalidatePath("/gift-history");
   revalidatePath("/admin");
   revalidatePath("/admin/gift-history");
@@ -114,8 +109,14 @@ export async function deleteGiftHistoryItemAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const supabase = createSupabaseAdminClient();
+  const { data: existing } = await supabase
+    .from("gift_history_items")
+    .select("photo_path")
+    .eq("id", id)
+    .maybeSingle();
 
   await supabase.from("gift_history_items").delete().eq("id", id);
+  await deleteStorageFile(existing?.photo_path);
 
   revalidatePath("/gift-history");
   revalidatePath("/admin");

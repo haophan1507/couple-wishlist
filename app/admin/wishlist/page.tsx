@@ -8,7 +8,8 @@ const defaultValues = {
   owner_type: "me",
   title: "",
   description: "",
-  image_url: "",
+  image_path: "",
+  image_alt: "",
   product_url: "",
   price_min: "",
   price_max: "",
@@ -23,7 +24,8 @@ type WishlistFormItem = {
   owner_type: string;
   title: string;
   description: string;
-  image_url: string;
+  image_path: string;
+  image_alt: string;
   product_url: string;
   price_min: string;
   price_max: string;
@@ -54,7 +56,9 @@ function WishlistForm({
       </div>
       <textarea name="description" rows={2} placeholder="Mô tả" defaultValue={item.description ?? ""} />
       <div className="grid gap-2 md:grid-cols-2">
-        <input name="image_url" placeholder="URL ảnh" defaultValue={item.image_url ?? ""} />
+        <input type="hidden" name="existing_image_path" defaultValue={item.image_path ?? ""} />
+        <input type="file" name="image_file" accept="image/*" />
+        <input name="image_alt" placeholder="Mô tả ảnh" defaultValue={item.image_alt ?? ""} />
         <input name="product_url" placeholder="Link sản phẩm" defaultValue={item.product_url ?? ""} />
       </div>
       <div className="grid gap-2 md:grid-cols-4">
@@ -115,7 +119,8 @@ export default async function AdminWishlistPage() {
                 owner_type: item.owner_type,
                 title: item.title,
                 description: item.description ?? "",
-                image_url: item.image_url ?? "",
+                image_path: item.image_path ?? "",
+                image_alt: item.image_alt ?? "",
                 product_url: item.product_url ?? "",
                 price_min: item.price_min?.toString() ?? "",
                 price_max: item.price_max?.toString() ?? "",

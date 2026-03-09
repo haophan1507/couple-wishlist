@@ -1,63 +1,63 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { randomUUID } from "crypto";
 import { requireAdmin } from "@/lib/auth";
+import { deleteStorageFile } from "@/lib/storage/delete";
+import { uploadImageFile } from "@/lib/storage/upload";
+import { getOptionalFile } from "@/lib/storage/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { gallerySchema } from "@/lib/validation";
-
-async function uploadFileIfProvided(formData: FormData) {
-  const file = formData.get("image_file");
-
-  if (!(file instanceof File) || file.size === 0) {
-    return null;
-  }
-
-  const ext = file.name.split(".").pop() || "jpg";
-  const filePath = `gallery/${randomUUID()}.${ext}`;
-  const supabase = createSupabaseAdminClient();
-
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const { error } = await supabase.storage.from("couple-assets").upload(filePath, buffer, {
-    contentType: file.type,
-    upsert: false
-  });
-
-  if (error) {
-    throw new Error("Failed to upload image.");
-  }
-
-  const { data } = supabase.storage.from("couple-assets").getPublicUrl(filePath);
-  return data.publicUrl;
-}
 
 export async function upsertGalleryItemAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
-  const uploadedUrl = await uploadFileIfProvided(formData);
+  const imageFile = getOptionalFile(formData, "image_file");
 
   const parsed = gallerySchema.safeParse({
     caption: formData.get("caption"),
     memory_date: formData.get("memory_date"),
-    image_url: uploadedUrl || formData.get("image_url")
+    image_alt: formData.get("image_alt"),
+    existing_image_path: formData.get("existing_image_path")
   });
 
-  if (!parsed.success || !parsed.data.image_url) {
+  if (!parsed.success) {
     throw new Error("Invalid gallery form data");
   }
 
+  const supabase = createSupabaseAdminClient();
+  const { data: existing } = id
+    ? await supabase.from("gallery_items").select("image_path").eq("id", id).maybeSingle()
+    : { data: null };
+  let nextImagePath = parsed.data.existing_image_path || existing?.image_path || null;
+
+  if (imageFile) {
+    const uploaded = await uploadImageFile({
+      file: imageFile,
+      target: "gallery",
+      entityId: id || undefined,
+    });
+    nextImagePath = uploaded.path;
+  }
+
+  if (!nextImagePath) {
+    throw new Error("Gallery image is required.");
+  }
+
   const payload = {
-    image_url: parsed.data.image_url,
+    image_path: nextImagePath,
+    image_alt: parsed.data.image_alt || parsed.data.caption || null,
     caption: parsed.data.caption || null,
     memory_date: parsed.data.memory_date || null
   };
-
-  const supabase = createSupabaseAdminClient();
 
   if (id) {
     await supabase.from("gallery_items").update(payload).eq("id", id);
   } else {
     await supabase.from("gallery_items").insert(payload);
+  }
+
+  if (imageFile && existing?.image_path && existing.image_path !== nextImagePath) {
+    await deleteStorageFile(existing.image_path);
   }
 
   revalidatePath("/gallery");
@@ -68,7 +68,14 @@ export async function deleteGalleryItemAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const supabase = createSupabaseAdminClient();
+  const { data: existing } = await supabase
+    .from("gallery_items")
+    .select("image_path")
+    .eq("id", id)
+    .maybeSingle();
   await supabase.from("gallery_items").delete().eq("id", id);
+
+  await deleteStorageFile(existing?.image_path);
 
   revalidatePath("/gallery");
   revalidatePath("/admin/gallery");

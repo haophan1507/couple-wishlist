@@ -31,7 +31,8 @@ create table if not exists couple_profile (
   person_one_hobby text,
   person_two_hobby text,
   story text,
-  cover_image_url text,
+  cover_image_path text,
+  cover_image_alt text,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
@@ -41,7 +42,8 @@ create table if not exists wishlist_items (
   owner_type owner_type not null,
   title text not null,
   description text,
-  image_url text,
+  image_path text,
+  image_alt text,
   product_url text,
   price_min numeric(10,2),
   price_max numeric(10,2),
@@ -64,7 +66,8 @@ create table if not exists special_days (
 
 create table if not exists gallery_items (
   id uuid primary key default uuid_generate_v4(),
-  image_url text not null,
+  image_path text not null,
+  image_alt text,
   caption text,
   memory_date date,
   created_at timestamptz not null default timezone('utc', now())
@@ -78,7 +81,8 @@ create table if not exists gift_history_items (
   received_date date not null,
   special_day_id uuid references special_days(id) on delete set null,
   note text,
-  photo_url text,
+  photo_path text,
+  photo_alt text,
   wishlist_item_id uuid references wishlist_items(id) on delete set null,
   wishlist_item_title text,
   status gift_history_status not null default 'received',

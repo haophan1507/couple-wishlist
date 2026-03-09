@@ -19,7 +19,8 @@ type GiftHistoryFormItem = {
   received_date: string;
   special_day_id: string;
   note: string;
-  photo_url: string;
+  photo_path: string;
+  photo_alt: string;
   wishlist_item_id: string;
   status: "received" | "thanked" | "archived";
 };
@@ -32,7 +33,8 @@ const defaultValues: GiftHistoryFormItem = {
   received_date: "",
   special_day_id: "",
   note: "",
-  photo_url: "",
+  photo_path: "",
+  photo_alt: "",
   wishlist_item_id: "",
   status: "received",
 };
@@ -132,15 +134,16 @@ function GiftHistoryForm({
       <div className="grid gap-3 md:grid-cols-2">
         <label className="block">
           <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-            URL ảnh
+            Ảnh kỷ niệm
           </span>
-          <input name="photo_url" defaultValue={item.photo_url} placeholder="https://..." />
+          <input type="hidden" name="existing_photo_path" defaultValue={item.photo_path} />
+          <input type="file" name="photo_file" accept="image/*" />
         </label>
         <label className="block">
           <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-            Tải ảnh lên
+            Mô tả ảnh
           </span>
-          <input type="file" name="photo_file" accept="image/*" />
+          <input name="photo_alt" defaultValue={item.photo_alt} placeholder="Ví dụ: bó tulip trong tối kỷ niệm" />
         </label>
       </div>
 
@@ -229,7 +232,8 @@ export default async function AdminGiftHistoryPage() {
                 received_date: item.received_date,
                 special_day_id: item.special_day_id ?? "",
                 note: item.note ?? "",
-                photo_url: item.photo_url ?? "",
+                photo_path: item.photo_path ?? "",
+                photo_alt: item.photo_alt ?? "",
                 wishlist_item_id: item.wishlist_item_id ?? "",
                 status: item.status,
               }}

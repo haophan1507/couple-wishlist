@@ -14,6 +14,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
+import { getPublicStorageUrl } from "@/lib/storage/public-url";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
@@ -105,7 +106,16 @@ export async function getCoupleProfile() {
     .select("*")
     .limit(1)
     .maybeSingle();
-  return (data as CoupleProfile | null) ?? null;
+  const profile = (data as CoupleProfile | null) ?? null;
+
+  if (!profile) {
+    return null;
+  }
+
+  return {
+    ...profile,
+    cover_image_url: getPublicStorageUrl(profile.cover_image_path),
+  };
 }
 
 export async function getWishlistItems(filters?: {
@@ -139,6 +149,7 @@ export async function getWishlistItems(filters?: {
 
   return safeData.map((item) => ({
     ...item,
+    image_url: getPublicStorageUrl(item.image_path),
     is_gifted: item.status === "gifted",
   }));
 }
@@ -195,7 +206,10 @@ export async function getGalleryItems() {
     .select("*")
     .order("memory_date", { ascending: false })
     .order("created_at", { ascending: false });
-  return (data as GalleryItem[] | null) ?? [];
+  return (((data as GalleryItem[] | null) ?? [])).map((item) => ({
+    ...item,
+    image_url: getPublicStorageUrl(item.image_path),
+  }));
 }
 
 export async function getGiftHistoryItems() {
@@ -222,6 +236,7 @@ export async function getGiftHistoryItems() {
 
   return (((items as GiftHistoryItem[] | null) ?? [])).map((item) => ({
     ...item,
+    photo_url: getPublicStorageUrl(item.photo_path),
     special_day: item.special_day_id ? dayMap.get(item.special_day_id) ?? null : null,
     wishlist_item: item.wishlist_item_id
       ? wishlistMap.get(item.wishlist_item_id) ?? null

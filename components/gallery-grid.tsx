@@ -1,7 +1,7 @@
 import { format } from "date-fns";
-import type { Database } from "@/types/database";
+import { getGalleryItems } from "@/lib/data/queries";
 
-type GalleryItem = Database["public"]["Tables"]["gallery_items"]["Row"];
+type GalleryItem = Awaited<ReturnType<typeof getGalleryItems>>[number];
 
 export function GalleryGrid({ items }: { items: GalleryItem[] }) {
   if (!items.length) {
@@ -12,7 +12,11 @@ export function GalleryGrid({ items }: { items: GalleryItem[] }) {
     <div className="columns-1 gap-4 md:columns-2 lg:columns-3">
       {items.map((item) => (
         <article key={item.id} className="card mb-4 break-inside-avoid p-3">
-          <img src={item.image_url} alt={item.caption ?? "Ảnh kỷ niệm"} className="w-full rounded-2xl object-cover" />
+          <img
+            src={item.image_url ?? "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80"}
+            alt={item.image_alt ?? item.caption ?? "Ảnh kỷ niệm"}
+            className="w-full rounded-2xl object-cover"
+          />
           <div className="px-1 pb-1 pt-3">
             {item.caption ? <p className="text-sm font-medium dark:text-white">{item.caption}</p> : null}
             {item.memory_date ? (

@@ -8,7 +8,9 @@ function GalleryForm({
 }: {
   item?: {
     id: string;
-    image_url: string;
+    image_path: string;
+    image_alt: string | null;
+    image_url?: string | null;
     caption: string | null;
     memory_date: string | null;
   };
@@ -16,8 +18,9 @@ function GalleryForm({
   return (
     <form action={upsertGalleryItemAction} className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5">
       <input type="hidden" name="id" defaultValue={item?.id ?? ""} />
-      <input name="image_url" placeholder="URL ảnh (hoặc tải lên bên dưới)" defaultValue={item?.image_url ?? ""} />
+      <input type="hidden" name="existing_image_path" defaultValue={item?.image_path ?? ""} />
       <input type="file" name="image_file" accept="image/*" />
+      <input name="image_alt" placeholder="Mô tả ảnh" defaultValue={item?.image_alt ?? item?.caption ?? ""} />
       <input name="caption" placeholder="Chú thích" defaultValue={item?.caption ?? ""} />
       <input name="memory_date" type="date" defaultValue={item?.memory_date ?? ""} />
       <FormSubmitButton

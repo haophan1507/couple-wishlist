@@ -86,10 +86,20 @@ export default async function AdminPage() {
                 />
               </Field>
               <Field label="Ảnh bìa">
+                <>
+                  <input
+                    type="hidden"
+                    name="existing_cover_image_path"
+                    defaultValue={profile?.cover_image_path ?? ""}
+                  />
+                  <input type="file" name="cover_image_file" accept="image/*" />
+                </>
+              </Field>
+              <Field label="Mô tả ảnh bìa">
                 <input
-                  name="cover_image_url"
-                  placeholder="https://..."
-                  defaultValue={profile?.cover_image_url ?? ""}
+                  name="cover_image_alt"
+                  placeholder="Ví dụ: hai bạn trong chuyến đi biển"
+                  defaultValue={profile?.cover_image_alt ?? ""}
                 />
               </Field>
               <div className="md:col-span-2">

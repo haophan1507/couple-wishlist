@@ -2,11 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
+import { deleteStorageFile } from "@/lib/storage/delete";
+import { uploadImageFile } from "@/lib/storage/upload";
+import { getOptionalFile } from "@/lib/storage/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { coupleProfileSchema } from "@/lib/validation";
 
 export async function upsertCoupleProfileAction(formData: FormData) {
   await requireAdmin();
+  const coverFile = getOptionalFile(formData, "cover_image_file");
 
   const parsed = coupleProfileSchema.safeParse({
     person_one_name: formData.get("person_one_name"),
@@ -19,7 +23,8 @@ export async function upsertCoupleProfileAction(formData: FormData) {
     person_one_hobby: formData.get("person_one_hobby"),
     person_two_hobby: formData.get("person_two_hobby"),
     story: formData.get("story"),
-    cover_image_url: formData.get("cover_image_url")
+    cover_image_alt: formData.get("cover_image_alt"),
+    existing_cover_image_path: formData.get("existing_cover_image_path")
   });
 
   if (!parsed.success) {
@@ -27,6 +32,21 @@ export async function upsertCoupleProfileAction(formData: FormData) {
   }
 
   const supabase = createSupabaseAdminClient();
+  const { data: existing } = await supabase
+    .from("couple_profile")
+    .select("id, cover_image_path")
+    .limit(1)
+    .maybeSingle();
+  let nextCoverImagePath = parsed.data.existing_cover_image_path || existing?.cover_image_path || null;
+
+  if (coverFile) {
+    const uploaded = await uploadImageFile({
+      file: coverFile,
+      target: "cover",
+      entityId: existing?.id,
+    });
+    nextCoverImagePath = uploaded.path;
+  }
 
   const payload = {
     person_one_name: parsed.data.person_one_name,
@@ -39,16 +59,19 @@ export async function upsertCoupleProfileAction(formData: FormData) {
     person_one_hobby: parsed.data.person_one_hobby || null,
     person_two_hobby: parsed.data.person_two_hobby || null,
     story: parsed.data.story || null,
-    cover_image_url: parsed.data.cover_image_url || null,
+    cover_image_path: nextCoverImagePath,
+    cover_image_alt: parsed.data.cover_image_alt || null,
     updated_at: new Date().toISOString()
   };
-
-  const { data: existing } = await supabase.from("couple_profile").select("id").limit(1).maybeSingle();
 
   if (existing) {
     await supabase.from("couple_profile").update(payload).eq("id", existing.id);
   } else {
     await supabase.from("couple_profile").insert(payload);
+  }
+
+  if (coverFile && existing?.cover_image_path && existing.cover_image_path !== nextCoverImagePath) {
+    await deleteStorageFile(existing.cover_image_path);
   }
 
   revalidatePath("/");

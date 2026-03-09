@@ -16,7 +16,8 @@ export type Database = {
           person_one_hobby: string | null;
           person_two_hobby: string | null;
           story: string | null;
-          cover_image_url: string | null;
+          cover_image_path: string | null;
+          cover_image_alt: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -32,7 +33,8 @@ export type Database = {
           person_one_hobby?: string | null;
           person_two_hobby?: string | null;
           story?: string | null;
-          cover_image_url?: string | null;
+          cover_image_path?: string | null;
+          cover_image_alt?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -47,7 +49,8 @@ export type Database = {
           person_one_hobby?: string | null;
           person_two_hobby?: string | null;
           story?: string | null;
-          cover_image_url?: string | null;
+          cover_image_path?: string | null;
+          cover_image_alt?: string | null;
           updated_at?: string;
         };
       };
@@ -60,7 +63,8 @@ export type Database = {
           received_date: string;
           special_day_id: string | null;
           note: string | null;
-          photo_url: string | null;
+          photo_path: string | null;
+          photo_alt: string | null;
           wishlist_item_id: string | null;
           wishlist_item_title: string | null;
           status: "received" | "thanked" | "archived";
@@ -75,7 +79,8 @@ export type Database = {
           received_date: string;
           special_day_id?: string | null;
           note?: string | null;
-          photo_url?: string | null;
+          photo_path?: string | null;
+          photo_alt?: string | null;
           wishlist_item_id?: string | null;
           wishlist_item_title?: string | null;
           status?: "received" | "thanked" | "archived";
@@ -89,7 +94,8 @@ export type Database = {
           received_date?: string;
           special_day_id?: string | null;
           note?: string | null;
-          photo_url?: string | null;
+          photo_path?: string | null;
+          photo_alt?: string | null;
           wishlist_item_id?: string | null;
           wishlist_item_title?: string | null;
           status?: "received" | "thanked" | "archived";
@@ -99,20 +105,23 @@ export type Database = {
       gallery_items: {
         Row: {
           id: string;
-          image_url: string;
+          image_path: string;
+          image_alt: string | null;
           caption: string | null;
           memory_date: string | null;
           created_at: string;
         };
         Insert: {
           id?: string;
-          image_url: string;
+          image_path: string;
+          image_alt?: string | null;
           caption?: string | null;
           memory_date?: string | null;
           created_at?: string;
         };
         Update: {
-          image_url?: string;
+          image_path?: string;
+          image_alt?: string | null;
           caption?: string | null;
           memory_date?: string | null;
         };
@@ -171,7 +180,8 @@ export type Database = {
           owner_type: "me" | "honey";
           title: string;
           description: string | null;
-          image_url: string | null;
+          image_path: string | null;
+          image_alt: string | null;
           product_url: string | null;
           price_min: number | null;
           price_max: number | null;
@@ -187,7 +197,8 @@ export type Database = {
           owner_type: "me" | "honey";
           title: string;
           description?: string | null;
-          image_url?: string | null;
+          image_path?: string | null;
+          image_alt?: string | null;
           product_url?: string | null;
           price_min?: number | null;
           price_max?: number | null;
@@ -202,7 +213,8 @@ export type Database = {
           owner_type?: "me" | "honey";
           title?: string;
           description?: string | null;
-          image_url?: string | null;
+          image_path?: string | null;
+          image_alt?: string | null;
           product_url?: string | null;
           price_min?: number | null;
           price_max?: number | null;
