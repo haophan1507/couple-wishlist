@@ -23,7 +23,6 @@ export async function upsertCoupleProfileAction(formData: FormData) {
     person_one_hobby: formData.get("person_one_hobby"),
     person_two_hobby: formData.get("person_two_hobby"),
     story: formData.get("story"),
-    cover_image_alt: formData.get("cover_image_alt"),
     existing_cover_image_path: formData.get("existing_cover_image_path")
   });
 
@@ -60,7 +59,7 @@ export async function upsertCoupleProfileAction(formData: FormData) {
     person_two_hobby: parsed.data.person_two_hobby || null,
     story: parsed.data.story || null,
     cover_image_path: nextCoverImagePath,
-    cover_image_alt: parsed.data.cover_image_alt || null,
+    cover_image_alt: "Ảnh bìa cặp đôi",
     updated_at: new Date().toISOString()
   };
 

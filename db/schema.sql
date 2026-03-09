@@ -6,6 +6,7 @@ create type owner_type as enum ('me', 'honey');
 create type wishlist_priority as enum ('low', 'medium', 'high');
 create type wishlist_status as enum ('available', 'gifted');
 create type gift_history_status as enum ('received', 'thanked', 'archived');
+create type place_status as enum ('visited', 'planned');
 create type special_day_type as enum ('birthday', 'anniversary', 'relationship', 'holiday', 'other');
 create type profile_role as enum ('admin', 'viewer');
 
@@ -73,6 +74,35 @@ create table if not exists gallery_items (
   created_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists place_memories (
+  id uuid primary key default uuid_generate_v4(),
+  title text not null,
+  slug text unique,
+  description text,
+  status place_status not null default 'planned',
+  visit_date date,
+  location_name text not null,
+  latitude numeric(9,6),
+  longitude numeric(9,6),
+  city text,
+  country text,
+  cover_image_path text,
+  cover_image_alt text,
+  sort_order integer,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists place_memory_images (
+  id uuid primary key default uuid_generate_v4(),
+  place_memory_id uuid not null references place_memories(id) on delete cascade,
+  image_path text not null,
+  image_alt text,
+  caption text,
+  sort_order integer,
+  created_at timestamptz not null default timezone('utc', now())
+);
+
 create table if not exists gift_history_items (
   id uuid primary key default uuid_generate_v4(),
   recipient_owner_type owner_type not null,
@@ -106,6 +136,10 @@ for each row execute function set_updated_at();
 
 create trigger trg_couple_profile_updated_at
 before update on couple_profile
+for each row execute function set_updated_at();
+
+create trigger trg_place_memories_updated_at
+before update on place_memories
 for each row execute function set_updated_at();
 
 create trigger trg_gift_history_updated_at
@@ -144,6 +178,8 @@ alter table couple_profile enable row level security;
 alter table wishlist_items enable row level security;
 alter table special_days enable row level security;
 alter table gallery_items enable row level security;
+alter table place_memories enable row level security;
+alter table place_memory_images enable row level security;
 alter table gift_history_items enable row level security;
 
 -- Policies: helper expression for admins
@@ -220,6 +256,44 @@ using (true);
 
 create policy "admin manage gallery"
 on gallery_items for all
+to authenticated
+using (
+  exists (
+    select 1 from profiles p where p.id = auth.uid() and p.role = 'admin'
+  )
+)
+with check (
+  exists (
+    select 1 from profiles p where p.id = auth.uid() and p.role = 'admin'
+  )
+);
+
+create policy "public read place memories"
+on place_memories for select
+to anon, authenticated
+using (true);
+
+create policy "admin manage place memories"
+on place_memories for all
+to authenticated
+using (
+  exists (
+    select 1 from profiles p where p.id = auth.uid() and p.role = 'admin'
+  )
+)
+with check (
+  exists (
+    select 1 from profiles p where p.id = auth.uid() and p.role = 'admin'
+  )
+);
+
+create policy "public read place memory images"
+on place_memory_images for select
+to anon, authenticated
+using (true);
+
+create policy "admin manage place memory images"
+on place_memory_images for all
 to authenticated
 using (
   exists (

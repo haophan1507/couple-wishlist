@@ -4,6 +4,7 @@ import {
   getCoupleProfile,
   getGalleryItems,
   getGiftHistoryItems,
+  getPlaceMemories,
   getSpecialDays,
   getWishlistItems
 } from "@/lib/data/queries";
@@ -25,19 +26,20 @@ function Field({
 }
 
 export default async function AdminPage() {
-  const [profile, wishlist, days, gallery, giftHistory] = await Promise.all([
+  const [profile, wishlist, days, gallery, giftHistory, places] = await Promise.all([
     getCoupleProfile(),
     getWishlistItems(),
     getSpecialDays(),
     getGalleryItems(),
-    getGiftHistoryItems()
+    getGiftHistoryItems(),
+    getPlaceMemories()
   ]);
 
   return (
     <>
       <section className="card p-6">
         <h1 className="text-2xl font-semibold dark:text-white">Bảng điều khiển</h1>
-        <div className="mt-4 grid gap-3 md:grid-cols-4">
+        <div className="mt-4 grid gap-3 md:grid-cols-5">
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
             <p className="text-sm text-mocha/70 dark:text-white/55">Món trong wishlist</p>
             <p className="mt-1 text-2xl font-semibold dark:text-white">{wishlist.length}</p>
@@ -53,6 +55,10 @@ export default async function AdminPage() {
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
             <p className="text-sm text-mocha/70 dark:text-white/55">Quà đã lưu lịch sử</p>
             <p className="mt-1 text-2xl font-semibold dark:text-white">{giftHistory.length}</p>
+          </div>
+          <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
+            <p className="text-sm text-mocha/70 dark:text-white/55">Địa điểm yêu thương</p>
+            <p className="mt-1 text-2xl font-semibold dark:text-white">{places.length}</p>
           </div>
         </div>
       </section>
@@ -94,13 +100,6 @@ export default async function AdminPage() {
                   />
                   <input type="file" name="cover_image_file" accept="image/*" />
                 </>
-              </Field>
-              <Field label="Mô tả ảnh bìa">
-                <input
-                  name="cover_image_alt"
-                  placeholder="Ví dụ: hai bạn trong chuyến đi biển"
-                  defaultValue={profile?.cover_image_alt ?? ""}
-                />
               </Field>
               <div className="md:col-span-2">
                 <Field label="Câu chuyện của hai bạn">

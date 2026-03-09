@@ -23,6 +23,8 @@ type GiftHistoryItem = Database["public"]["Tables"]["gift_history_items"]["Row"]
 type WishlistItem = Database["public"]["Tables"]["wishlist_items"]["Row"];
 type SpecialDay = Database["public"]["Tables"]["special_days"]["Row"];
 type GalleryItem = Database["public"]["Tables"]["gallery_items"]["Row"];
+type PlaceMemory = Database["public"]["Tables"]["place_memories"]["Row"];
+type PlaceMemoryImage = Database["public"]["Tables"]["place_memory_images"]["Row"];
 type TimelineEvent = {
   id: string;
   title: string;
@@ -244,6 +246,39 @@ export async function getGiftHistoryItems() {
   }));
 }
 
+export async function getPlaceMemories() {
+  const supabase = await createSupabaseServerClient();
+  const [{ data: places }, { data: images }] = await Promise.all([
+    supabase
+      .from("place_memories")
+      .select("*")
+      .order("sort_order", { ascending: true, nullsFirst: false })
+      .order("visit_date", { ascending: true })
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("place_memory_images")
+      .select("*")
+      .order("sort_order", { ascending: true, nullsFirst: false })
+      .order("created_at", { ascending: true }),
+  ]);
+
+  const imageMap = new Map<string, PlaceMemoryImage[]>();
+  for (const image of ((images as PlaceMemoryImage[] | null) ?? [])) {
+    const list = imageMap.get(image.place_memory_id) ?? [];
+    list.push(image);
+    imageMap.set(image.place_memory_id, list);
+  }
+
+  return (((places as PlaceMemory[] | null) ?? [])).map((place) => ({
+    ...place,
+    cover_image_url: getPublicStorageUrl(place.cover_image_path),
+    images: (imageMap.get(place.id) ?? []).map((image) => ({
+      ...image,
+      image_url: getPublicStorageUrl(image.image_path),
+    })),
+  }));
+}
+
 export function getLoveStats(loveStartDate: string | null) {
   if (!loveStartDate) {
     return null;
@@ -382,6 +417,9 @@ export function getLoveCalendar(events: TimelineEvent[], monthDate = new Date())
 
 export type PublicWishlistItem = Awaited<
   ReturnType<typeof getWishlistItems>
+>[number];
+export type PlaceMemoryEntry = Awaited<
+  ReturnType<typeof getPlaceMemories>
 >[number];
 export type GiftHistoryEntry = Awaited<
   ReturnType<typeof getGiftHistoryItems>

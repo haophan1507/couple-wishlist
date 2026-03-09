@@ -11,6 +11,7 @@ const links = [
   { href: "/", label: "Trang chủ" },
   { href: "/wishlist", label: "Danh sách quà" },
   { href: "/gift-history", label: "Quà đã nhận" },
+  { href: "/heart-mapping", label: "Heart Mapping" },
   { href: "/special-days", label: "Ngày đặc biệt" },
   { href: "/gallery", label: "Khoảnh khắc" }
 ];

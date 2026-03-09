@@ -16,7 +16,6 @@ export async function upsertGalleryItemAction(formData: FormData) {
   const parsed = gallerySchema.safeParse({
     caption: formData.get("caption"),
     memory_date: formData.get("memory_date"),
-    image_alt: formData.get("image_alt"),
     existing_image_path: formData.get("existing_image_path")
   });
 
@@ -45,7 +44,7 @@ export async function upsertGalleryItemAction(formData: FormData) {
 
   const payload = {
     image_path: nextImagePath,
-    image_alt: parsed.data.image_alt || parsed.data.caption || null,
+    image_alt: parsed.data.caption || "Ảnh kỷ niệm",
     caption: parsed.data.caption || null,
     memory_date: parsed.data.memory_date || null
   };

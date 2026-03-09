@@ -19,7 +19,6 @@ export async function upsertGiftHistoryItemAction(formData: FormData) {
     received_date: formData.get("received_date"),
     special_day_id: formData.get("special_day_id"),
     note: formData.get("note"),
-    photo_alt: formData.get("photo_alt"),
     existing_photo_path: formData.get("existing_photo_path"),
     wishlist_item_id: formData.get("wishlist_item_id"),
     status: formData.get("status"),
@@ -76,7 +75,7 @@ export async function upsertGiftHistoryItemAction(formData: FormData) {
   const finalPayload = {
     ...payload,
     photo_path: nextPhotoPath,
-    photo_alt: parsed.data.photo_alt || parsed.data.gift_name,
+    photo_alt: parsed.data.gift_name,
     wishlist_item_title: wishlistItemTitle,
   };
 

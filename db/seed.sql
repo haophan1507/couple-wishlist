@@ -144,3 +144,71 @@ values
     'received'
   )
 on conflict do nothing;
+
+insert into place_memories
+  (title, slug, description, status, visit_date, location_name, latitude, longitude, city, country, cover_image_path, cover_image_alt, sort_order)
+values
+  (
+    'Đà Lạt đầu tiên',
+    'da-lat-dau-tien',
+    'Chuyến đi se lạnh đầu tiên, uống cà phê sáng và đi dạo quanh hồ.',
+    'visited',
+    '2022-12-18',
+    'Đà Lạt, Lâm Đồng',
+    11.940420,
+    108.458313,
+    'Đà Lạt',
+    'Việt Nam',
+    'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&q=80',
+    'Đà Lạt mù sương',
+    1
+  ),
+  (
+    'Phú Quốc hoàng hôn',
+    'phu-quoc-hoang-hon',
+    'Buổi chiều ngắm biển và ăn tối sát bờ cát.',
+    'visited',
+    '2024-05-04',
+    'Phú Quốc, Kiên Giang',
+    10.289879,
+    103.984020,
+    'Phú Quốc',
+    'Việt Nam',
+    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    'Biển Phú Quốc lúc hoàng hôn',
+    2
+  ),
+  (
+    'Nhật Bản mùa thu',
+    'nhat-ban-mua-thu',
+    'Một hành trình tụi mình vẫn đang lên kế hoạch cho mùa lá đỏ.',
+    'planned',
+    null,
+    'Kyoto, Nhật Bản',
+    35.011564,
+    135.768149,
+    'Kyoto',
+    'Nhật Bản',
+    'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80',
+    'Con đường lá đỏ ở Kyoto',
+    3
+  )
+on conflict do nothing;
+
+insert into place_memory_images
+  (place_memory_id, image_path, image_alt, caption, sort_order)
+select
+  pm.id,
+  image_data.image_path,
+  image_data.image_alt,
+  image_data.caption,
+  image_data.sort_order
+from (
+  values
+    ('da-lat-dau-tien', 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80', 'Quán cà phê ở Đà Lạt', 'Buổi sáng lạnh và ly cà phê nóng', 1),
+    ('da-lat-dau-tien', 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80', 'Đồi thông', 'Con dốc nhỏ tụi mình chụp ảnh cùng nhau', 2),
+    ('phu-quoc-hoang-hon', 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80', 'Bãi biển Phú Quốc', 'Hoàng hôn vàng cam và gió biển', 1),
+    ('nhat-ban-mua-thu', 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=1200&q=80', 'Ngôi đền ở Kyoto', 'Một hình dung nhỏ cho chuyến đi tương lai', 1)
+) as image_data (place_slug, image_path, image_alt, caption, sort_order)
+join place_memories pm on pm.slug = image_data.place_slug
+on conflict do nothing;

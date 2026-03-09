@@ -102,6 +102,87 @@ export type Database = {
           updated_at?: string;
         };
       };
+      place_memories: {
+        Row: {
+          id: string;
+          title: string;
+          slug: string | null;
+          description: string | null;
+          status: "visited" | "planned";
+          visit_date: string | null;
+          location_name: string;
+          latitude: number | null;
+          longitude: number | null;
+          city: string | null;
+          country: string | null;
+          cover_image_path: string | null;
+          cover_image_alt: string | null;
+          sort_order: number | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          slug?: string | null;
+          description?: string | null;
+          status?: "visited" | "planned";
+          visit_date?: string | null;
+          location_name: string;
+          latitude?: number | null;
+          longitude?: number | null;
+          city?: string | null;
+          country?: string | null;
+          cover_image_path?: string | null;
+          cover_image_alt?: string | null;
+          sort_order?: number | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          slug?: string | null;
+          description?: string | null;
+          status?: "visited" | "planned";
+          visit_date?: string | null;
+          location_name?: string;
+          latitude?: number | null;
+          longitude?: number | null;
+          city?: string | null;
+          country?: string | null;
+          cover_image_path?: string | null;
+          cover_image_alt?: string | null;
+          sort_order?: number | null;
+          updated_at?: string;
+        };
+      };
+      place_memory_images: {
+        Row: {
+          id: string;
+          place_memory_id: string;
+          image_path: string;
+          image_alt: string | null;
+          caption: string | null;
+          sort_order: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          place_memory_id: string;
+          image_path: string;
+          image_alt?: string | null;
+          caption?: string | null;
+          sort_order?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          place_memory_id?: string;
+          image_path?: string;
+          image_alt?: string | null;
+          caption?: string | null;
+          sort_order?: number | null;
+        };
+      };
       gallery_items: {
         Row: {
           id: string;

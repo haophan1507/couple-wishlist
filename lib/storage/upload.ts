@@ -3,7 +3,13 @@ import { STORAGE_BUCKET } from "@/lib/storage/constants";
 import { buildStoragePath } from "@/lib/storage/paths";
 import { validateImageFile } from "@/lib/storage/validation";
 
-type StorageTarget = "wishlist" | "giftHistory" | "gallery" | "cover";
+type StorageTarget =
+  | "wishlist"
+  | "giftHistory"
+  | "gallery"
+  | "cover"
+  | "placeCover"
+  | "placeGallery";
 
 export async function uploadImageFile(options: {
   file: File;
