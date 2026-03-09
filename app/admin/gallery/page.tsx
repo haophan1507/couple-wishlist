@@ -1,4 +1,6 @@
 import { deleteGalleryItemAction, upsertGalleryItemAction } from "@/app/actions/gallery";
+import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { FormSubmitButton } from "@/components/admin/form-submit-button";
 import { getGalleryItems } from "@/lib/data/queries";
 
 function GalleryForm({
@@ -18,9 +20,10 @@ function GalleryForm({
       <input type="file" name="image_file" accept="image/*" />
       <input name="caption" placeholder="Chú thích" defaultValue={item?.caption ?? ""} />
       <input name="memory_date" type="date" defaultValue={item?.memory_date ?? ""} />
-      <button type="submit" className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white">
-        {item ? "Cập nhật" : "Thêm ảnh"}
-      </button>
+      <FormSubmitButton
+        idleLabel={item ? "Cập nhật" : "Thêm ảnh"}
+        loadingLabel={item ? "Đang cập nhật..." : "Đang thêm..."}
+      />
     </form>
   );
 }
@@ -42,11 +45,12 @@ export default async function AdminGalleryPage() {
           <div key={item.id} className="card p-4">
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-medium">{item.caption ?? "Ảnh"}</p>
-              <form action={deleteGalleryItemAction}>
+              <form id={`delete-gallery-${item.id}`} action={deleteGalleryItemAction}>
                 <input type="hidden" name="id" value={item.id} />
-                <button type="submit" className="text-xs text-red-600">
-                  Xóa
-                </button>
+                <ConfirmDeleteButton
+                  formId={`delete-gallery-${item.id}`}
+                  itemName={item.caption ?? "ảnh này"}
+                />
               </form>
             </div>
             <GalleryForm item={item} />

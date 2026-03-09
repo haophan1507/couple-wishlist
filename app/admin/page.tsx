@@ -1,4 +1,5 @@
 import { upsertCoupleProfileAction } from "@/app/actions/couple-profile";
+import { FormSubmitButton } from "@/components/admin/form-submit-button";
 import { getCoupleProfile, getGalleryItems, getSpecialDays, getWishlistItems } from "@/lib/data/queries";
 
 export default async function AdminPage() {
@@ -49,9 +50,11 @@ export default async function AdminPage() {
             placeholder="URL ảnh bìa"
             defaultValue={profile?.cover_image_url ?? ""}
           />
-          <button type="submit" className="rounded-xl bg-mocha px-4 py-2 text-sm text-white md:col-span-2 md:w-fit">
-            Lưu hồ sơ
-          </button>
+          <FormSubmitButton
+            idleLabel="Lưu hồ sơ"
+            loadingLabel="Đang lưu..."
+            className="md:col-span-2 md:w-fit"
+          />
         </form>
       </section>
     </>

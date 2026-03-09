@@ -1,4 +1,6 @@
 import { deleteWishlistItemAction, upsertWishlistItemAction } from "@/app/actions/wishlist";
+import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { FormSubmitButton } from "@/components/admin/form-submit-button";
 import { getWishlistItems } from "@/lib/data/queries";
 
 const defaultValues = {
@@ -65,9 +67,10 @@ function WishlistForm({ item = defaultValues }: { item?: WishlistFormItem }) {
           <option value="gifted">Đã tặng</option>
         </select>
       </div>
-      <button type="submit" className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white">
-        {item.id ? "Cập nhật" : "Thêm món"}
-      </button>
+      <FormSubmitButton
+        idleLabel={item.id ? "Cập nhật" : "Thêm món"}
+        loadingLabel={item.id ? "Đang cập nhật..." : "Đang thêm..."}
+      />
     </form>
   );
 }
@@ -90,11 +93,9 @@ export default async function AdminWishlistPage() {
           <div key={item.id} className="card p-4">
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-medium">{item.title}</p>
-              <form action={deleteWishlistItemAction}>
+              <form id={`delete-wishlist-${item.id}`} action={deleteWishlistItemAction}>
                 <input type="hidden" name="id" value={item.id} />
-                <button type="submit" className="text-xs text-red-600">
-                  Xóa
-                </button>
+                <ConfirmDeleteButton formId={`delete-wishlist-${item.id}`} itemName={item.title} />
               </form>
             </div>
             <WishlistForm

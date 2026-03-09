@@ -1,4 +1,6 @@
 import { deleteSpecialDayAction, upsertSpecialDayAction } from "@/app/actions/special-days";
+import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { FormSubmitButton } from "@/components/admin/form-submit-button";
 import { getSpecialDays } from "@/lib/data/queries";
 
 function SpecialDayForm({
@@ -27,9 +29,10 @@ function SpecialDayForm({
           <option value="other">Khác</option>
         </select>
       </div>
-      <button type="submit" className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white">
-        {day ? "Cập nhật" : "Thêm ngày"}
-      </button>
+      <FormSubmitButton
+        idleLabel={day ? "Cập nhật" : "Thêm ngày"}
+        loadingLabel={day ? "Đang cập nhật..." : "Đang thêm..."}
+      />
     </form>
   );
 }
@@ -51,11 +54,9 @@ export default async function AdminSpecialDaysPage() {
           <div key={day.id} className="card p-4">
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-medium">{day.title}</p>
-              <form action={deleteSpecialDayAction}>
+              <form id={`delete-special-day-${day.id}`} action={deleteSpecialDayAction}>
                 <input type="hidden" name="id" value={day.id} />
-                <button type="submit" className="text-xs text-red-600">
-                  Xóa
-                </button>
+                <ConfirmDeleteButton formId={`delete-special-day-${day.id}`} itemName={day.title} />
               </form>
             </div>
             <SpecialDayForm day={day} />
