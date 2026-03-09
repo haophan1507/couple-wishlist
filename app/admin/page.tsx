@@ -1,4 +1,5 @@
 import { upsertCoupleProfileAction } from "@/app/actions/couple-profile";
+import { sendSpecialDayTestEmailAction } from "@/app/actions/notifications";
 import { FormSubmitButton } from "@/components/admin/form-submit-button";
 import {
   getCoupleProfile,
@@ -25,7 +26,18 @@ function Field({
   );
 }
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams
+}: {
+  searchParams: Promise<{
+    emailTest?: string;
+    sent?: string;
+    events?: string;
+    reason?: string;
+    message?: string;
+  }>;
+}) {
+  const params = await searchParams;
   const [profile, wishlist, days, gallery, giftHistory, places] = await Promise.all([
     getCoupleProfile(),
     getWishlistItems(),
@@ -176,6 +188,34 @@ export default async function AdminPage() {
             className="md:w-fit"
           />
         </form>
+
+        <div className="mt-6 border-t border-mocha/10 pt-4 dark:border-white/10">
+          <details className="group">
+            <summary className="cursor-pointer text-xs text-mocha/55 hover:text-mocha/75 dark:text-white/45 dark:hover:text-white/65">
+              Công cụ hệ thống
+            </summary>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <form action={sendSpecialDayTestEmailAction}>
+                <FormSubmitButton
+                  idleLabel="Gửi test email ngay"
+                  loadingLabel="Đang gửi test..."
+                  className="rounded-lg bg-transparent px-3 py-1.5 text-xs text-mocha/70 ring-1 ring-mocha/20 hover:bg-white dark:bg-transparent dark:text-white/70 dark:ring-white/20 dark:hover:bg-white/10"
+                />
+              </form>
+              {params.emailTest === "done" ? (
+                <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                  Đã gửi {params.sent ?? "0"} email. Sự kiện hôm nay: {params.events ?? "0"}.
+                  {params.reason ? ` ${params.reason}` : ""}
+                </p>
+              ) : null}
+              {params.emailTest === "error" ? (
+                <p className="text-xs text-rose-700 dark:text-rose-300">
+                  Lỗi gửi test: {params.message ?? "Lỗi không xác định"}.
+                </p>
+              ) : null}
+            </div>
+          </details>
+        </div>
       </section>
     </>
   );

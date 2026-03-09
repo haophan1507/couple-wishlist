@@ -231,6 +231,30 @@ export type Database = {
           role?: "admin" | "viewer";
         };
       };
+      special_day_notification_logs: {
+        Row: {
+          id: string;
+          event_key: string;
+          special_day_id: string | null;
+          target_email: string;
+          notify_date: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_key: string;
+          special_day_id?: string | null;
+          target_email: string;
+          notify_date: string;
+          created_at?: string;
+        };
+        Update: {
+          event_key?: string;
+          special_day_id?: string | null;
+          target_email?: string;
+          notify_date?: string;
+        };
+      };
       special_days: {
         Row: {
           id: string;

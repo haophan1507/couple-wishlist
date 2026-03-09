@@ -120,6 +120,17 @@ create table if not exists gift_history_items (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists special_day_notification_logs (
+  id uuid primary key default uuid_generate_v4(),
+  event_key text not null,
+  special_day_id uuid references special_days(id) on delete set null,
+  target_email text not null,
+  notify_date date not null,
+  created_at timestamptz not null default timezone('utc', now()),
+  constraint special_day_notification_logs_unique_event_per_day
+    unique (event_key, target_email, notify_date)
+);
+
 -- Trigger utilities
 create or replace function set_updated_at()
 returns trigger as $$
@@ -181,6 +192,7 @@ alter table gallery_items enable row level security;
 alter table place_memories enable row level security;
 alter table place_memory_images enable row level security;
 alter table gift_history_items enable row level security;
+alter table special_day_notification_logs enable row level security;
 
 -- Policies: helper expression for admins
 create policy "profiles self read"
@@ -342,6 +354,15 @@ using (
   )
 )
 with check (
+  exists (
+    select 1 from profiles p where p.id = auth.uid() and p.role = 'admin'
+  )
+);
+
+create policy "admin read special day notification logs"
+on special_day_notification_logs for select
+to authenticated
+using (
   exists (
     select 1 from profiles p where p.id = auth.uid() and p.role = 'admin'
   )
