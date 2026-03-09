@@ -21,8 +21,8 @@ export default async function SpecialDaysPage() {
 
         {together !== null ? (
           <div className="mt-6 card p-5">
-            <p className="text-sm text-mocha/75">Số ngày bên nhau</p>
-            <p className="mt-1 text-3xl font-semibold">{together}</p>
+            <p className="text-sm text-mocha/75 dark:text-white/55">Số ngày bên nhau</p>
+            <p className="mt-1 text-3xl font-semibold dark:text-white">{together}</p>
           </div>
         ) : null}
 
@@ -44,7 +44,7 @@ export default async function SpecialDaysPage() {
               />
             );
           })}
-          {!days.length ? <p className="card p-8 text-sm text-mocha/70">Chưa có ngày đặc biệt nào.</p> : null}
+          {!days.length ? <p className="card p-8 text-sm text-mocha/70 dark:text-white/50">Chưa có ngày đặc biệt nào.</p> : null}
         </div>
       </Container>
     </section>

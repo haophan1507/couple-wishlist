@@ -22,6 +22,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://example.com")
 };
 
+const themeScript = `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches)){document.documentElement.classList.add("dark")}}catch(e){}})()`;
+
 export default function RootLayout({
   children
 }: Readonly<{
@@ -29,6 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" className={`${playfair.variable} ${jakarta.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="font-[var(--font-body)]" suppressHydrationWarning>
         {children}
       </body>

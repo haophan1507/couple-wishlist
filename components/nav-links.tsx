@@ -27,8 +27,8 @@ export function NavLinks() {
             className={cn(
               "rounded-full px-3 py-1.5 text-sm transition",
               active
-                ? "bg-blush text-mocha shadow-sm"
-                : "text-mocha/75 hover:bg-white/70 hover:text-mocha"
+                ? "bg-blush text-mocha shadow-sm dark:bg-white/10 dark:text-white"
+                : "text-mocha/75 hover:bg-white/70 hover:text-mocha dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
             )}
             aria-current={active ? "page" : undefined}
           >

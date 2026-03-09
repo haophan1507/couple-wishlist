@@ -17,7 +17,7 @@ export function FormSubmitButton({ idleLabel, loadingLabel, className }: FormSub
       type="submit"
       disabled={pending}
       className={cn(
-        "w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95",
+        "w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90",
         className,
       )}
     >

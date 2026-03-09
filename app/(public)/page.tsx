@@ -42,7 +42,7 @@ export default async function HomePage() {
               <UpcomingDay title={upcoming.title} date={upcoming.upcomingDate} countdown={upcoming.countdown} />
             ) : (
               <div className="card p-6">
-                <p className="text-sm text-mocha/70">Chưa có ngày đặc biệt. Hãy thêm trong trang quản trị.</p>
+                <p className="text-sm text-mocha/70 dark:text-white/50">Chưa có ngày đặc biệt. Hãy thêm trong trang quản trị.</p>
               </div>
             )}
 
@@ -64,7 +64,7 @@ export default async function HomePage() {
         <Container>
           <div className="card grid gap-8 p-8 md:grid-cols-2 md:p-10">
             <div>
-              <p className="inline-flex items-center gap-2 rounded-full bg-blush px-3 py-1 text-xs">
+              <p className="inline-flex items-center gap-2 rounded-full bg-blush px-3 py-1 text-xs dark:bg-white/10 dark:text-white/70">
                 <Heart className="h-3.5 w-3.5" />
                 Về tụi mình
               </p>
@@ -74,13 +74,13 @@ export default async function HomePage() {
                   "Tụi mình tạo trang này để chia sẻ những món quà yêu thích và cùng nhau lưu lại những cột mốc đáng nhớ."}
               </p>
             </div>
-            <div className="rounded-3xl bg-blush p-6">
-              <p className="text-sm text-mocha/70">Không gian riêng cho cặp đôi</p>
-              <h3 className="mt-2 text-xl font-semibold">Cùng nhau chuẩn bị bất ngờ</h3>
-              <p className="mt-2 text-sm text-mocha/75">
+            <div className="rounded-3xl bg-blush p-6 dark:bg-white/5">
+              <p className="text-sm text-mocha/70 dark:text-white/55">Không gian riêng cho cặp đôi</p>
+              <h3 className="mt-2 text-xl font-semibold dark:text-white">Cùng nhau chuẩn bị bất ngờ</h3>
+              <p className="mt-2 text-sm text-mocha/75 dark:text-white/60">
                 Hai bạn có thể thêm món quà, theo dõi trạng thái và đánh dấu khi đã tặng cho nhau.
               </p>
-              <Gift className="mt-4 h-5 w-5 text-mocha" />
+              <Gift className="mt-4 h-5 w-5 text-mocha dark:text-white/70" />
             </div>
           </div>
         </Container>

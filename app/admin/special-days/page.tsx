@@ -15,7 +15,7 @@ function SpecialDayForm({
   };
 }) {
   return (
-    <form action={upsertSpecialDayAction} className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4">
+    <form action={upsertSpecialDayAction} className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5">
       <input type="hidden" name="id" defaultValue={day?.id ?? ""} />
       <input name="title" placeholder="Tiêu đề" defaultValue={day?.title ?? ""} required />
       <textarea name="description" rows={2} placeholder="Mô tả" defaultValue={day?.description ?? ""} />
@@ -43,7 +43,7 @@ export default async function AdminSpecialDaysPage() {
   return (
     <>
       <section className="card p-6">
-        <h1 className="text-2xl font-semibold">Quản lý Ngày Đặc Biệt</h1>
+        <h1 className="text-2xl font-semibold dark:text-white">Quản lý Ngày Đặc Biệt</h1>
         <div className="mt-4">
           <SpecialDayForm />
         </div>
@@ -53,7 +53,7 @@ export default async function AdminSpecialDaysPage() {
         {days.map((day) => (
           <div key={day.id} className="card p-4">
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm font-medium">{day.title}</p>
+              <p className="text-sm font-medium dark:text-white">{day.title}</p>
               <form id={`delete-special-day-${day.id}`} action={deleteSpecialDayAction}>
                 <input type="hidden" name="id" value={day.id} />
                 <ConfirmDeleteButton formId={`delete-special-day-${day.id}`} itemName={day.title} />
@@ -62,7 +62,7 @@ export default async function AdminSpecialDaysPage() {
             <SpecialDayForm day={day} />
           </div>
         ))}
-        {!days.length ? <p className="card p-6 text-sm text-mocha/70">Chưa có ngày đặc biệt nào.</p> : null}
+        {!days.length ? <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">Chưa có ngày đặc biệt nào.</p> : null}
       </section>
     </>
   );

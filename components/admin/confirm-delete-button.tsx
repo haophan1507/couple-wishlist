@@ -23,15 +23,15 @@ export function ConfirmDeleteButton({ formId, itemName }: ConfirmDeleteButtonPro
 
   return (
     <>
-      <button type="button" className="text-xs text-red-600" onClick={() => setOpen(true)}>
+      <button type="button" className="text-xs text-red-600 dark:text-red-400" onClick={() => setOpen(true)}>
         Xóa
       </button>
 
       {open ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 px-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-soft">
-            <h3 className="text-lg font-semibold">Xác nhận xóa</h3>
-            <p className="mt-2 text-sm text-mocha/75">
+          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-soft dark:border dark:border-white/10 dark:bg-[#2a2428] dark:shadow-none">
+            <h3 className="text-lg font-semibold dark:text-white">Xác nhận xóa</h3>
+            <p className="mt-2 text-sm text-mocha/75 dark:text-white/60">
               {itemName
                 ? `Bạn có chắc muốn xóa "${itemName}" không? Hành động này không thể hoàn tác.`
                 : "Bạn có chắc muốn xóa mục này không? Hành động này không thể hoàn tác."}
@@ -40,7 +40,7 @@ export function ConfirmDeleteButton({ formId, itemName }: ConfirmDeleteButtonPro
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-xl border border-mocha/20 px-3 py-2 text-sm"
+                className="rounded-xl border border-mocha/20 px-3 py-2 text-sm dark:border-white/20 dark:text-white/80"
                 disabled={submitting}
               >
                 Hủy

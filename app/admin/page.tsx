@@ -13,26 +13,26 @@ export default async function AdminPage() {
   return (
     <>
       <section className="card p-6">
-        <h1 className="text-2xl font-semibold">Bảng điều khiển</h1>
+        <h1 className="text-2xl font-semibold dark:text-white">Bảng điều khiển</h1>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <div className="rounded-2xl bg-blush p-4">
-            <p className="text-sm text-mocha/70">Món trong wishlist</p>
-            <p className="mt-1 text-2xl font-semibold">{wishlist.length}</p>
+          <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
+            <p className="text-sm text-mocha/70 dark:text-white/55">Món trong wishlist</p>
+            <p className="mt-1 text-2xl font-semibold dark:text-white">{wishlist.length}</p>
           </div>
-          <div className="rounded-2xl bg-blush p-4">
-            <p className="text-sm text-mocha/70">Ngày đặc biệt</p>
-            <p className="mt-1 text-2xl font-semibold">{days.length}</p>
+          <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
+            <p className="text-sm text-mocha/70 dark:text-white/55">Ngày đặc biệt</p>
+            <p className="mt-1 text-2xl font-semibold dark:text-white">{days.length}</p>
           </div>
-          <div className="rounded-2xl bg-blush p-4">
-            <p className="text-sm text-mocha/70">Ảnh kỷ niệm</p>
-            <p className="mt-1 text-2xl font-semibold">{gallery.length}</p>
+          <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
+            <p className="text-sm text-mocha/70 dark:text-white/55">Ảnh kỷ niệm</p>
+            <p className="mt-1 text-2xl font-semibold dark:text-white">{gallery.length}</p>
           </div>
         </div>
       </section>
 
       <section className="card p-6">
-        <h2 className="text-xl font-semibold">Hồ sơ cặp đôi</h2>
-        <p className="mt-1 text-sm text-mocha/70">Hiển thị ở trang chủ công khai.</p>
+        <h2 className="text-xl font-semibold dark:text-white">Hồ sơ cặp đôi</h2>
+        <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">Hiển thị ở trang chủ công khai.</p>
 
         <form action={upsertCoupleProfileAction} className="mt-4 grid gap-3 md:grid-cols-2">
           <input name="person_one_name" placeholder="Tên người thứ nhất" defaultValue={profile?.person_one_name ?? ""} required />

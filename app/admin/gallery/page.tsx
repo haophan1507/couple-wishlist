@@ -14,7 +14,7 @@ function GalleryForm({
   };
 }) {
   return (
-    <form action={upsertGalleryItemAction} className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4">
+    <form action={upsertGalleryItemAction} className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5">
       <input type="hidden" name="id" defaultValue={item?.id ?? ""} />
       <input name="image_url" placeholder="URL ảnh (hoặc tải lên bên dưới)" defaultValue={item?.image_url ?? ""} />
       <input type="file" name="image_file" accept="image/*" />
@@ -34,7 +34,7 @@ export default async function AdminGalleryPage() {
   return (
     <>
       <section className="card p-6">
-        <h1 className="text-2xl font-semibold">Quản lý Khoảnh khắc</h1>
+        <h1 className="text-2xl font-semibold dark:text-white">Quản lý Khoảnh khắc</h1>
         <div className="mt-4">
           <GalleryForm />
         </div>
@@ -44,7 +44,7 @@ export default async function AdminGalleryPage() {
         {items.map((item) => (
           <div key={item.id} className="card p-4">
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm font-medium">{item.caption ?? "Ảnh"}</p>
+              <p className="text-sm font-medium dark:text-white">{item.caption ?? "Ảnh"}</p>
               <form id={`delete-gallery-${item.id}`} action={deleteGalleryItemAction}>
                 <input type="hidden" name="id" value={item.id} />
                 <ConfirmDeleteButton
@@ -56,7 +56,7 @@ export default async function AdminGalleryPage() {
             <GalleryForm item={item} />
           </div>
         ))}
-        {!items.length ? <p className="card p-6 text-sm text-mocha/70">Chưa có ảnh nào.</p> : null}
+        {!items.length ? <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">Chưa có ảnh nào.</p> : null}
       </section>
     </>
   );

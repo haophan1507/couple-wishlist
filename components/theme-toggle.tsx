@@ -10,7 +10,8 @@ export function ThemeToggle() {
   useEffect(() => {
     setMounted(true);
     const stored = localStorage.getItem("theme") as "light" | "dark" | null;
-    const initial = stored ?? "light";
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initial = stored ?? (prefersDark ? "dark" : "light");
     setTheme(initial);
     document.documentElement.classList.toggle("dark", initial === "dark");
   }, []);
@@ -29,7 +30,7 @@ export function ThemeToggle() {
         localStorage.setItem("theme", next);
         document.documentElement.classList.toggle("dark", next === "dark");
       }}
-      className="rounded-full border border-mocha/20 p-2 text-mocha/80 transition hover:bg-white"
+      className="rounded-full border border-mocha/20 p-2 text-mocha/80 transition hover:bg-white dark:border-white/20 dark:text-white/80 dark:hover:bg-white/10"
     >
       {!mounted ? (
         <span className="block h-4 w-4 opacity-0" />

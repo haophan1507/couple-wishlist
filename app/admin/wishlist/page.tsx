@@ -43,7 +43,7 @@ function WishlistForm({
   personTwoName: string;
 }) {
   return (
-    <form action={upsertWishlistItemAction} className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4">
+    <form action={upsertWishlistItemAction} className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5">
       <input type="hidden" name="id" defaultValue={item.id ?? ""} />
       <div className="grid gap-2 md:grid-cols-2">
         <select name="owner_type" defaultValue={item.owner_type ?? "me"}>
@@ -90,8 +90,8 @@ export default async function AdminWishlistPage() {
   return (
     <>
       <section className="card p-6">
-        <h1 className="text-2xl font-semibold">Quản lý Danh Sách Quà</h1>
-        <p className="mt-1 text-sm text-mocha/70">Tạo mới và chỉnh sửa món quà.</p>
+        <h1 className="text-2xl font-semibold dark:text-white">Quản lý Danh Sách Quà</h1>
+        <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">Tạo mới và chỉnh sửa món quà.</p>
         <div className="mt-4">
           <WishlistForm personOneName={personOneName} personTwoName={personTwoName} />
         </div>
@@ -101,7 +101,7 @@ export default async function AdminWishlistPage() {
         {items.map((item) => (
           <div key={item.id} className="card p-4">
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm font-medium">{item.title}</p>
+              <p className="text-sm font-medium dark:text-white">{item.title}</p>
               <form id={`delete-wishlist-${item.id}`} action={deleteWishlistItemAction}>
                 <input type="hidden" name="id" value={item.id} />
                 <ConfirmDeleteButton formId={`delete-wishlist-${item.id}`} itemName={item.title} />
@@ -127,7 +127,7 @@ export default async function AdminWishlistPage() {
             />
           </div>
         ))}
-        {!items.length ? <p className="card p-6 text-sm text-mocha/70">Chưa có món quà nào.</p> : null}
+        {!items.length ? <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">Chưa có món quà nào.</p> : null}
       </section>
     </>
   );
