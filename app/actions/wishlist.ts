@@ -6,6 +6,7 @@ import { deleteStorageFile } from "@/lib/storage/delete";
 import { uploadImageFile } from "@/lib/storage/upload";
 import { getOptionalFile } from "@/lib/storage/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { isValidHttpUrl, joinWishlistProductUrls, parseWishlistProductUrls } from "@/lib/utils/wishlist-links";
 import { wishlistSchema } from "@/lib/validation";
 
 export async function upsertWishlistItemAction(formData: FormData) {
@@ -13,6 +14,8 @@ export async function upsertWishlistItemAction(formData: FormData) {
 
   const id = String(formData.get("id") ?? "");
   const imageFile = getOptionalFile(formData, "image_file");
+  const productUrlsRaw = String(formData.get("product_urls") ?? formData.get("product_url") ?? "");
+  const productUrls = parseWishlistProductUrls(productUrlsRaw);
   const categoryPreset = String(formData.get("category_preset") ?? "").trim();
   const categoryCustom = String(formData.get("category_custom") ?? "").trim();
   const categoryValue =
@@ -27,7 +30,7 @@ export async function upsertWishlistItemAction(formData: FormData) {
     title: formData.get("title"),
     description: formData.get("description"),
     existing_image_path: formData.get("existing_image_path"),
-    product_url: formData.get("product_url"),
+    product_urls: productUrlsRaw,
     price_min: formData.get("price_min") || undefined,
     price_max: formData.get("price_max") || undefined,
     category: categoryValue || undefined,
@@ -38,6 +41,10 @@ export async function upsertWishlistItemAction(formData: FormData) {
 
   if (!parsed.success) {
     throw new Error("Invalid wishlist form data");
+  }
+
+  if (productUrls.some((url) => !isValidHttpUrl(url))) {
+    throw new Error("Một hoặc nhiều link sản phẩm không hợp lệ (chỉ hỗ trợ http/https).");
   }
 
   const supabase = createSupabaseAdminClient();
@@ -60,7 +67,7 @@ export async function upsertWishlistItemAction(formData: FormData) {
     title: parsed.data.title,
     image_path: nextImagePath,
     image_alt: parsed.data.title,
-    product_url: parsed.data.product_url || null,
+    product_url: joinWishlistProductUrls(productUrls) || null,
     category: parsed.data.category || null,
     note: parsed.data.note || null,
     description: parsed.data.description || null,

@@ -4,6 +4,7 @@ import { FormSubmitButton } from "@/components/admin/form-submit-button";
 import { WishlistCategoryField } from "@/components/admin/wishlist-category-field";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { getCoupleProfile, getWishlistItems } from "@/lib/data/queries";
+import { parseWishlistProductUrls } from "@/lib/utils/wishlist-links";
 
 const defaultValues = {
   id: "",
@@ -11,7 +12,7 @@ const defaultValues = {
   title: "",
   description: "",
   image_path: "",
-  product_url: "",
+  product_urls: "",
   price_min: "",
   price_max: "",
   category: "",
@@ -26,7 +27,7 @@ type WishlistFormItem = {
   title: string;
   description: string;
   image_path: string;
-  product_url: string;
+  product_urls: string;
   price_min: string;
   price_max: string;
   category: string;
@@ -58,7 +59,12 @@ function WishlistForm({
       <div className="grid gap-2 md:grid-cols-2">
         <input type="hidden" name="existing_image_path" defaultValue={item.image_path ?? ""} />
         <input type="file" name="image_file" accept="image/*" />
-        <input name="product_url" placeholder="Link sản phẩm" defaultValue={item.product_url ?? ""} />
+        <textarea
+          name="product_urls"
+          rows={3}
+          placeholder="Mỗi dòng là một link sản phẩm (https://...)"
+          defaultValue={item.product_urls ?? ""}
+        />
       </div>
       <div className="grid gap-2 md:grid-cols-2">
         <input name="price_min" type="number" placeholder="Giá thấp nhất" defaultValue={item.price_min ?? ""} />
@@ -137,7 +143,7 @@ export default async function AdminWishlistPage({
                 title: item.title,
                 description: item.description ?? "",
                 image_path: item.image_path ?? "",
-                product_url: item.product_url ?? "",
+                product_urls: parseWishlistProductUrls(item.product_url).join("\n"),
                 price_min: item.price_min?.toString() ?? "",
                 price_max: item.price_max?.toString() ?? "",
                 category: item.category ?? "",

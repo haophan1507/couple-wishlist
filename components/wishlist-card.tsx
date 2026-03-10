@@ -22,6 +22,8 @@ const priorityLabel: Record<string, string> = {
 };
 
 export function WishlistCard({ item }: { item: PublicWishlistItem }) {
+  const productUrls = item.product_urls ?? [];
+
   return (
     <article className="group relative isolate overflow-hidden rounded-[2rem] border border-white/95 bg-white/95 shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_14px_30px_-24px_rgba(122,82,95,0.55)] ring-1 ring-rose/10 transition duration-300 hover:-translate-y-0.5 hover:border-rose/25 hover:shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_20px_36px_-24px_rgba(122,82,95,0.62)] hover:ring-rose/20 dark:border-white/10 dark:bg-white/5 dark:shadow-none dark:ring-white/10 dark:hover:border-white/20 dark:hover:ring-white/20">
       <div className="relative overflow-hidden">
@@ -56,16 +58,21 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
           ) : null}
         </div>
 
-        {item.product_url ? (
-          <Link
-            href={item.product_url}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-mocha underline-offset-4 hover:underline dark:text-white/80"
-          >
-            Link sản phẩm
-            <ExternalLink className="h-3.5 w-3.5" />
-          </Link>
+        {productUrls.length ? (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {productUrls.map((url, index) => (
+              <Link
+                key={`${url}-${index}`}
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-mocha/20 bg-white px-3 py-1.5 text-xs font-medium text-mocha/85 transition hover:bg-blush dark:border-white/20 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+              >
+                Link {index + 1}
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            ))}
+          </div>
         ) : null}
 
         {item.status === "gifted" ? (

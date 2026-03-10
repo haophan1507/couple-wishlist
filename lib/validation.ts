@@ -5,7 +5,7 @@ export const wishlistSchema = z.object({
   title: z.string().min(2).max(120),
   description: z.string().max(400).optional(),
   existing_image_path: z.string().max(300).optional().or(z.literal("")),
-  product_url: z.string().url().optional().or(z.literal("")),
+  product_urls: z.string().max(3000).optional().or(z.literal("")),
   price_min: z.coerce.number().nonnegative().optional(),
   price_max: z.coerce.number().nonnegative().optional(),
   category: z.string().max(60).optional(),

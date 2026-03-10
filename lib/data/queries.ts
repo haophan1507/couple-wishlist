@@ -16,6 +16,7 @@ import {
 } from "date-fns";
 import { getPublicStorageUrl } from "@/lib/storage/public-url";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { parseWishlistProductUrls } from "@/lib/utils/wishlist-links";
 import type { Database } from "@/types/database";
 
 type CoupleProfile = Database["public"]["Tables"]["couple_profile"]["Row"];
@@ -220,6 +221,7 @@ export async function getWishlistItems(filters?: {
   return safeData.map((item) => ({
     ...item,
     image_url: getPublicStorageUrl(item.image_path),
+    product_urls: parseWishlistProductUrls(item.product_url),
     is_gifted: item.status === "gifted",
   }));
 }
