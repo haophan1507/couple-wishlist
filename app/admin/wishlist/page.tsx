@@ -1,6 +1,7 @@
 import { deleteWishlistItemAction, upsertWishlistItemAction } from "@/app/actions/wishlist";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
 import { FormSubmitButton } from "@/components/admin/form-submit-button";
+import { WishlistCategoryField } from "@/components/admin/wishlist-category-field";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { getCoupleProfile, getWishlistItems } from "@/lib/data/queries";
 
@@ -59,15 +60,22 @@ function WishlistForm({
         <input type="file" name="image_file" accept="image/*" />
         <input name="product_url" placeholder="Link sản phẩm" defaultValue={item.product_url ?? ""} />
       </div>
-      <div className="grid gap-2 md:grid-cols-4">
+      <div className="grid gap-2 md:grid-cols-2">
         <input name="price_min" type="number" placeholder="Giá thấp nhất" defaultValue={item.price_min ?? ""} />
         <input name="price_max" type="number" placeholder="Giá cao nhất" defaultValue={item.price_max ?? ""} />
-        <input name="category" placeholder="Danh mục" defaultValue={item.category ?? ""} />
-        <select name="priority" defaultValue={item.priority ?? "medium"}>
-          <option value="low">Thấp</option>
-          <option value="medium">Trung bình</option>
-          <option value="high">Cao</option>
-        </select>
+      </div>
+      <div className="grid gap-2 md:grid-cols-2">
+        <WishlistCategoryField defaultCategory={item.category ?? ""} />
+        <label className="space-y-2">
+          <span className="block text-xs font-medium text-mocha/65 dark:text-white/50">
+            Mức độ mong muốn
+          </span>
+          <select name="priority" defaultValue={item.priority ?? "medium"}>
+            <option value="low">Bình thường</option>
+            <option value="medium">Muốn sớm</option>
+            <option value="high">Rất muốn</option>
+          </select>
+        </label>
       </div>
       <div className="grid gap-2 md:grid-cols-[1fr_180px]">
         <textarea name="note" rows={2} placeholder="Ghi chú" defaultValue={item.note ?? ""} />

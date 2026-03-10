@@ -13,6 +13,15 @@ export async function upsertWishlistItemAction(formData: FormData) {
 
   const id = String(formData.get("id") ?? "");
   const imageFile = getOptionalFile(formData, "image_file");
+  const categoryPreset = String(formData.get("category_preset") ?? "").trim();
+  const categoryCustom = String(formData.get("category_custom") ?? "").trim();
+  const categoryValue =
+    categoryPreset === "other" ? categoryCustom : categoryPreset;
+
+  if (categoryPreset === "other" && !categoryCustom) {
+    throw new Error("Vui lòng nhập danh mục khi chọn Khác.");
+  }
+
   const parsed = wishlistSchema.safeParse({
     owner_type: formData.get("owner_type"),
     title: formData.get("title"),
@@ -21,7 +30,7 @@ export async function upsertWishlistItemAction(formData: FormData) {
     product_url: formData.get("product_url"),
     price_min: formData.get("price_min") || undefined,
     price_max: formData.get("price_max") || undefined,
-    category: formData.get("category"),
+    category: categoryValue || undefined,
     priority: formData.get("priority"),
     note: formData.get("note"),
     status: formData.get("status")

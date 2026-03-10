@@ -18,7 +18,7 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="card h-fit p-4 md:sticky md:top-20">
+    <aside className="card h-fit p-4 md:w-[220px] md:sticky md:top-4 md:max-h-[calc(100dvh-2rem)] md:overflow-y-auto md:self-start">
       <h2 className="px-2 py-2 font-semibold dark:text-white">Quản trị</h2>
       <nav className="mt-2 space-y-1">
         {links.map((link) => (

@@ -52,7 +52,7 @@ export default async function WishlistPage({
         <div className="mt-10 space-y-10">
           <section>
             <h2 className="text-2xl font-semibold dark:text-white">Wishlist của {profile?.person_one_name ?? "mình"}</h2>
-            <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1">
+            <div className="mt-4 max-h-[70vh] overflow-y-auto px-1 pb-5 pt-1">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {paginatedMeItems.map((item) => (
                   <WishlistCard key={item.id} item={item} />
@@ -75,7 +75,7 @@ export default async function WishlistPage({
 
           <section>
             <h2 className="text-2xl font-semibold dark:text-white">Wishlist của {profile?.person_two_name ?? "người thương"}</h2>
-            <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1">
+            <div className="mt-4 max-h-[70vh] overflow-y-auto px-1 pb-5 pt-1">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {paginatedHoneyItems.map((item) => (
                   <WishlistCard key={item.id} item={item} />
