@@ -1,10 +1,10 @@
 import { deletePlaceMemoryAction, upsertPlaceMemoryAction } from "@/app/actions/places";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { EditPlaceLocation } from "@/components/admin/edit-place-location";
 import { FormSubmitButton } from "@/components/admin/form-submit-button";
 import { PlaceMapPicker } from "@/components/admin/place-map-picker";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { getPlaceMemories } from "@/lib/data/queries";
-import { MapPin } from "lucide-react";
 
 type PlaceFormItem = {
   id: string;
@@ -74,26 +74,13 @@ function PlaceForm({
           defaultLongitude={item.longitude}
         />
       ) : (
-        <>
-          <input type="hidden" name="location_name" defaultValue={item.location_name} />
-          <input type="hidden" name="city" defaultValue={item.city} />
-          <input type="hidden" name="country" defaultValue={item.country} />
-          <input type="hidden" name="latitude" defaultValue={item.latitude} />
-          <input type="hidden" name="longitude" defaultValue={item.longitude} />
-
-          <div className="rounded-2xl border border-mocha/10 bg-blush/50 p-4 dark:border-white/10 dark:bg-white/5">
-            <p className="inline-flex items-center gap-2 text-sm font-medium text-mocha/85 dark:text-white/75">
-              <MapPin className="h-4 w-4" />
-              Vị trí đã lưu
-            </p>
-            <p className="mt-2 text-sm text-mocha/75 dark:text-white/60">
-              {item.location_name || "Chưa có tên địa điểm"}
-            </p>
-            <p className="mt-1 text-xs text-mocha/60 dark:text-white/45">
-              {[item.city, item.country].filter(Boolean).join(" • ") || "Chưa có thành phố / quốc gia"}
-            </p>
-          </div>
-        </>
+        <EditPlaceLocation
+          locationName={item.location_name}
+          city={item.city}
+          country={item.country}
+          latitude={item.latitude}
+          longitude={item.longitude}
+        />
       )}
 
       <div className="grid gap-3 md:grid-cols-2">

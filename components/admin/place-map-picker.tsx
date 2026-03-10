@@ -1,19 +1,23 @@
 "use client";
 
-import "leaflet/dist/leaflet.css";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  MapContainer,
-  Marker,
-  TileLayer,
-  useMap,
-  useMapEvents,
-} from "react-leaflet";
 import { LoaderCircle, MapPin, Search } from "lucide-react";
-import L from "leaflet";
 
 const WIKIMEDIA_TILE_URL = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=vi";
 const OSM_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+const DynamicPlaceMapCanvas = dynamic(
+  () => import("@/components/admin/place-map-canvas").then((mod) => mod.PlaceMapCanvas),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[320px] items-center justify-center text-sm text-mocha/60 dark:text-white/45">
+        Đang tải bản đồ...
+      </div>
+    ),
+  },
+);
 
 type SearchResult = {
   displayName: string;
@@ -22,53 +26,6 @@ type SearchResult = {
   city: string;
   country: string;
 };
-
-function createPickerIcon() {
-  return L.divIcon({
-    html: "<div style='display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9999px;background:#d96a7b;color:white;box-shadow:0 8px 20px rgba(217,106,123,.35);font-size:16px;'>❤</div>",
-    className: "",
-    iconSize: [34, 34],
-    iconAnchor: [17, 17],
-  });
-}
-
-function RecenterMap({
-  latitude,
-  longitude,
-}: {
-  latitude: number | null;
-  longitude: number | null;
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (typeof latitude === "number" && typeof longitude === "number") {
-      map.flyTo([latitude, longitude], Math.max(map.getZoom(), 8), {
-        animate: true,
-        duration: 0.8,
-      });
-    }
-  }, [latitude, longitude, map]);
-
-  return null;
-}
-
-function ClickHandler({
-  onPick,
-}: {
-  onPick: (coords: { latitude: number; longitude: number }) => void;
-}) {
-  useMapEvents({
-    click(event) {
-      onPick({
-        latitude: Number(event.latlng.lat.toFixed(6)),
-        longitude: Number(event.latlng.lng.toFixed(6)),
-      });
-    },
-  });
-
-  return null;
-}
 
 export function PlaceMapPicker({
   defaultLocationName,
@@ -338,52 +295,26 @@ export function PlaceMapPicker({
 
           <div className="relative">
           <div className="overflow-hidden rounded-3xl border border-white/70 dark:border-white/10">
-            <MapContainer
+            <DynamicPlaceMapCanvas
               center={center}
               zoom={initialLatitude && initialLongitude ? 8 : 5}
-              scrollWheelZoom
-              className="h-[320px] w-full"
-            >
-              <TileLayer
-                attribution={
-                  useFallbackTile
-                    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
-                }
-                url={useFallbackTile ? OSM_TILE_URL : WIKIMEDIA_TILE_URL}
-                eventHandlers={{
-                  tileerror: () => {
-                    setUseFallbackTile(true);
-                  },
-                }}
-              />
-              <RecenterMap latitude={latitude} longitude={longitude} />
-              <ClickHandler
-                onPick={(coords) => {
-                  setLatitude(coords.latitude);
-                  setLongitude(coords.longitude);
-                  void reverseGeocode(coords.latitude, coords.longitude);
-                }}
-              />
-              {typeof latitude === "number" && typeof longitude === "number" ? (
-                <Marker
-                  position={[latitude, longitude]}
-                  icon={createPickerIcon()}
-                  draggable
-                  eventHandlers={{
-                    dragend(event) {
-                      const marker = event.target;
-                      const position = marker.getLatLng();
-                      const nextLatitude = Number(position.lat.toFixed(6));
-                      const nextLongitude = Number(position.lng.toFixed(6));
-                      setLatitude(nextLatitude);
-                      setLongitude(nextLongitude);
-                      void reverseGeocode(nextLatitude, nextLongitude);
-                    },
-                  }}
-                />
-              ) : null}
-            </MapContainer>
+              latitude={latitude}
+              longitude={longitude}
+              tileUrl={useFallbackTile ? OSM_TILE_URL : WIKIMEDIA_TILE_URL}
+              attribution={
+                useFallbackTile
+                  ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
+              }
+              onTileError={() => {
+                setUseFallbackTile(true);
+              }}
+              onPick={(coords) => {
+                setLatitude(coords.latitude);
+                setLongitude(coords.longitude);
+                void reverseGeocode(coords.latitude, coords.longitude);
+              }}
+            />
           </div>
           </div>
         </div>
