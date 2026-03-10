@@ -22,7 +22,7 @@ const priorityLabel: Record<string, string> = {
 
 export function WishlistCard({ item }: { item: PublicWishlistItem }) {
   return (
-    <article className="group overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 [filter:drop-shadow(0_16px_28px_rgba(157,120,133,0.18))] backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:[filter:drop-shadow(0_24px_36px_rgba(157,120,133,0.24))] dark:border-white/10 dark:bg-white/5 dark:filter-none dark:hover:translate-y-0">
+    <article className="group overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 shadow-[0_16px_34px_-22px_rgba(140,95,110,0.42)] backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_42px_-22px_rgba(140,95,110,0.5)] dark:border-white/10 dark:bg-white/5 dark:shadow-none dark:hover:translate-y-0">
       <div className="relative overflow-hidden">
         <img
           src={
