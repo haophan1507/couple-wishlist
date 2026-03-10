@@ -120,7 +120,7 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
 
       <div className="card p-5">
         <h3 className="text-lg font-semibold dark:text-white">Chi tiết trong tháng</h3>
-        <div className="mt-4 space-y-3">
+        <div className="mt-4 max-h-[60vh] space-y-3 overflow-y-auto pr-1">
           {visibleEvents.length ? (
             visibleEvents.map((day) => (
               <div key={day.date.toISOString()} className="rounded-2xl bg-blush/70 p-4 dark:bg-white/5">
