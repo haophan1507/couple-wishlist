@@ -95,7 +95,7 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
   const boundary = useMemo(() => buildHeartBoundary(), []);
 
   const layout = useMemo(() => {
-    const perimeter = getEvenPointsAlongBoundary(boundary, sections.length);
+    const perimeter = getEvenPointsAlongBoundary(boundary, sections.length).reverse();
     const compact = sections.length > 16;
 
     return sections.map((section, index) => {
@@ -169,21 +169,21 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
             {(() => {
               const isActive = hoveredId === section.id || selectedId === section.id;
               const isMuted = section.muted && selectedId !== section.id;
+              const circleFill = section.id === selectedId
+                ? "#d97c95"
+                : isMuted
+                  ? "rgba(255,255,255,0.82)"
+                  : "#e8a4b7";
+              const circleStroke = isMuted ? "rgba(108,89,96,0.2)" : "#ffffff";
+              const heartColor = isMuted ? "#6c5960" : "#ffffff";
               return (
                 <g transform={`translate(${point.x},${point.y})`} className="transition-transform duration-200" style={{ transformOrigin: `${point.x}px ${point.y}px` }}>
                   <circle r={24} fill="transparent" />
                   <circle
                     r={isActive ? 18.5 : 15.5}
-                    fill={
-                      section.id === selectedId
-                        ? "#d97c95"
-                        : isMuted
-                          ? "rgba(232,164,183,0.42)"
-                          : "#e8a4b7"
-                    }
-                    stroke="#ffffff"
+                    fill={circleFill}
+                    stroke={circleStroke}
                     strokeWidth="2.8"
-                    opacity={isMuted ? 0.72 : 1}
                     className="transition-all duration-200"
                   />
                   <Heart
@@ -191,9 +191,8 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
                     y={isActive ? -8 : -7.2}
                     width={isActive ? 16 : 14.4}
                     height={isActive ? 16 : 14.4}
-                    fill={isMuted ? "rgba(255,255,255,0.8)" : "#ffffff"}
-                    stroke={isMuted ? "rgba(255,255,255,0.8)" : "#ffffff"}
-                    opacity={isMuted ? 0.9 : 1}
+                    fill={heartColor}
+                    stroke={heartColor}
                     className="transition-all duration-200"
                   />
                 </g>
