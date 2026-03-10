@@ -1,34 +1,8 @@
-import { deleteGalleryItemAction, upsertGalleryItemAction } from "@/app/actions/gallery";
+import { deleteGalleryItemAction } from "@/app/actions/gallery";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
-import { FormSubmitButton } from "@/components/admin/form-submit-button";
+import { GalleryForm } from "@/components/admin/gallery-form";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { getGalleryItems } from "@/lib/data/queries";
-
-function GalleryForm({
-  item
-}: {
-  item?: {
-    id: string;
-    image_path: string;
-    image_url?: string | null;
-    caption: string | null;
-    memory_date: string | null;
-  };
-}) {
-  return (
-    <form action={upsertGalleryItemAction} className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5">
-      <input type="hidden" name="id" defaultValue={item?.id ?? ""} />
-      <input type="hidden" name="existing_image_path" defaultValue={item?.image_path ?? ""} />
-      <input type="file" name="image_file" accept="image/*" />
-      <input name="caption" placeholder="Chú thích" defaultValue={item?.caption ?? ""} />
-      <input name="memory_date" type="date" defaultValue={item?.memory_date ?? ""} />
-      <FormSubmitButton
-        idleLabel={item ? "Cập nhật" : "Thêm ảnh"}
-        loadingLabel={item ? "Đang cập nhật..." : "Đang thêm..."}
-      />
-    </form>
-  );
-}
 
 export default async function AdminGalleryPage({
   searchParams
@@ -66,7 +40,14 @@ export default async function AdminGalleryPage({
                 />
               </form>
             </div>
-            <GalleryForm item={item} />
+            <GalleryForm
+              item={{
+                id: item.id,
+                image_path: item.image_path,
+                caption: item.caption ?? "",
+                memory_date: item.memory_date ?? "",
+              }}
+            />
           </div>
         ))}
         {!items.length ? <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">Chưa có ảnh nào.</p> : null}
