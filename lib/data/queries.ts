@@ -321,8 +321,7 @@ export async function getPlaceMemories() {
     supabase
       .from("place_memories")
       .select("*")
-      .order("sort_order", { ascending: true, nullsFirst: false })
-      .order("visit_date", { ascending: true })
+      .order("visit_date", { ascending: true, nullsFirst: false })
       .order("created_at", { ascending: true }),
     supabase
       .from("place_memory_images")

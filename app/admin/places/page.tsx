@@ -19,7 +19,6 @@ type PlaceFormItem = {
   city: string;
   country: string;
   cover_image_path: string;
-  sort_order: string;
   gallery_captions: string;
 };
 
@@ -36,7 +35,6 @@ const defaultValues: PlaceFormItem = {
   city: "",
   country: "",
   cover_image_path: "",
-  sort_order: "",
   gallery_captions: "",
 };
 
@@ -59,13 +57,12 @@ function PlaceForm({
 
       <textarea name="description" rows={3} placeholder="Mô tả cảm xúc hoặc kỷ niệm ở nơi này" defaultValue={item.description} />
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-2">
         <select name="status" defaultValue={item.status}>
           <option value="planned">Dự định</option>
           <option value="visited">Đã đi</option>
         </select>
         <input name="visit_date" type="date" defaultValue={item.visit_date} />
-        <input name="sort_order" type="number" placeholder="Thứ tự hiển thị" defaultValue={item.sort_order} />
       </div>
 
       {showLocationPicker ? (
@@ -189,7 +186,6 @@ export default async function AdminPlacesPage({
                 city: place.city ?? "",
                 country: place.country ?? "",
                 cover_image_path: place.cover_image_path ?? "",
-                sort_order: place.sort_order?.toString() ?? "",
                 gallery_captions: place.images.map((image) => image.caption ?? "").join("\n"),
               }}
             />

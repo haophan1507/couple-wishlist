@@ -18,13 +18,21 @@ type Mode = "heart" | "map";
 export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] }) {
   const [mode, setMode] = useState<Mode>("heart");
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
-  const visitedPlaces = useMemo(
+  const timelinePlaces = useMemo(
     () =>
       places
-        .filter((place) => place.status === "visited")
-        .sort((a, b) => (a.visit_date ?? "").localeCompare(b.visit_date ?? "") || a.id.localeCompare(b.id)),
+        .sort((a, b) => {
+          const aDate = a.visit_date ?? a.created_at;
+          const bDate = b.visit_date ?? b.created_at;
+          return aDate.localeCompare(bDate) || a.id.localeCompare(b.id);
+        }),
     [places],
   );
+  const visitedPlaces = useMemo(
+    () => timelinePlaces.filter((place) => place.status === "visited"),
+    [timelinePlaces],
+  );
+  const displayedPlaces = timelinePlaces;
   const selectedPlace = places.find((place) => place.id === selectedPlaceId) ?? null;
 
   return (
@@ -66,15 +74,16 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
       <div className="mt-8 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <section className="card p-6 md:p-8">
           {mode === "heart" ? (
-            visitedPlaces.length ? (
+            timelinePlaces.length ? (
               <HeartDiagram
                 className="my-2"
-                sections={visitedPlaces.map((place) => ({
+                sections={timelinePlaces.map((place) => ({
                   id: place.id,
                   title: place.title,
                   description: place.description ?? place.location_name,
                   imageUrl: place.cover_image_url ?? undefined,
                   accent: place.id === selectedPlaceId,
+                  muted: place.status === "planned",
                 }))}
                 selectedId={selectedPlaceId}
                 onSelect={setSelectedPlaceId}
@@ -82,9 +91,9 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
             ) : (
               <div className="flex min-h-[420px] items-center justify-center rounded-[2rem] bg-blush/40 text-center dark:bg-white/5">
                 <div>
-                  <p className="text-lg font-medium dark:text-white">Chưa có nơi nào đã ghé thăm.</p>
+                  <p className="text-lg font-medium dark:text-white">Chưa có địa điểm nào để hiển thị.</p>
                   <p className="mt-2 text-sm text-mocha/70 dark:text-white/55">
-                    Khi thêm địa điểm trạng thái đã đi, chúng sẽ xuất hiện thành các nhịp tim nhỏ.
+                    Khi thêm địa điểm, chúng sẽ xuất hiện thành các nhịp tim nhỏ.
                   </p>
                 </div>
               </div>
@@ -126,10 +135,10 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
 
           <div className="card p-6">
             <h2 className="text-lg font-semibold dark:text-white">
-              {mode === "heart" ? "Những nơi đã đi qua" : "Danh sách địa điểm"}
+              {mode === "heart" ? "Những địa điểm trong tim" : "Danh sách địa điểm"}
             </h2>
             <div className="mt-4 max-h-[55vh] space-y-3 overflow-y-auto pr-1 md:max-h-[60vh] xl:max-h-[68vh]">
-              {(mode === "heart" ? visitedPlaces : places).map((place) => (
+              {displayedPlaces.map((place) => (
                 <button
                   key={place.id}
                   type="button"
@@ -139,7 +148,7 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
                     place.id === selectedPlaceId
                       ? "border-rose/35 bg-blush/70 dark:border-white/20 dark:bg-white/10"
                       : "border-mocha/10 bg-white/70 hover:border-rose/20 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10",
-                    place.status === "planned" && mode === "map" ? "opacity-70" : "",
+                    place.status === "planned" ? "opacity-70" : "",
                   )}
                 >
                   <div className="flex items-center justify-between gap-3">

@@ -10,6 +10,7 @@ type HeartSection = {
   description?: string;
   imageUrl?: string;
   accent?: boolean;
+  muted?: boolean;
 };
 
 type HeartDiagramProps = {
@@ -167,14 +168,22 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
           >
             {(() => {
               const isActive = hoveredId === section.id || selectedId === section.id;
+              const isMuted = section.muted && selectedId !== section.id;
               return (
                 <g transform={`translate(${point.x},${point.y})`} className="transition-transform duration-200" style={{ transformOrigin: `${point.x}px ${point.y}px` }}>
                   <circle r={24} fill="transparent" />
                   <circle
                     r={isActive ? 18.5 : 15.5}
-                    fill={section.id === selectedId ? "#d97c95" : "#e8a4b7"}
+                    fill={
+                      section.id === selectedId
+                        ? "#d97c95"
+                        : isMuted
+                          ? "rgba(232,164,183,0.42)"
+                          : "#e8a4b7"
+                    }
                     stroke="#ffffff"
                     strokeWidth="2.8"
+                    opacity={isMuted ? 0.72 : 1}
                     className="transition-all duration-200"
                   />
                   <Heart
@@ -182,8 +191,9 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
                     y={isActive ? -8 : -7.2}
                     width={isActive ? 16 : 14.4}
                     height={isActive ? 16 : 14.4}
-                    fill="#ffffff"
-                    stroke="#ffffff"
+                    fill={isMuted ? "rgba(255,255,255,0.8)" : "#ffffff"}
+                    stroke={isMuted ? "rgba(255,255,255,0.8)" : "#ffffff"}
+                    opacity={isMuted ? 0.9 : 1}
                     className="transition-all duration-200"
                   />
                 </g>

@@ -66,8 +66,7 @@ export const placeMemorySchema = z
     city: z.string().max(80).optional(),
     country: z.string().max(80).optional(),
     existing_cover_image_path: z.string().max(300).optional().or(z.literal("")),
-    gallery_captions: z.string().max(4000).optional(),
-    sort_order: z.coerce.number().int().min(0).optional()
+    gallery_captions: z.string().max(4000).optional()
   })
   .refine(
     (value) =>

@@ -48,7 +48,6 @@ export async function upsertPlaceMemoryAction(formData: FormData) {
     country: formData.get("country"),
     existing_cover_image_path: formData.get("existing_cover_image_path"),
     gallery_captions: formData.get("gallery_captions"),
-    sort_order: formData.get("sort_order") || undefined,
   });
 
   if (!parsed.success) {
@@ -89,7 +88,6 @@ export async function upsertPlaceMemoryAction(formData: FormData) {
     country: parsed.data.country || null,
     cover_image_path: nextCoverImagePath,
     cover_image_alt: parsed.data.title,
-    sort_order: parsed.data.sort_order ?? null,
     updated_at: new Date().toISOString(),
   };
 
