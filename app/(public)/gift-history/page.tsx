@@ -121,7 +121,7 @@ export default async function GiftHistoryPage({
             </div>
 
             <div className="mt-8 max-h-[70vh] overflow-y-auto pr-1">
-              <div className="grid gap-6 lg:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {paginatedItems.map((item) => (
                   <GiftHistoryCard
                     key={item.id}

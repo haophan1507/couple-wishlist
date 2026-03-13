@@ -34,7 +34,7 @@ export function GiftHistoryCard({
   return (
     <article className="card overflow-hidden">
       {item.photo_url ? (
-        <div className="aspect-[4/3] overflow-hidden">
+        <div className="aspect-[16/10] overflow-hidden">
           <img
             src={item.photo_url}
             alt={item.gift_name}
@@ -42,18 +42,18 @@ export function GiftHistoryCard({
           />
         </div>
       ) : (
-        <div className="flex aspect-[4/3] items-center justify-center bg-blush/70 dark:bg-white/5">
-          <Sparkles className="h-8 w-8 text-mocha/60 dark:text-white/45" />
+        <div className="flex aspect-[16/10] items-center justify-center bg-blush/70 dark:bg-white/5">
+          <Sparkles className="h-7 w-7 text-mocha/60 dark:text-white/45" />
         </div>
       )}
 
-      <div className="space-y-4 p-5">
+      <div className="space-y-3.5 p-4 md:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-mocha/45 dark:text-white/35">
               Món quà đã nhận
             </p>
-            <h3 className="mt-1 text-xl font-semibold dark:text-white">
+            <h3 className="mt-1 text-lg font-semibold dark:text-white md:text-xl">
               {item.gift_name}
             </h3>
           </div>
@@ -68,33 +68,33 @@ export function GiftHistoryCard({
           </span>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl bg-blush/70 p-4 dark:bg-white/5">
+        <div className="grid gap-2.5 sm:grid-cols-2">
+          <div className="rounded-2xl bg-blush/70 p-3 dark:bg-white/5">
             <p className="text-xs text-mocha/55 dark:text-white/45">Người nhận</p>
-            <p className="mt-1 font-medium dark:text-white">{recipientName}</p>
+            <p className="mt-1 text-sm font-medium dark:text-white">{recipientName}</p>
           </div>
-          <div className="rounded-2xl bg-blush/70 p-4 dark:bg-white/5">
+          <div className="rounded-2xl bg-blush/70 p-3 dark:bg-white/5">
             <p className="text-xs text-mocha/55 dark:text-white/45">Người tặng</p>
-            <p className="mt-1 font-medium dark:text-white">{item.giver_name}</p>
+            <p className="mt-1 text-sm font-medium dark:text-white">{item.giver_name}</p>
           </div>
-          <div className="rounded-2xl bg-blush/70 p-4 dark:bg-white/5">
+          <div className="rounded-2xl bg-blush/70 p-3 dark:bg-white/5">
             <p className="text-xs text-mocha/55 dark:text-white/45">Ngày nhận</p>
-            <p className="mt-1 font-medium dark:text-white">
+            <p className="mt-1 text-sm font-medium dark:text-white">
               {format(new Date(item.received_date), "dd/MM/yyyy")}
             </p>
           </div>
-          <div className="rounded-2xl bg-blush/70 p-4 dark:bg-white/5">
+          <div className="rounded-2xl bg-blush/70 p-3 dark:bg-white/5">
             <p className="text-xs text-mocha/55 dark:text-white/45">Dịp gắn với món quà</p>
-            <p className="mt-1 font-medium dark:text-white">
+            <p className="mt-1 text-sm font-medium dark:text-white">
               {item.special_day?.title ?? "Một ngày bình thường nhưng đáng nhớ"}
             </p>
           </div>
         </div>
 
         {item.note ? (
-          <div className="rounded-2xl border border-rose/15 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
+          <div className="rounded-2xl border border-rose/15 bg-white/70 p-3 dark:border-white/10 dark:bg-white/5">
             <p className="text-xs text-mocha/55 dark:text-white/45">Lời nhắn / ghi chú</p>
-            <p className="mt-2 text-sm leading-6 text-mocha/85 dark:text-white/75">
+            <p className="mt-1.5 text-sm leading-5 text-mocha/85 dark:text-white/75">
               {item.note}
             </p>
           </div>
