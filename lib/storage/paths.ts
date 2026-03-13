@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { STORAGE_RULES } from "@/lib/storage/constants";
 
 type StorageTarget = keyof typeof STORAGE_RULES;
+type BuildStoragePathOptions = { entityId?: string; filename?: string; ext?: string };
 
 function sanitizeSegment(value: string) {
   return value
@@ -12,9 +13,9 @@ function sanitizeSegment(value: string) {
     .slice(0, 40);
 }
 
-export function buildStoragePath(target: StorageTarget, options?: { entityId?: string; filename?: string }) {
+export function buildStoragePath(target: StorageTarget, options?: BuildStoragePathOptions) {
   const folder = STORAGE_RULES[target].folder;
-  const ext = options?.filename?.split(".").pop()?.toLowerCase() || "jpg";
+  const ext = options?.ext || options?.filename?.split(".").pop()?.toLowerCase() || "jpg";
   const today = new Date();
   const year = format(today, "yyyy");
   const month = format(today, "MM");

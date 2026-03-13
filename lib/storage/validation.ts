@@ -9,9 +9,9 @@ export function validateImageFile(file: File, target: StorageTarget) {
     throw new Error("Chỉ hỗ trợ ảnh JPG, PNG hoặc WEBP.");
   }
 
-  if (file.size > rule.maxSizeBytes) {
-    const maxSizeMb = Math.floor(rule.maxSizeBytes / (1024 * 1024));
-    throw new Error(`Ảnh vượt quá giới hạn ${maxSizeMb} MB.`);
+  if (file.size > rule.maxOriginalBytes) {
+    const maxSizeMb = Math.floor(rule.maxOriginalBytes / (1024 * 1024));
+    throw new Error(`Ảnh gốc vượt quá giới hạn ${maxSizeMb} MB.`);
   }
 }
 
