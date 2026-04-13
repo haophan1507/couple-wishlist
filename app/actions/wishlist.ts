@@ -9,15 +9,24 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isValidHttpUrl, joinWishlistProductUrls, parseWishlistProductUrls } from "@/lib/utils/wishlist-links";
 import { wishlistSchema } from "@/lib/validation";
 
+function normalizeTextField(value: FormDataEntryValue | null) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeOptionalNumberField(value: FormDataEntryValue | null) {
+  const normalized = normalizeTextField(value);
+  return normalized ? normalized : undefined;
+}
+
 export async function upsertWishlistItemAction(formData: FormData) {
   await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
   const imageFile = getOptionalFile(formData, "image_file");
-  const productUrlsRaw = String(formData.get("product_urls") ?? formData.get("product_url") ?? "");
+  const productUrlsRaw = normalizeTextField(formData.get("product_urls") ?? formData.get("product_url"));
   const productUrls = parseWishlistProductUrls(productUrlsRaw);
-  const categoryPreset = String(formData.get("category_preset") ?? "").trim();
-  const categoryCustom = String(formData.get("category_custom") ?? "").trim();
+  const categoryPreset = normalizeTextField(formData.get("category_preset"));
+  const categoryCustom = normalizeTextField(formData.get("category_custom"));
   const categoryValue =
     categoryPreset === "other" ? categoryCustom : categoryPreset;
 
@@ -27,20 +36,21 @@ export async function upsertWishlistItemAction(formData: FormData) {
 
   const parsed = wishlistSchema.safeParse({
     owner_type: formData.get("owner_type"),
-    title: formData.get("title"),
-    description: formData.get("description"),
-    existing_image_path: formData.get("existing_image_path"),
+    title: normalizeTextField(formData.get("title")),
+    description: normalizeTextField(formData.get("description")),
+    existing_image_path: normalizeTextField(formData.get("existing_image_path")),
     product_urls: productUrlsRaw,
-    price_min: formData.get("price_min") || undefined,
-    price_max: formData.get("price_max") || undefined,
+    price_min: normalizeOptionalNumberField(formData.get("price_min")),
+    price_max: normalizeOptionalNumberField(formData.get("price_max")),
     category: categoryValue || undefined,
     priority: formData.get("priority"),
-    note: formData.get("note"),
+    note: normalizeTextField(formData.get("note")),
     status: formData.get("status")
   });
 
   if (!parsed.success) {
-    throw new Error("Invalid wishlist form data");
+    const firstIssue = parsed.error.issues[0];
+    throw new Error(firstIssue?.message || "Dữ liệu món quà không hợp lệ.");
   }
 
   if (productUrls.some((url) => !isValidHttpUrl(url))) {
@@ -48,9 +58,14 @@ export async function upsertWishlistItemAction(formData: FormData) {
   }
 
   const supabase = createSupabaseAdminClient();
-  const { data: existing } = id
+  const { data: existing, error: existingError } = id
     ? await supabase.from("wishlist_items").select("image_path").eq("id", id).maybeSingle()
-    : { data: null };
+    : { data: null, error: null };
+
+  if (existingError) {
+    throw new Error("Không thể đọc dữ liệu món quà hiện tại.");
+  }
+
   let nextImagePath = parsed.data.existing_image_path || existing?.image_path || null;
 
   if (imageFile) {
@@ -79,9 +94,17 @@ export async function upsertWishlistItemAction(formData: FormData) {
   };
 
   if (id) {
-    await supabase.from("wishlist_items").update(payload).eq("id", id);
+    const { error } = await supabase.from("wishlist_items").update(payload).eq("id", id);
+
+    if (error) {
+      throw new Error(`Cập nhật món quà thất bại: ${error.message}`);
+    }
   } else {
-    await supabase.from("wishlist_items").insert(payload);
+    const { error } = await supabase.from("wishlist_items").insert(payload);
+
+    if (error) {
+      throw new Error(`Thêm món quà thất bại: ${error.message}`);
+    }
   }
 
   if (imageFile && existing?.image_path && existing.image_path !== nextImagePath) {

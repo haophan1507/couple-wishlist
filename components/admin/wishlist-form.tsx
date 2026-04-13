@@ -221,7 +221,7 @@ export function WishlistForm({
 
             <label className="space-y-2">
               <span className="block text-xs font-medium text-mocha/65 dark:text-white/50">
-                Mức độ mong muốn
+                Mức độ ưu tiên
               </span>
               <select
                 name="priority"
@@ -229,9 +229,9 @@ export function WishlistForm({
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               >
-                <option value="low">Bình thường</option>
-                <option value="medium">Muốn sớm</option>
-                <option value="high">Rất muốn</option>
+                <option value="low">Ưu tiên thấp</option>
+                <option value="medium">Ưu tiên trung bình</option>
+                <option value="high">Ưu tiên cao</option>
               </select>
             </label>
           </div>
@@ -278,4 +278,3 @@ export function WishlistForm({
     </Formik>
   );
 }
-

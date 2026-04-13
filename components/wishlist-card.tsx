@@ -16,9 +16,15 @@ function currency(value: number | null) {
 }
 
 const priorityLabel: Record<string, string> = {
-  low: "Bình thường",
-  medium: "Muốn sớm",
-  high: "Rất muốn"
+  low: "Ưu tiên thấp",
+  medium: "Ưu tiên trung bình",
+  high: "Ưu tiên cao"
+};
+
+const priorityDotClass: Record<string, string> = {
+  low: "bg-green-500",
+  medium: "bg-amber-400",
+  high: "bg-rose-500"
 };
 
 export function WishlistCard({ item }: { item: PublicWishlistItem }) {
@@ -37,9 +43,11 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
       <div className="bg-gradient-to-b from-white/95 to-white/92 p-5 dark:from-transparent dark:to-transparent">
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-lg font-semibold tracking-tight dark:text-white">{item.title}</h3>
-          <span className="rounded-full bg-blush px-3 py-1 text-xs font-medium text-mocha/85 dark:bg-white/10 dark:text-white/80">
-            {priorityLabel[item.priority]}
-          </span>
+          <span
+            className={`mt-1 inline-block h-3.5 w-3.5 rounded-full ${priorityDotClass[item.priority]}`}
+            aria-label={priorityLabel[item.priority]}
+            title={priorityLabel[item.priority]}
+          />
         </div>
         {item.description ? (
           <p className="mt-2 line-clamp-3 text-sm leading-6 text-mocha/75 dark:text-white/60">{item.description}</p>
