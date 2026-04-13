@@ -59,6 +59,18 @@ function createInitialValues(item: WishlistFormItem): FormValues {
   };
 }
 
+function toTrimmedString(value: unknown) {
+  if (typeof value === "string") {
+    return value.trim();
+  }
+
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return String(value).trim();
+}
+
 export function WishlistForm({
   item = defaultValues,
   personOneName,
@@ -75,18 +87,18 @@ export function WishlistForm({
       enableReinitialize
       onSubmit={async (values, helpers) => {
         const formData = new FormData();
-        formData.set("id", values.id ?? "");
+        formData.set("id", toTrimmedString(values.id));
         formData.set("owner_type", values.owner_type);
-        formData.set("title", values.title.trim());
-        formData.set("description", values.description.trim());
-        formData.set("existing_image_path", values.image_path ?? "");
-        formData.set("product_urls", values.product_urls.trim());
-        formData.set("price_min", values.price_min.trim());
-        formData.set("price_max", values.price_max.trim());
+        formData.set("title", toTrimmedString(values.title));
+        formData.set("description", toTrimmedString(values.description));
+        formData.set("existing_image_path", toTrimmedString(values.image_path));
+        formData.set("product_urls", toTrimmedString(values.product_urls));
+        formData.set("price_min", toTrimmedString(values.price_min));
+        formData.set("price_max", toTrimmedString(values.price_max));
         formData.set("category_preset", values.category_preset);
-        formData.set("category_custom", values.category_custom.trim());
+        formData.set("category_custom", toTrimmedString(values.category_custom));
         formData.set("priority", values.priority);
-        formData.set("note", values.note.trim());
+        formData.set("note", toTrimmedString(values.note));
         formData.set("status", values.status);
 
         if (imageFile) {
