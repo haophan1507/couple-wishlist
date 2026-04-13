@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { Formik } from "formik";
 import { useRouter } from "next/navigation";
-import { upsertWishlistItemAction } from "@/app/actions/wishlist";
 import { WISHLIST_CATEGORY_OPTIONS } from "@/lib/constants/wishlist";
 
 type WishlistFormItem = {
@@ -95,8 +94,18 @@ export function WishlistForm({
         }
 
         try {
-          await upsertWishlistItemAction(formData);
+          const response = await fetch("/api/admin/wishlist", {
+            method: "POST",
+            body: formData,
+          });
+          const result = (await response.json()) as { ok?: boolean; message?: string };
+
+          if (!response.ok || !result.ok) {
+            throw new Error(result.message || "Không thể lưu món quà lúc này.");
+          }
+
           setImageFile(null);
+          helpers.setStatus(undefined);
           router.refresh();
           if (!isEditing) {
             helpers.resetForm();
@@ -160,7 +169,7 @@ export function WishlistForm({
             <textarea
               name="product_urls"
               rows={3}
-              placeholder="Mỗi dòng là một link sản phẩm (https://...)"
+              placeholder="Link sản phẩm (không bắt buộc, mỗi dòng một link https://...)"
               value={formik.values.product_urls}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}

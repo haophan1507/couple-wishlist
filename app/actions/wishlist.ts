@@ -24,7 +24,8 @@ export async function upsertWishlistItemAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const imageFile = getOptionalFile(formData, "image_file");
   const productUrlsRaw = normalizeTextField(formData.get("product_urls") ?? formData.get("product_url"));
-  const productUrls = parseWishlistProductUrls(productUrlsRaw);
+  const parsedProductUrls = parseWishlistProductUrls(productUrlsRaw);
+  const validProductUrls = parsedProductUrls.filter((url) => isValidHttpUrl(url));
   const categoryPreset = normalizeTextField(formData.get("category_preset"));
   const categoryCustom = normalizeTextField(formData.get("category_custom"));
   const categoryValue =
@@ -53,8 +54,8 @@ export async function upsertWishlistItemAction(formData: FormData) {
     throw new Error(firstIssue?.message || "Dữ liệu món quà không hợp lệ.");
   }
 
-  if (productUrls.some((url) => !isValidHttpUrl(url))) {
-    throw new Error("Một hoặc nhiều link sản phẩm không hợp lệ (chỉ hỗ trợ http/https).");
+  if (parsedProductUrls.length > 1 && validProductUrls.length !== parsedProductUrls.length) {
+    throw new Error("Danh sách link sản phẩm có dòng không hợp lệ. Bạn có thể để trống hoặc chỉ nhập link bắt đầu bằng http/https.");
   }
 
   const supabase = createSupabaseAdminClient();
@@ -82,7 +83,7 @@ export async function upsertWishlistItemAction(formData: FormData) {
     title: parsed.data.title,
     image_path: nextImagePath,
     image_alt: parsed.data.title,
-    product_url: joinWishlistProductUrls(productUrls) || null,
+    product_url: joinWishlistProductUrls(validProductUrls) || null,
     category: parsed.data.category || null,
     note: parsed.data.note || null,
     description: parsed.data.description || null,
