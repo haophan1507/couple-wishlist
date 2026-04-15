@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ExternalLink, Tag } from "lucide-react";
+import { ExternalLink, NotebookText, Tag } from "lucide-react";
 import { getWishlistFallbackImage } from "@/lib/constants/wishlist";
 import type { PublicWishlistItem } from "@/lib/data/queries";
 
@@ -50,7 +50,16 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
           />
         </div>
         {item.description ? (
-          <p className="mt-2 line-clamp-3 text-sm leading-6 text-mocha/75 dark:text-white/60">{item.description}</p>
+          <p className="mt-2 line-clamp-3 text-sm leading-6 text-mocha/75 dark:text-white/60">
+            {item.description}
+          </p>
+        ) : null}
+
+        {item.note ? (
+          <div className="mt-3 flex gap-2 rounded-2xl border border-rose/15 bg-blush/60 px-3 py-2.5 text-mocha/70 dark:border-white/10 dark:bg-white/10 dark:text-white/65">
+            <NotebookText className="mt-0.5 h-4 w-4 shrink-0 opacity-65" />
+            <p className="line-clamp-2 text-sm italic leading-6">{item.note}</p>
+          </div>
         ) : null}
 
         <div className="mt-4 flex flex-wrap gap-2 text-xs text-mocha/70 dark:text-white/60">
