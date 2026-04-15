@@ -55,13 +55,6 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
           </p>
         ) : null}
 
-        {item.note ? (
-          <div className="mt-3 flex gap-2 rounded-2xl border border-rose/15 bg-blush/60 px-3 py-2.5 text-mocha/70 dark:border-white/10 dark:bg-white/10 dark:text-white/65">
-            <NotebookText className="mt-0.5 h-4 w-4 shrink-0 opacity-65" />
-            <p className="line-clamp-2 text-sm italic leading-6">{item.note}</p>
-          </div>
-        ) : null}
-
         <div className="mt-4 flex flex-wrap gap-2 text-xs text-mocha/70 dark:text-white/60">
           {item.category ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-sand px-2.5 py-1.5 dark:bg-white/10">
@@ -97,6 +90,13 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
         ) : (
           <p className="mt-4 rounded-2xl bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">Có sẵn</p>
         )}
+
+        {item.note ? (
+          <div className="mt-4 flex gap-2 rounded-2xl border border-rose/15 bg-blush/60 px-3 py-2.5 text-mocha/70 dark:border-white/10 dark:bg-white/10 dark:text-white/65">
+            <NotebookText className="mt-0.5 h-4 w-4 shrink-0 opacity-65" />
+            <p className="line-clamp-2 text-sm italic leading-6">{item.note}</p>
+          </div>
+        ) : null}
       </div>
     </article>
   );
