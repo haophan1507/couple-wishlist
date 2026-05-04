@@ -18,7 +18,7 @@ export function HeroSection({ names, coverImageUrl, story }: HeroSectionProps) {
               <Sparkles className="h-3.5 w-3.5" />
               Góc nhỏ của tụi mình
             </p>
-            <h1 className="mt-5 font-[var(--font-heading)] text-4xl leading-tight dark:text-white md:text-6xl">{names}</h1>
+            <h1 className="mt-5 font-(--font-heading) text-4xl leading-tight dark:text-white md:text-6xl">{names}</h1>
             <p className="mt-4 max-w-xl text-mocha/80 dark:text-white/65 md:text-lg">
               {story ?? "Một nơi lưu wishlist và kỷ niệm để cùng những người thân yêu chia sẻ hành trình của tụi mình."}
             </p>
@@ -41,7 +41,7 @@ export function HeroSection({ names, coverImageUrl, story }: HeroSectionProps) {
               alt="Ảnh bìa cặp đôi"
               className="h-full min-h-[280px] w-full rounded-2xl object-cover sm:min-h-[360px]"
             />
-            <div className="absolute bottom-3 left-3 right-3 rounded-2xl bg-white/85 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5 sm:p-4 dark:bg-[#1e1a1c]/85">
+            <div className="absolute bottom-3 left-3 right-3 rounded-2xl bg-white/85 p-3 backdrop-blur-sm sm:bottom-5 sm:left-5 sm:right-5 sm:p-4 dark:bg-[#1e1a1c]/85">
               <p className="text-sm font-medium dark:text-white">Wishlist và kỷ niệm</p>
               <p className="mt-1 text-xs text-mocha/70 sm:text-sm dark:text-white/60">Đặt trước quà, đếm ngày quan trọng và cùng chia sẻ niềm vui.</p>
               <ArrowRight className="mt-2 h-4 w-4 text-rose" />

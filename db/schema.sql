@@ -138,7 +138,8 @@ begin
   new.updated_at = timezone('utc', now());
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql
+set search_path = public;
 
 -- Triggers
 create trigger trg_wishlist_updated_at
@@ -172,7 +173,8 @@ begin
 
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer
+set search_path = public;
 
 create trigger on_auth_user_created
 after insert on auth.users

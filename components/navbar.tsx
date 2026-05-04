@@ -7,9 +7,9 @@ import { MobileMenu } from "@/components/mobile-menu";
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-30 border-b border-white/60 bg-cream/80 backdrop-blur dark:border-white/10 dark:bg-[#1e1a1c]/80">
+    <header className="sticky top-0 z-30 border-b border-white/60 bg-cream/80 backdrop-blur-sm dark:border-white/10 dark:bg-[#1e1a1c]/80">
       <Container className="flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-[var(--font-heading)] dark:text-white">
+        <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-(--font-heading) dark:text-white">
           <Heart className="h-5 w-5 text-rose" />
           Wishlist Cặp Đôi
         </Link>

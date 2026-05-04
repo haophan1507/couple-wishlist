@@ -14,7 +14,7 @@ export default async function LoginPage({
     <section className="min-h-screen py-16">
       <Container className="max-w-md">
         <div className="card p-8">
-          <h1 className="text-3xl font-semibold font-[var(--font-heading)] dark:text-white">Đăng nhập quản trị</h1>
+          <h1 className="text-3xl font-semibold font-(--font-heading) dark:text-white">Đăng nhập quản trị</h1>
           <p className="mt-2 text-sm text-mocha/70 dark:text-white/55">Đăng nhập để quản lý nội dung wishlist.</p>
 
           <form action={signInAction} className="mt-6 space-y-3">

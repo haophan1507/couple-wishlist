@@ -34,7 +34,7 @@ export function GiftHistoryCard({
   return (
     <article className="card overflow-hidden">
       {item.photo_url ? (
-        <div className="aspect-[16/10] overflow-hidden">
+        <div className="aspect-16/10 overflow-hidden">
           <img
             src={item.photo_url}
             alt={item.gift_name}
@@ -42,7 +42,7 @@ export function GiftHistoryCard({
           />
         </div>
       ) : (
-        <div className="flex aspect-[16/10] items-center justify-center bg-blush/70 dark:bg-white/5">
+        <div className="flex aspect-16/10 items-center justify-center bg-blush/70 dark:bg-white/5">
           <Sparkles className="h-7 w-7 text-mocha/60 dark:text-white/45" />
         </div>
       )}

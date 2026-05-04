@@ -25,7 +25,7 @@ export default async function GalleryPage({
   return (
     <section className="py-10 md:py-12">
       <Container>
-        <h1 className="section-title font-[var(--font-heading)]">Khoảnh khắc</h1>
+        <h1 className="section-title font-(--font-heading)">Khoảnh khắc</h1>
         <p className="section-subtitle">Những kỷ niệm tụi mình trân quý.</p>
         <div className="mt-8 max-h-[75vh] overflow-y-auto pr-1">
           <GalleryGrid items={paginatedItems} />

@@ -21,10 +21,6 @@ export function AdminMobileMenu() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
@@ -37,7 +33,7 @@ export function AdminMobileMenu() {
         type="button"
         aria-label={open ? "Đóng điều hướng quản trị" : "Mở điều hướng quản trị"}
         onClick={() => setOpen((value) => !value)}
-        className="fixed bottom-4 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-mocha/20 bg-white/95 text-mocha/85 shadow-soft backdrop-blur transition hover:bg-white dark:border-white/20 dark:bg-[#241f22]/95 dark:text-white/85 dark:hover:bg-[#2a2428]"
+        className="fixed bottom-4 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-mocha/20 bg-white/95 text-mocha/85 shadow-soft backdrop-blur-sm transition hover:bg-white dark:border-white/20 dark:bg-[#241f22]/95 dark:text-white/85 dark:hover:bg-[#2a2428]"
       >
         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
@@ -47,10 +43,10 @@ export function AdminMobileMenu() {
           <button
             type="button"
             aria-label="Đóng menu quản trị"
-            className="fixed inset-0 z-30 bg-black/35 backdrop-blur-sm"
+            className="fixed inset-0 z-30 bg-black/35 backdrop-blur-xs"
             onClick={() => setOpen(false)}
           />
-          <div className="fixed inset-x-3 bottom-20 z-40 rounded-3xl border border-white/80 bg-cream/95 p-3 shadow-soft backdrop-blur dark:border-white/10 dark:bg-[#1e1a1c]/95">
+          <div className="fixed inset-x-3 bottom-20 z-40 rounded-3xl border border-white/80 bg-cream/95 p-3 shadow-soft backdrop-blur-sm dark:border-white/10 dark:bg-[#1e1a1c]/95">
             <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.14em] text-mocha/55 dark:text-white/45">
               Điều hướng quản trị
             </p>
@@ -65,6 +61,7 @@ export function AdminMobileMenu() {
                   <Link
                     key={link.href}
                     href={link.href}
+                    onClick={() => setOpen(false)}
                     className={cn(
                       "block rounded-xl px-3 py-2.5 text-sm font-medium transition",
                       active
@@ -93,4 +90,3 @@ export function AdminMobileMenu() {
     </div>
   );
 }
-

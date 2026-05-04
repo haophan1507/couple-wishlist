@@ -31,7 +31,7 @@ export default async function SpecialDaysPage() {
   return (
     <section className="py-10 md:py-12">
       <Container>
-        <h1 className="section-title font-[var(--font-heading)]">
+        <h1 className="section-title font-(--font-heading)">
           Ngày đặc biệt
         </h1>
         <p className="section-subtitle">

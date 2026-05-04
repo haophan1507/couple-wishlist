@@ -21,10 +21,6 @@ export function MobileMenu() {
   const pathname = usePathname();
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
@@ -44,8 +40,8 @@ export function MobileMenu() {
 
       {open ? (
         <>
-          <div className="fixed inset-0 top-16 z-40 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <nav className="fixed inset-x-0 top-16 z-50 border-b border-white/60 bg-cream/95 px-4 pb-5 pt-3 backdrop-blur dark:border-white/10 dark:bg-[#1e1a1c]/95">
+          <div className="fixed inset-0 top-16 z-40 bg-black/30 backdrop-blur-xs" onClick={() => setOpen(false)} />
+          <nav className="fixed inset-x-0 top-16 z-50 border-b border-white/60 bg-cream/95 px-4 pb-5 pt-3 backdrop-blur-sm dark:border-white/10 dark:bg-[#1e1a1c]/95">
             <ul className="space-y-1">
               {links.map((link) => {
                 const active =
@@ -57,6 +53,7 @@ export function MobileMenu() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
+                      onClick={() => setOpen(false)}
                       className={cn(
                         "block rounded-xl px-4 py-2.5 text-sm font-medium transition",
                         active

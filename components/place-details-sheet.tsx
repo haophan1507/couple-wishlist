@@ -42,9 +42,9 @@ export function PlaceDetailsSheet({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-end bg-black/35 backdrop-blur-sm md:items-stretch">
+    <div className="fixed inset-0 z-50 flex items-end justify-end bg-black/35 backdrop-blur-xs md:items-stretch">
       <button type="button" aria-label="Đóng chi tiết" className="absolute inset-0" onClick={onClose} />
-      <aside className="relative z-10 h-[85vh] w-full overflow-y-auto rounded-t-[2rem] bg-cream p-6 shadow-soft dark:bg-[#1e1a1c] md:h-auto md:w-[440px] md:rounded-none md:rounded-l-[2rem]">
+      <aside className="relative z-10 h-[85vh] w-full overflow-y-auto rounded-t-4xl bg-cream p-6 shadow-soft dark:bg-[#1e1a1c] md:h-auto md:w-[440px] md:rounded-none md:rounded-l-4xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-mocha/45 dark:text-white/35">

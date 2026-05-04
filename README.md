@@ -26,7 +26,7 @@ A full-stack romantic wishlist website built with Next.js App Router, TypeScript
 
 ## Tech Stack
 
-- Next.js 15 (App Router)
+- Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS
 - Supabase (Postgres, Auth, Storage)
@@ -70,6 +70,7 @@ middleware.ts
 1. Install dependencies:
 
 ```bash
+nvm use
 npm install
 ```
 
@@ -102,6 +103,16 @@ where email = 'your-admin-email@example.com';
 ```bash
 npm run dev
 ```
+
+Useful checks:
+
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
+
+`npm run build` currently uses Webpack for production stability on Next.js 16.
 
 Open:
 

@@ -39,7 +39,7 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
     <>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="section-title font-[var(--font-heading)]">Heart Mapping</h1>
+          <h1 className="section-title font-(--font-heading)">Heart Mapping</h1>
           <p className="section-subtitle">
             Một bản đồ vừa tượng trưng vừa thực tế cho những nơi hai bạn đã đi qua và còn muốn ghé đến.
           </p>
@@ -89,7 +89,7 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
                 onSelect={setSelectedPlaceId}
               />
             ) : (
-              <div className="flex min-h-[420px] items-center justify-center rounded-[2rem] bg-blush/40 text-center dark:bg-white/5">
+              <div className="flex min-h-[420px] items-center justify-center rounded-4xl bg-blush/40 text-center dark:bg-white/5">
                 <div>
                   <p className="text-lg font-medium dark:text-white">Chưa có địa điểm nào để hiển thị.</p>
                   <p className="mt-2 text-sm text-mocha/70 dark:text-white/55">

@@ -1,22 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 
+function subscribe(callback: () => void) {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const handleChange = () => callback();
+
+  window.addEventListener("storage", handleChange);
+  window.addEventListener("themechange", handleChange);
+  mediaQuery.addEventListener("change", handleChange);
+
+  return () => {
+    window.removeEventListener("storage", handleChange);
+    window.removeEventListener("themechange", handleChange);
+    mediaQuery.removeEventListener("change", handleChange);
+  };
+}
+
+function getThemeSnapshot() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const stored = localStorage.getItem("theme");
+  if (stored === "light" || stored === "dark") {
+    return stored;
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [mounted, setMounted] = useState(false);
+  const theme = useSyncExternalStore(subscribe, getThemeSnapshot, () => null);
 
   useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem("theme") as "light" | "dark" | null;
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = stored ?? (prefersDark ? "dark" : "light");
-    setTheme(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
-  }, []);
+    if (!theme) {
+      return;
+    }
+
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   const isDark = theme === "dark";
+  const mounted = theme !== null;
 
   return (
     <button
@@ -26,9 +59,9 @@ export function ThemeToggle() {
       onClick={() => {
         if (!mounted) return;
         const next = isDark ? "light" : "dark";
-        setTheme(next);
         localStorage.setItem("theme", next);
         document.documentElement.classList.toggle("dark", next === "dark");
+        window.dispatchEvent(new Event("themechange"));
       }}
       className="rounded-full border border-mocha/20 p-2 text-mocha/80 transition hover:bg-white dark:border-white/20 dark:text-white/80 dark:hover:bg-white/10"
     >

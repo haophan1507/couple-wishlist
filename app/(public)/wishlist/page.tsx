@@ -42,7 +42,7 @@ export default async function WishlistPage({
   return (
     <section className="py-10 md:py-12">
       <Container>
-        <h1 className="section-title font-[var(--font-heading)]">Danh sách quà</h1>
+        <h1 className="section-title font-(--font-heading)">Danh sách quà</h1>
         <p className="section-subtitle">Hai bạn cùng cập nhật và theo dõi trạng thái quà dành cho nhau.</p>
 
         <Suspense>

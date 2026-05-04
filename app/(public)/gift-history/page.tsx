@@ -41,7 +41,7 @@ export default async function GiftHistoryPage({
                 <Heart className="h-3.5 w-3.5" />
                 Ký ức quà tặng
               </p>
-              <h1 className="mt-4 section-title font-[var(--font-heading)]">
+              <h1 className="mt-4 section-title font-(--font-heading)">
                 Những món quà đã đến và ở lại trong ký ức
               </h1>
               <p className="section-subtitle max-w-2xl">

@@ -70,7 +70,7 @@ export function RealMapView({
   return (
     <div
       className={cn(
-        "relative h-[520px] overflow-hidden rounded-[2rem] border border-white/70 md:h-[620px] xl:h-[700px] dark:border-white/10",
+        "relative h-[520px] overflow-hidden rounded-4xl border border-white/70 md:h-[620px] xl:h-[700px] dark:border-white/10",
         className,
       )}
     >

@@ -48,7 +48,7 @@ export function WishlistFilter({ categories }: WishlistFilterProps) {
           placeholder="Tìm theo tên hoặc mô tả..."
           defaultValue={searchParams.get("q") ?? ""}
           onChange={(e) => handleSearch(e.target.value)}
-          className="!pl-9"
+          className="pl-9!"
         />
       </div>
       <div className="relative">

@@ -117,8 +117,7 @@ export function PlaceMapPicker({
     const trimmedQuery = searchQuery.trim();
 
     if (trimmedQuery.length < 2) {
-      setResults([]);
-      setSearchError(null);
+      abortRef.current?.abort();
       return;
     }
 
@@ -195,7 +194,7 @@ export function PlaceMapPicker({
 
       <div className="space-y-4">
         <div className="space-y-3">
-          <div className="flex items-center gap-3 rounded-full border border-mocha/12 bg-white/92 px-5 py-3 shadow-soft backdrop-blur dark:border-white/10 dark:bg-white/8">
+          <div className="flex items-center gap-3 rounded-full border border-mocha/12 bg-white/92 px-5 py-3 shadow-soft backdrop-blur-sm dark:border-white/10 dark:bg-white/8">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blush/80 dark:bg-white/10">
               <Search className="h-4 w-4 text-mocha/55 dark:text-white/60" />
             </div>
@@ -203,9 +202,15 @@ export function PlaceMapPicker({
               type="text"
               value={searchQuery}
               onChange={(event) => {
-                setSearchQuery(event.target.value);
+                const nextQuery = event.target.value;
+                setSearchQuery(nextQuery);
                 setSearchError(null);
                 setShowResults(true);
+
+                if (nextQuery.trim().length < 2) {
+                  abortRef.current?.abort();
+                  setResults([]);
+                }
               }}
               onFocus={() => setShowResults(true)}
               onKeyDown={(event) => {
@@ -233,7 +238,7 @@ export function PlaceMapPicker({
 
           {showResults ? (
             <div
-              className="max-h-72 overflow-y-auto overscroll-contain rounded-[1.5rem] border border-mocha/10 bg-white/96 shadow-soft backdrop-blur dark:border-white/10 dark:bg-[#241f22]/96"
+              className="max-h-72 overflow-y-auto overscroll-contain rounded-3xl border border-mocha/10 bg-white/96 shadow-soft backdrop-blur-sm dark:border-white/10 dark:bg-[#241f22]/96"
               onWheelCapture={(event) => event.stopPropagation()}
               onTouchMoveCapture={(event) => event.stopPropagation()}
             >

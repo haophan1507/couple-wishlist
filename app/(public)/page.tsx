@@ -68,7 +68,7 @@ export default async function HomePage() {
                 <Heart className="h-3.5 w-3.5" />
                 Về tụi mình
               </p>
-              <h2 className="mt-4 section-title font-[var(--font-heading)]">Câu chuyện của tụi mình</h2>
+              <h2 className="mt-4 section-title font-(--font-heading)">Câu chuyện của tụi mình</h2>
               <p className="section-subtitle">
                 {profile?.story ??
                   "Tụi mình tạo trang này để chia sẻ những món quà yêu thích và cùng nhau lưu lại những cột mốc đáng nhớ."}

@@ -218,7 +218,7 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
                   fontSize={18}
                   fill="#5c3a45"
                   fontWeight={800}
-                  className="font-[var(--font-heading)]"
+                  className="font-(--font-heading)"
                 >
                   {section.title.length > 24 ? `${section.title.slice(0, 23)}...` : section.title}
                 </text>
@@ -230,7 +230,7 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
                     fontSize={14.5}
                     fill="#7b5b65"
                     fontWeight={500}
-                    className="font-[var(--font-body)]"
+                    className="font-(--font-body)"
                   >
                     {section.description.length > 27
                       ? `${section.description.slice(0, 26)}...`
