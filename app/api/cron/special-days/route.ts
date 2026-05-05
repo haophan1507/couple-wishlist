@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+
 type SpecialDayRow = {
   id: string;
   title: string;
@@ -12,6 +13,7 @@ type SpecialDayRow = {
 type CoupleProfileRow = {
   person_one_name: string;
   person_two_name: string;
+  love_start_date: string | null;
   person_one_birthday: string | null;
   person_two_birthday: string | null;
 };
@@ -26,6 +28,7 @@ type NotificationEvent = {
 };
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 const RECURRING_TYPES = new Set([
   "birthday",
@@ -41,6 +44,57 @@ const TYPE_LABEL: Record<SpecialDayRow["type"], string> = {
   holiday: "Ngày lễ",
   other: "Khác",
 };
+
+const AUTO_HOLIDAY_DEFINITIONS = [
+  {
+    key: "valentine",
+    monthDay: "02-14",
+    title: "Valentine 14/2",
+    description: "Ngày lễ Tình nhân - dịp để gửi lời yêu thương ngọt ngào.",
+  },
+  {
+    key: "womens-day",
+    monthDay: "03-08",
+    title: "Quốc tế Phụ nữ 8/3",
+    description: "Một ngày đặc biệt để gửi lời chúc và sự quan tâm.",
+  },
+  {
+    key: "international-happiness-day",
+    monthDay: "03-21",
+    title: "Ngày Quốc tế Hạnh phúc 21/3",
+    description: "Một ngày để cùng nhau lưu giữ niềm vui và hạnh phúc.",
+  },
+  {
+    key: "girlfriend-day",
+    monthDay: "08-01",
+    title: "Ngày bạn gái 1/8",
+    description: "Dịp để dành những điều dễ thương cho người thương.",
+  },
+  {
+    key: "boyfriend-day",
+    monthDay: "10-03",
+    title: "Ngày bạn trai 3/10",
+    description: "Một ngày nhỏ để nói lời yêu và cảm ơn nửa kia.",
+  },
+  {
+    key: "vn-womens-day",
+    monthDay: "10-20",
+    title: "Phụ nữ Việt Nam 20/10",
+    description: "Ngày tôn vinh phụ nữ Việt Nam với những điều dễ thương.",
+  },
+  {
+    key: "christmas-eve",
+    monthDay: "12-24",
+    title: "Đêm Giáng Sinh 24/12",
+    description: "Đêm ấm áp để hẹn hò và trao nhau quà nhỏ.",
+  },
+  {
+    key: "new-year-day",
+    monthDay: "01-01",
+    title: "Năm mới 1/1",
+    description: "Bắt đầu năm mới cùng nhau với thật nhiều yêu thương.",
+  },
+] as const;
 
 function getTodayParts(timeZone: string) {
   const formatter = new Intl.DateTimeFormat("en-CA", {
@@ -70,10 +124,99 @@ function getMonthDay(dateInput: string | null) {
   return { month: m, day: d, iso: dateInput };
 }
 
+function getDateParts(dateInput: string | null) {
+  if (!dateInput) return null;
+  const [year, month, day] = dateInput.split("-").map((value) => Number(value));
+  if (!year || !month || !day) return null;
+  return { year, month, day };
+}
+
+function getUtcDayIndex(date: { year: number; month: number; day: number }) {
+  return Math.floor(Date.UTC(date.year, date.month - 1, date.day) / 86_400_000);
+}
+
+function buildAutoHolidayEvents(
+  specialDays: SpecialDayRow[],
+  today: { month: number; day: number },
+) {
+  const todayMonthDay = `${today.month.toString().padStart(2, "0")}-${today.day
+    .toString()
+    .padStart(2, "0")}`;
+  const manualHolidayMonthDays = new Set(
+    specialDays
+      .filter((day) => day.type === "holiday")
+      .map((day) => day.date.slice(5)),
+  );
+
+  return AUTO_HOLIDAY_DEFINITIONS.filter(
+    (holiday) =>
+      holiday.monthDay === todayMonthDay &&
+      !manualHolidayMonthDays.has(holiday.monthDay),
+  ).map((holiday) => ({
+    eventKey: `auto-holiday:${holiday.key}`,
+    specialDayId: null,
+    title: holiday.title,
+    description: holiday.description,
+    dateLabel: `Hằng năm-${holiday.monthDay}`,
+    typeLabel: "Ngày lễ",
+  }));
+}
+
+function buildLoveMilestoneEvents(
+  profile: CoupleProfileRow | null,
+  today: { year: number; month: number; day: number; isoDate: string },
+) {
+  const loveStartDate = getDateParts(profile?.love_start_date ?? null);
+  if (!loveStartDate) return [];
+
+  const daysInLove = getUtcDayIndex(today) - getUtcDayIndex(loveStartDate);
+  if (daysInLove <= 0) return [];
+
+  const milestoneEvents = new Map<number, NotificationEvent>();
+  const addMilestone = (title: string, description: string) => {
+    milestoneEvents.set(daysInLove, {
+      eventKey: `love-milestone:${daysInLove}`,
+      specialDayId: null,
+      title,
+      description,
+      dateLabel: today.isoDate,
+      typeLabel: "Mốc yêu nhau",
+    });
+  };
+
+  if ([99, 500, 999].includes(daysInLove)) {
+    addMilestone(
+      `${daysInLove} ngày yêu nhau`,
+      `Một mốc số đẹp sau ${daysInLove} ngày ở bên nhau.`,
+    );
+  }
+
+  if (daysInLove >= 1000 && daysInLove % 500 === 0) {
+    addMilestone(
+      `${daysInLove} ngày yêu nhau`,
+      `Cột mốc đặc biệt ${daysInLove} ngày của hai bạn.`,
+    );
+  }
+
+  if (
+    today.month === loveStartDate.month &&
+    today.day === loveStartDate.day &&
+    today.year > loveStartDate.year
+  ) {
+    const yearCount = today.year - loveStartDate.year;
+    addMilestone(
+      `${yearCount} năm yêu nhau`,
+      `Kỷ niệm tròn ${yearCount} năm kể từ ngày bắt đầu yêu nhau.`,
+    );
+  }
+
+  return [...milestoneEvents.values()];
+}
+
 function buildTodayEvents(
   specialDays: SpecialDayRow[],
   profile: CoupleProfileRow | null,
-  today: { month: number; day: number; isoDate: string },
+  today: { year: number; month: number; day: number; isoDate: string },
 ) {
   const events: NotificationEvent[] = [];
 
@@ -97,6 +240,8 @@ function buildTodayEvents(
       typeLabel: TYPE_LABEL[day.type],
     });
   }
+
+  events.push(...buildAutoHolidayEvents(specialDays, today));
 
   const personOneBirthday = getMonthDay(profile?.person_one_birthday ?? null);
   if (
@@ -131,6 +276,8 @@ function buildTodayEvents(
       typeLabel: "Sinh nhật",
     });
   }
+
+  events.push(...buildLoveMilestoneEvents(profile, today));
 
   return events;
 }
@@ -248,7 +395,7 @@ async function handleCron(request: NextRequest) {
     supabase
       .from("couple_profile")
       .select(
-        "id, person_one_name, person_two_name, person_one_birthday, person_two_birthday",
+        "id, person_one_name, person_two_name, love_start_date, person_one_birthday, person_two_birthday",
       )
       .limit(1)
       .maybeSingle(),
