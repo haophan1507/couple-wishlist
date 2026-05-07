@@ -1,22 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-function buildBaseUrl(host: string | null, forwardedHost: string | null, proto: string | null) {
-  if (forwardedHost) {
-    return `${proto ?? "https"}://${forwardedHost}`;
-  }
-  if (host) {
-    const local = host.includes("localhost") || host.startsWith("127.0.0.1");
-    return `${local ? "http" : "https"}://${host}`;
-  }
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
-  }
-  return "http://localhost:3000";
-}
+import { executeSpecialDaysCron } from "@/lib/cron/special-days";
 
 export async function sendSpecialDayTestEmailAction() {
   const supabase = await createSupabaseServerClient();
@@ -38,40 +24,15 @@ export async function sendSpecialDayTestEmailAction() {
     redirect("/unauthorized");
   }
 
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    redirect(`/admin?emailTest=error&message=${encodeURIComponent("Thiếu cấu hình CRON_SECRET")}`);
-  }
-
-  const headerStore = await headers();
-  const baseUrl = buildBaseUrl(
-    headerStore.get("host"),
-    headerStore.get("x-forwarded-host"),
-    headerStore.get("x-forwarded-proto"),
-  );
-
   let redirectUrl = "/admin";
 
   try {
-    const response = await fetch(`${baseUrl}/api/cron/special-days`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${secret}`,
-      },
-      cache: "no-store",
-    });
+    const result = await executeSpecialDaysCron();
 
-    const payload = (await response.json()) as {
-      sent?: number;
-      totalEvents?: number;
-      reason?: string;
-      error?: string;
-    };
-
-    if (!response.ok) {
-      redirectUrl = `/admin?emailTest=error&message=${encodeURIComponent(payload.error ?? "Gửi test email thất bại")}`;
+    if (result.error) {
+      redirectUrl = `/admin?emailTest=error&message=${encodeURIComponent(result.error)}`;
     } else {
-      redirectUrl = `/admin?emailTest=done&sent=${payload.sent ?? 0}&events=${payload.totalEvents ?? 0}&reason=${encodeURIComponent(payload.reason ?? "")}`;
+      redirectUrl = `/admin?emailTest=done&sent=${result.sent ?? 0}&events=${result.totalEvents ?? 0}&reason=${encodeURIComponent(result.reason ?? "")}`;
     }
   } catch (error) {
     redirectUrl = `/admin?emailTest=error&message=${encodeURIComponent(
