@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Formik } from "formik";
 import { useRouter } from "next/navigation";
-import { upsertGiftHistoryItemAction } from "@/app/actions/gift-history";
 
 type GiftHistoryFormValues = {
   id: string;
@@ -46,6 +45,7 @@ export function GiftHistoryForm({
 }) {
   const router = useRouter();
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const isEditing = Boolean(item.id);
 
   return (
@@ -70,8 +70,20 @@ export function GiftHistoryForm({
         }
 
         try {
-          await upsertGiftHistoryItemAction(formData);
+          const response = await fetch("/api/admin/gift-history", {
+            method: "POST",
+            body: formData,
+          });
+          const result = (await response.json()) as { ok?: boolean; message?: string };
+
+          if (!response.ok || !result.ok) {
+            throw new Error(result.message || "Không thể lưu lịch sử quà.");
+          }
+
           setPhotoFile(null);
+          if (photoInputRef.current) {
+            photoInputRef.current.value = "";
+          }
           router.refresh();
           if (!isEditing) {
             helpers.resetForm();
@@ -210,6 +222,7 @@ export function GiftHistoryForm({
               </span>
               <input type="hidden" name="existing_photo_path" value={formik.values.photo_path} />
               <input
+                ref={photoInputRef}
                 type="file"
                 name="photo_file"
                 accept="image/*"
@@ -258,4 +271,3 @@ export function GiftHistoryForm({
     </Formik>
   );
 }
-
