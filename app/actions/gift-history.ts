@@ -42,23 +42,32 @@ export async function upsertGiftHistoryItemAction(formData: FormData) {
 
   const supabase = createSupabaseAdminClient();
   let wishlistItemTitle: string | null = null;
-  const { data: existing } = id
+  const { data: existing, error: existingError } = id
     ? await supabase
         .from("gift_history_items")
         .select("wishlist_item_title, photo_path")
         .eq("id", id)
         .maybeSingle()
-    : { data: null };
+    : { data: null, error: null };
+
+  if (existingError) {
+    throw new Error("Không thể đọc dữ liệu lịch sử quà hiện tại.");
+  }
+
   let nextPhotoPath = parsed.data.existing_photo_path || existing?.photo_path || null;
 
   wishlistItemTitle = existing?.wishlist_item_title ?? null;
 
   if (payload.wishlist_item_id) {
-    const { data: wishlistItem } = await supabase
+    const { data: wishlistItem, error: wishlistItemError } = await supabase
       .from("wishlist_items")
       .select("id, title")
       .eq("id", payload.wishlist_item_id)
       .maybeSingle();
+
+    if (wishlistItemError) {
+      throw new Error("Không thể đọc món quà trong wishlist được liên kết.");
+    }
 
     wishlistItemTitle = wishlistItem?.title ?? wishlistItemTitle;
   }
@@ -80,16 +89,28 @@ export async function upsertGiftHistoryItemAction(formData: FormData) {
   };
 
   if (id) {
-    await supabase.from("gift_history_items").update(finalPayload).eq("id", id);
+    const { error } = await supabase.from("gift_history_items").update(finalPayload).eq("id", id);
+
+    if (error) {
+      throw new Error(`Cập nhật lịch sử quà thất bại: ${error.message}`);
+    }
   } else {
-    await supabase.from("gift_history_items").insert(finalPayload);
+    const { error } = await supabase.from("gift_history_items").insert(finalPayload);
+
+    if (error) {
+      throw new Error(`Thêm lịch sử quà thất bại: ${error.message}`);
+    }
   }
 
   if (payload.wishlist_item_id) {
-    await supabase
+    const { error } = await supabase
       .from("wishlist_items")
       .delete()
       .eq("id", payload.wishlist_item_id);
+
+    if (error) {
+      throw new Error(`Đã lưu lịch sử quà nhưng không thể xóa món trong wishlist: ${error.message}`);
+    }
   }
 
   if (photoFile && existing?.photo_path && existing.photo_path !== nextPhotoPath) {
@@ -114,7 +135,12 @@ export async function deleteGiftHistoryItemAction(formData: FormData) {
     .eq("id", id)
     .maybeSingle();
 
-  await supabase.from("gift_history_items").delete().eq("id", id);
+  const { error } = await supabase.from("gift_history_items").delete().eq("id", id);
+
+  if (error) {
+    throw new Error(`Xóa lịch sử quà thất bại: ${error.message}`);
+  }
+
   await deleteStorageFile(existing?.photo_path);
 
   revalidatePath("/gift-history");

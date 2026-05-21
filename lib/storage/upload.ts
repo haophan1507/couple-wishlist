@@ -28,24 +28,29 @@ export async function uploadImageFile(options: {
 
   const supabase = createSupabaseAdminClient();
   const originalBuffer = Buffer.from(await options.file.arrayBuffer());
-  const pipeline = sharp(originalBuffer, { failOn: "none" })
-    .rotate()
-    .resize({
-      width: rule.maxWidth,
-      height: rule.maxHeight,
-      fit: "inside",
-      withoutEnlargement: true,
-    });
-
-  const qualityLevels = [84, 78, 72, 66, 60];
   let finalBuffer: Buffer | null = null;
 
-  for (const quality of qualityLevels) {
-    const candidate = await pipeline.clone().webp({ quality, effort: 4 }).toBuffer();
-    finalBuffer = candidate;
-    if (candidate.byteLength <= rule.maxSizeBytes) {
-      break;
+  try {
+    const pipeline = sharp(originalBuffer, { failOn: "none" })
+      .rotate()
+      .resize({
+        width: rule.maxWidth,
+        height: rule.maxHeight,
+        fit: "inside",
+        withoutEnlargement: true,
+      });
+
+    const qualityLevels = [84, 78, 72, 66, 60];
+
+    for (const quality of qualityLevels) {
+      const candidate = await pipeline.clone().webp({ quality, effort: 4 }).toBuffer();
+      finalBuffer = candidate;
+      if (candidate.byteLength <= rule.maxSizeBytes) {
+        break;
+      }
     }
+  } catch {
+    throw new Error("Không thể xử lý ảnh này. Vui lòng thử ảnh JPG, PNG hoặc WEBP khác.");
   }
 
   if (!finalBuffer || finalBuffer.byteLength > rule.maxSizeBytes) {
@@ -59,7 +64,7 @@ export async function uploadImageFile(options: {
   });
 
   if (error) {
-    throw new Error("Tải ảnh lên thất bại.");
+    throw new Error(`Tải ảnh lên thất bại: ${error.message}`);
   }
 
   return {

@@ -5,6 +5,10 @@ type StorageTarget = keyof typeof STORAGE_RULES;
 export function validateImageFile(file: File, target: StorageTarget) {
   const rule = STORAGE_RULES[target];
 
+  if (file.size === 0) {
+    throw new Error("Ảnh đang bị rỗng hoặc chưa được trình duyệt gửi lên. Vui lòng chọn lại ảnh.");
+  }
+
   if (!ALLOWED_IMAGE_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_TYPES)[number])) {
     throw new Error("Chỉ hỗ trợ ảnh JPG, PNG hoặc WEBP.");
   }
@@ -18,7 +22,15 @@ export function validateImageFile(file: File, target: StorageTarget) {
 export function getOptionalFile(formData: FormData, key: string) {
   const file = formData.get(key);
 
-  if (!(file instanceof File) || file.size === 0) {
+  if (!(file instanceof File)) {
+    return null;
+  }
+
+  if (file.size === 0) {
+    if (file.name) {
+      throw new Error("Ảnh đang bị rỗng hoặc chưa được trình duyệt gửi lên. Vui lòng chọn lại ảnh.");
+    }
+
     return null;
   }
 
