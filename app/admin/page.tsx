@@ -194,8 +194,37 @@ export default async function AdminPage({
             <summary className="cursor-pointer text-xs text-mocha/55 hover:text-mocha/75 dark:text-white/45 dark:hover:text-white/65">
               Công cụ hệ thống
             </summary>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <form action={sendSpecialDayTestEmailAction}>
+            <div className="mt-3 space-y-3">
+              <form
+                action={sendSpecialDayTestEmailAction}
+                className="grid gap-3 rounded-2xl border border-mocha/10 bg-white/50 p-4 dark:border-white/10 dark:bg-white/5"
+              >
+                <div className="grid gap-3 md:grid-cols-2">
+                  <Field label="Người nhận test">
+                    <input
+                      name="recipient_emails"
+                      type="text"
+                      placeholder="email@example.com, email-2@example.com"
+                    />
+                  </Field>
+                  <Field label="Tiêu đề">
+                    <input
+                      name="subject"
+                      type="text"
+                      placeholder="Test email Couple Wishlist"
+                    />
+                  </Field>
+                </div>
+                <Field label="Nội dung test">
+                  <textarea
+                    name="test_message"
+                    rows={4}
+                    placeholder="Nhập nội dung muốn gửi kèm trong email test..."
+                  />
+                </Field>
+                <p className="text-xs text-mocha/55 dark:text-white/45">
+                  Bỏ trống người nhận để dùng danh sách trong NOTIFICATION_TO_EMAILS.
+                </p>
                 <FormSubmitButton
                   idleLabel="Gửi test email ngay"
                   loadingLabel="Đang gửi test..."

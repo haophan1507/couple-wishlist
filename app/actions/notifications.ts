@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { executeSpecialDaysCron } from "@/lib/cron/special-days";
 
-export async function sendSpecialDayTestEmailAction() {
+export async function sendSpecialDayTestEmailAction(formData: FormData) {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -27,7 +27,23 @@ export async function sendSpecialDayTestEmailAction() {
   let redirectUrl = "/admin";
 
   try {
-    const result = await executeSpecialDaysCron();
+    const recipientInput = String(formData.get("recipient_emails") ?? "");
+    const recipients = recipientInput
+      ? recipientInput
+          .split(",")
+          .map((value) => value.trim())
+          .filter(Boolean)
+      : undefined;
+    const customMessage = String(formData.get("test_message") ?? "").trim();
+    const subject = String(formData.get("subject") ?? "").trim();
+
+    const result = await executeSpecialDaysCron({
+      customMessage,
+      forceSend: true,
+      recipients,
+      skipLogs: true,
+      subject,
+    });
 
     if (result.error) {
       redirectUrl = `/admin?emailTest=error&message=${encodeURIComponent(result.error)}`;

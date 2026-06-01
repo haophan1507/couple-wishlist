@@ -27,6 +27,14 @@ type NotificationEvent = {
   typeLabel: string;
 };
 
+type ExecuteSpecialDaysCronOptions = {
+  customMessage?: string;
+  forceSend?: boolean;
+  recipients?: string[];
+  skipLogs?: boolean;
+  subject?: string;
+};
+
 
 const RECURRING_TYPES = new Set([
   "birthday",
@@ -34,6 +42,15 @@ const RECURRING_TYPES = new Set([
   "relationship",
   "holiday",
 ]);
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
 
 const TYPE_LABEL: Record<SpecialDayRow["type"], string> = {
   birthday: "Sinh nhật",
@@ -280,15 +297,11 @@ function buildTodayEvents(
   return events;
 }
 
-function createEmailHtml(recipientName: string, events: NotificationEvent[]) {
-  const escapeHtml = (value: string) =>
-    value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-
+function createEmailHtml(
+  recipientName: string,
+  events: NotificationEvent[],
+  customMessage?: string,
+) {
   const items = events
     .map(
       (event) => `
@@ -304,14 +317,24 @@ function createEmailHtml(recipientName: string, events: NotificationEvent[]) {
       `,
     )
     .join("");
+  const messageHtml = customMessage
+    ? `<div style="margin: 0 0 18px; padding: 14px 16px; border-radius: 14px; background: #fff8ed; border: 1px solid #f1d4aa; color: #6f4b2d; font-size: 14px; line-height: 1.55; white-space: pre-wrap;">${escapeHtml(customMessage)}</div>`
+    : "";
+  const eventsHtml = events.length
+    ? `
+      <p style="margin: 0 0 12px; color: #7a5964; font-size: 14px;">Hôm nay có các ngày đặc biệt cần nhớ:</p>
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        ${items}
+      </ul>
+    `
+    : `<p style="margin: 0; color: #7a5964; font-size: 14px;">Đây là email test từ Couple Wishlist.</p>`;
 
   return `
     <div style="max-width: 640px; margin: 0 auto; padding: 24px; background: #fff; border-radius: 18px; border: 1px solid #f2dce4; font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
       <h1 style="margin: 0 0 10px; color: #5a3b45; font-size: 24px;">Nhắc nhở ngày đặc biệt</h1>
-      <p style="margin: 0 0 18px; color: #7a5964; font-size: 14px;">Xin chào ${escapeHtml(recipientName)}, hôm nay có các ngày đặc biệt cần nhớ:</p>
-      <ul style="list-style: none; padding: 0; margin: 0;">
-        ${items}
-      </ul>
+      <p style="margin: 0 0 18px; color: #7a5964; font-size: 14px;">Xin chào ${escapeHtml(recipientName)},</p>
+      ${messageHtml}
+      ${eventsHtml}
       <p style="margin: 20px 0 0; color: #8e6a75; font-size: 12px;">Được gửi từ Couple Wishlist.</p>
     </div>
   `;
@@ -346,8 +369,9 @@ async function sendEmailViaSmtp(params: {
   });
 }
 
-export async function executeSpecialDaysCron() {
-
+export async function executeSpecialDaysCron(
+  options: ExecuteSpecialDaysCronOptions = {},
+) {
   const smtpHost = process.env.SMTP_HOST;
   const smtpPort = Number(process.env.SMTP_PORT || "465");
   const smtpSecure =
@@ -402,12 +426,14 @@ export async function executeSpecialDaysCron() {
     };
   }
 
+  const configuredRecipients =
+    options.recipients ??
+    (process.env.NOTIFICATION_TO_EMAILS || "")
+      .split(",")
+      .map((value) => value.trim());
   const recipients = Array.from(
     new Set(
-      (process.env.NOTIFICATION_TO_EMAILS || "")
-        .split(",")
-        .map((value) => value.trim())
-        .filter(Boolean),
+      configuredRecipients.map((value) => value.trim()).filter(Boolean),
     ),
   );
 
@@ -420,7 +446,8 @@ export async function executeSpecialDaysCron() {
   }
 
   const events = buildTodayEvents(specialDays ?? [], profile ?? null, today);
-  if (!events.length) {
+  const customMessage = options.customMessage?.trim();
+  if (!events.length && !customMessage) {
     return {
       sent: 0,
       skipped: recipients.length,
@@ -429,20 +456,21 @@ export async function executeSpecialDaysCron() {
     };
   }
 
-  const { data: existingLogs, error: existingLogError } = await supabase
-    .from("special_day_notification_logs")
-    .select("event_key, target_email")
-    .eq("notify_date", today.isoDate);
+  const existingKeys = new Set<string>();
+  if (!options.forceSend) {
+    const { data: existingLogs, error: existingLogError } = await supabase
+      .from("special_day_notification_logs")
+      .select("event_key, target_email")
+      .eq("notify_date", today.isoDate);
 
-  if (existingLogError) {
-    return { error: existingLogError.message };
+    if (existingLogError) {
+      return { error: existingLogError.message };
+    }
+
+    for (const row of existingLogs ?? []) {
+      existingKeys.add(`${row.target_email.toLowerCase()}::${row.event_key}`);
+    }
   }
-
-  const existingKeys = new Set(
-    (existingLogs ?? []).map(
-      (row) => `${row.target_email.toLowerCase()}::${row.event_key}`,
-    ),
-  );
 
   let sent = 0;
   let skipped = 0;
@@ -454,7 +482,7 @@ export async function executeSpecialDaysCron() {
       (event) => !existingKeys.has(`${normalized}::${event.eventKey}`),
     );
 
-    if (!pendingEvents.length) {
+    if (!pendingEvents.length && !customMessage) {
       skipped += 1;
       continue;
     }
@@ -472,25 +500,31 @@ export async function executeSpecialDaysCron() {
         pass: smtpPass,
         from: emailFrom,
         to: recipient,
-        subject: `Ngày đặc biệt hôm nay (${today.isoDate})`,
-        html: createEmailHtml(recipientName, pendingEvents),
+        subject:
+          options.subject?.trim() ||
+          (customMessage
+            ? `Test email Couple Wishlist (${today.isoDate})`
+            : `Ngày đặc biệt hôm nay (${today.isoDate})`),
+        html: createEmailHtml(recipientName, pendingEvents, customMessage),
       });
 
-      const logPayload = pendingEvents.map((event) => ({
-        event_key: event.eventKey,
-        special_day_id: event.specialDayId,
-        target_email: recipient,
-        notify_date: today.isoDate,
-      }));
+      if (!options.skipLogs && pendingEvents.length) {
+        const logPayload = pendingEvents.map((event) => ({
+          event_key: event.eventKey,
+          special_day_id: event.specialDayId,
+          target_email: recipient,
+          notify_date: today.isoDate,
+        }));
 
-      const { error: insertLogError } = await supabase
-        .from("special_day_notification_logs")
-        .insert(logPayload);
+        const { error: insertLogError } = await supabase
+          .from("special_day_notification_logs")
+          .insert(logPayload);
 
-      if (insertLogError) {
-        failures.push(
-          `Log insert failed for ${recipient}: ${insertLogError.message}`,
-        );
+        if (insertLogError) {
+          failures.push(
+            `Log insert failed for ${recipient}: ${insertLogError.message}`,
+          );
+        }
       }
 
       sent += 1;
