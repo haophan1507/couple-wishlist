@@ -34,7 +34,7 @@ export default async function AdminGiftHistoryPage({
   return (
     <>
       <section className="card p-6">
-        <h1 className="text-2xl font-semibold dark:text-white">Lịch sử quà tặng</h1>
+        <h1 className="text-2xl font-semibold dark:text-white">Kỷ niệm quà</h1>
         <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">
           Lưu lại những món quà đã nhận như một phần ký ức của hai bạn.
         </p>

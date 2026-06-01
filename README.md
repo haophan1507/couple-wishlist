@@ -1,21 +1,25 @@
-# Couple Wishlist
+# Góc Của Tụi Mình
 
-A full-stack romantic wishlist website built with Next.js App Router, TypeScript, Tailwind CSS, and Supabase.
+A full-stack private couple space for wishlist items, special days, places, memories, and gift history, built with Next.js App Router, TypeScript, Tailwind CSS, and Supabase.
 
 ## Features
 
-- Public landing page with couple intro, cover photo, and wishlist/special-day previews
-- Private couple wishlist page with search/filter and gift status tracking
+- Public landing page with couple intro, cover photo, and relationship overview
+- Private couple wishlist page with search/filter and item status tracking
 - Public special days page with countdowns and days-together counter
 - Email notifications when special days arrive (daily cron)
 - Automatic love milestones from the couple's love start date
 - Automatic birthdays from the couple profile
 - Monthly love calendar with milestone and special-day details
 - Couple profile facts such as age, favorites, and hobbies
+- Heart map for visited and planned places
 - Public gallery page with memory cards
+- Public gift history page for received gifts and notes
 - Protected admin dashboard with CRUD for:
   - Couple profile
   - Wishlist items
+  - Gift history
+  - Places
   - Special days
   - Gallery photos
 - Supabase Storage image uploads for gallery
@@ -191,7 +195,7 @@ Note: Vercel cron schedules are in UTC. `0 0 * * *` is 07:00 in Vietnam (UTC+7).
    - `SMTP_SECURE=true`
    - `SMTP_USER=<your-gmail>`
    - `SMTP_PASS=<app-password>`
-   - `NOTIFICATION_FROM_EMAIL=Couple Wishlist <your-gmail>`
+   - `NOTIFICATION_FROM_EMAIL=Góc Của Tụi Mình <your-gmail>`
 
 ### Manual test
 

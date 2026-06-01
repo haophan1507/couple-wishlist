@@ -5,16 +5,8 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "@/app/actions/auth";
+import { ADMIN_NAV_LINKS } from "@/lib/constants/app";
 import { cn } from "@/lib/utils/cn";
-
-const adminLinks = [
-  { href: "/admin", label: "Tổng quan" },
-  { href: "/admin/wishlist", label: "Danh sách quà" },
-  { href: "/admin/gift-history", label: "Lịch sử quà" },
-  { href: "/admin/places", label: "Heart Mapping" },
-  { href: "/admin/special-days", label: "Ngày đặc biệt" },
-  { href: "/admin/gallery", label: "Khoảnh khắc" },
-];
 
 export function AdminMobileMenu() {
   const pathname = usePathname();
@@ -51,7 +43,7 @@ export function AdminMobileMenu() {
               Điều hướng quản trị
             </p>
             <nav className="space-y-1">
-              {adminLinks.map((link) => {
+              {ADMIN_NAV_LINKS.map((link) => {
                 const active =
                   link.href === "/admin"
                     ? pathname === "/admin"

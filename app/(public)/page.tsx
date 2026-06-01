@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Gift, Heart } from "lucide-react";
+import { Heart, MapPinned } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { HeroSection } from "@/components/sections/hero-section";
 import { UpcomingDay } from "@/components/sections/upcoming-day";
 import { WishlistPreview } from "@/components/sections/wishlist-preview";
+import { APP_DESCRIPTION } from "@/lib/constants/app";
 import {
   getCoupleProfile,
   getSpecialDays,
@@ -13,7 +14,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Trang chủ",
-  description: "Trang wishlist riêng tư và góc kỷ niệm của tụi mình."
+  description: APP_DESCRIPTION
 };
 
 export default async function HomePage() {
@@ -71,16 +72,16 @@ export default async function HomePage() {
               <h2 className="mt-4 section-title font-(--font-heading)">Câu chuyện của tụi mình</h2>
               <p className="section-subtitle">
                 {profile?.story ??
-                  "Tụi mình tạo trang này để chia sẻ những món quà yêu thích và cùng nhau lưu lại những cột mốc đáng nhớ."}
+                  "Tụi mình tạo trang này để gom lại wishlist, ngày đặc biệt, địa điểm yêu thương và những khoảnh khắc đáng nhớ."}
               </p>
             </div>
             <div className="rounded-3xl bg-blush p-6 dark:bg-white/5">
               <p className="text-sm text-mocha/70 dark:text-white/55">Không gian riêng cho cặp đôi</p>
-              <h3 className="mt-2 text-xl font-semibold dark:text-white">Cùng nhau chuẩn bị bất ngờ</h3>
+              <h3 className="mt-2 text-xl font-semibold dark:text-white">Cùng nhau lưu lại hành trình</h3>
               <p className="mt-2 text-sm text-mocha/75 dark:text-white/60">
-                Hai bạn có thể thêm món quà, theo dõi trạng thái và đánh dấu khi đã tặng cho nhau.
+                Hai bạn có thể ghi lại điều muốn làm, món quà yêu thích, nơi từng đi qua và các cột mốc cần nhớ.
               </p>
-              <Gift className="mt-4 h-5 w-5 text-mocha dark:text-white/70" />
+              <MapPinned className="mt-4 h-5 w-5 text-mocha dark:text-white/70" />
             </div>
           </div>
         </Container>

@@ -9,6 +9,7 @@ import {
   getSpecialDays,
   getWishlistItems
 } from "@/lib/data/queries";
+import { APP_NAME } from "@/lib/constants/app";
 import type { ReactNode } from "react";
 
 function Field({
@@ -51,9 +52,12 @@ export default async function AdminPage({
     <>
       <section className="card p-6">
         <h1 className="text-2xl font-semibold dark:text-white">Bảng điều khiển</h1>
+        <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">
+          Tổng quan không gian riêng của hai bạn: wishlist, kỷ niệm quà, ngày đặc biệt, ảnh và địa điểm yêu thương.
+        </p>
         <div className="mt-4 grid gap-3 md:grid-cols-5">
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
-            <p className="text-sm text-mocha/70 dark:text-white/55">Món trong wishlist</p>
+            <p className="text-sm text-mocha/70 dark:text-white/55">Wishlist</p>
             <p className="mt-1 text-2xl font-semibold dark:text-white">{wishlist.length}</p>
           </div>
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
@@ -65,11 +69,11 @@ export default async function AdminPage({
             <p className="mt-1 text-2xl font-semibold dark:text-white">{gallery.length}</p>
           </div>
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
-            <p className="text-sm text-mocha/70 dark:text-white/55">Quà đã lưu lịch sử</p>
+            <p className="text-sm text-mocha/70 dark:text-white/55">Kỷ niệm quà</p>
             <p className="mt-1 text-2xl font-semibold dark:text-white">{giftHistory.length}</p>
           </div>
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
-            <p className="text-sm text-mocha/70 dark:text-white/55">Địa điểm yêu thương</p>
+            <p className="text-sm text-mocha/70 dark:text-white/55">Bản đồ yêu thương</p>
             <p className="mt-1 text-2xl font-semibold dark:text-white">{places.length}</p>
           </div>
         </div>
@@ -211,7 +215,7 @@ export default async function AdminPage({
                     <input
                       name="subject"
                       type="text"
-                      placeholder="Couple Wishlist"
+                      placeholder={APP_NAME}
                     />
                   </Field>
                 </div>

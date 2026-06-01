@@ -23,8 +23,10 @@ export default async function AdminWishlistPage({
   return (
     <>
       <section className="card p-6">
-        <h1 className="text-2xl font-semibold dark:text-white">Quản lý Danh Sách Quà</h1>
-        <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">Tạo mới và chỉnh sửa món quà.</p>
+        <h1 className="text-2xl font-semibold dark:text-white">Quản lý wishlist</h1>
+        <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">
+          Tạo mới và chỉnh sửa món quà, điều muốn có hoặc ý tưởng bất ngờ.
+        </p>
         <div className="mt-4">
           <WishlistForm personOneName={personOneName} personTwoName={personTwoName} />
         </div>

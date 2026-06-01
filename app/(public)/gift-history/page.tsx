@@ -6,7 +6,7 @@ import { PaginationControls } from "@/components/ui/pagination-controls";
 import { getCoupleProfile, getGiftHistoryItems } from "@/lib/data/queries";
 
 export const metadata: Metadata = {
-  title: "Lịch sử quà tặng",
+  title: "Kỷ niệm quà",
   description:
     "Nơi lưu lại những món quà đã nhận như một phần ký ức dịu dàng của hai bạn.",
 };

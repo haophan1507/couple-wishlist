@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/container";
 import { getPlaceMemories } from "@/lib/data/queries";
 
 export const metadata: Metadata = {
-  title: "Heart Mapping",
+  title: "Bản đồ yêu thương",
   description: "Những nơi đã đi qua và những nơi hai bạn còn muốn cùng nhau ghé đến.",
 };
 

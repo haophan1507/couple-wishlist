@@ -3,16 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "@/app/actions/auth";
+import { ADMIN_NAV_LINKS } from "@/lib/constants/app";
 import { cn } from "@/lib/utils/cn";
-
-const links = [
-  { href: "/admin", label: "Tổng quan" },
-  { href: "/admin/wishlist", label: "Danh sách quà" },
-  { href: "/admin/gift-history", label: "Lịch sử quà" },
-  { href: "/admin/places", label: "Heart Mapping" },
-  { href: "/admin/special-days", label: "Ngày đặc biệt" },
-  { href: "/admin/gallery", label: "Khoảnh khắc" }
-];
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -21,7 +13,7 @@ export function AdminSidebar() {
     <aside className="card hidden h-fit p-4 md:block md:w-[220px] md:sticky md:top-4 md:max-h-[calc(100dvh-2rem)] md:overflow-y-auto md:self-start">
       <h2 className="px-2 py-2 font-semibold dark:text-white">Quản trị</h2>
       <nav className="mt-2 space-y-1">
-        {links.map((link) => (
+        {ADMIN_NAV_LINKS.map((link) => (
           (() => {
             const active =
               link.href === "/admin"

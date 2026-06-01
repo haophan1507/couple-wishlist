@@ -132,7 +132,7 @@ export default async function AdminPlacesPage({
   return (
     <>
       <section className="card p-6">
-        <h1 className="text-2xl font-semibold dark:text-white">Heart Mapping</h1>
+        <h1 className="text-2xl font-semibold dark:text-white">Bản đồ yêu thương</h1>
         <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">
           Quản lý những nơi đã đi và những nơi còn muốn cùng nhau ghé đến.
         </p>
@@ -180,7 +180,7 @@ export default async function AdminPlacesPage({
         ))}
         {!places.length ? (
           <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">
-            Chưa có địa điểm nào trong Heart Mapping.
+            Chưa có địa điểm nào trong bản đồ yêu thương.
           </p>
         ) : null}
         </div>

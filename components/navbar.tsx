@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/container";
 import { NavLinks } from "@/components/nav-links";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileMenu } from "@/components/mobile-menu";
+import { APP_NAME } from "@/lib/constants/app";
 
 export function Navbar() {
   return (
@@ -11,7 +12,7 @@ export function Navbar() {
       <Container className="flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-(--font-heading) dark:text-white">
           <Heart className="h-5 w-5 text-rose" />
-          Wishlist Cặp Đôi
+          {APP_NAME}
         </Link>
         <nav className="hidden items-center gap-2 md:flex md:gap-4">
           <NavLinks />

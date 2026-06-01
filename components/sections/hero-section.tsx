@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { APP_SHORT_DESCRIPTION } from "@/lib/constants/app";
 
 type HeroSectionProps = {
   names: string;
@@ -20,14 +21,14 @@ export function HeroSection({ names, coverImageUrl, story }: HeroSectionProps) {
             </p>
             <h1 className="mt-5 font-(--font-heading) text-4xl leading-tight dark:text-white md:text-6xl">{names}</h1>
             <p className="mt-4 max-w-xl text-mocha/80 dark:text-white/65 md:text-lg">
-              {story ?? "Một nơi lưu wishlist và kỷ niệm để cùng những người thân yêu chia sẻ hành trình của tụi mình."}
+              {story ?? APP_SHORT_DESCRIPTION}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/wishlist" className="rounded-full bg-mocha px-5 py-2.5 text-sm text-white transition hover:opacity-90 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90">
-                Xem Wishlist
+                Mở wishlist
               </Link>
               <Link href="/special-days" className="rounded-full border border-mocha/20 bg-white px-5 py-2.5 text-sm text-mocha transition hover:border-mocha/40 dark:border-white/20 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10">
-                Xem Ngày Đặc Biệt
+                Xem ngày đặc biệt
               </Link>
             </div>
           </div>
@@ -42,8 +43,8 @@ export function HeroSection({ names, coverImageUrl, story }: HeroSectionProps) {
               className="h-full min-h-[280px] w-full rounded-2xl object-cover sm:min-h-[360px]"
             />
             <div className="absolute bottom-3 left-3 right-3 rounded-2xl bg-white/85 p-3 backdrop-blur-sm sm:bottom-5 sm:left-5 sm:right-5 sm:p-4 dark:bg-[#1e1a1c]/85">
-              <p className="text-sm font-medium dark:text-white">Wishlist và kỷ niệm</p>
-              <p className="mt-1 text-xs text-mocha/70 sm:text-sm dark:text-white/60">Đặt trước quà, đếm ngày quan trọng và cùng chia sẻ niềm vui.</p>
+              <p className="text-sm font-medium dark:text-white">Wishlist, kỷ niệm và bản đồ yêu thương</p>
+              <p className="mt-1 text-xs text-mocha/70 sm:text-sm dark:text-white/60">Một nơi để theo dõi điều muốn làm, ngày cần nhớ và những dấu mốc đã đi qua.</p>
               <ArrowRight className="mt-2 h-4 w-4 text-rose" />
             </div>
           </div>

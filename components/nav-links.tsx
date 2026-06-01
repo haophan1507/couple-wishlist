@@ -2,23 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { APP_NAV_LINKS } from "@/lib/constants/app";
 import { cn } from "@/lib/utils/cn";
-
-const links = [
-  { href: "/", label: "Trang chủ" },
-  { href: "/wishlist", label: "Danh sách quà" },
-  { href: "/gift-history", label: "Quà đã nhận" },
-  { href: "/heart-mapping", label: "Heart Mapping" },
-  { href: "/special-days", label: "Ngày đặc biệt" },
-  { href: "/gallery", label: "Khoảnh khắc" }
-];
 
 export function NavLinks() {
   const pathname = usePathname();
 
   return (
     <>
-      {links.map((link) => {
+      {APP_NAV_LINKS.map((link) => {
         const active =
           link.href === "/" ? pathname === "/" : pathname === link.href || pathname.startsWith(`${link.href}/`);
 

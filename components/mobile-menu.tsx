@@ -4,17 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { APP_NAV_LINKS } from "@/lib/constants/app";
 import { cn } from "@/lib/utils/cn";
 import { ThemeToggle } from "@/components/theme-toggle";
-
-const links = [
-  { href: "/", label: "Trang chủ" },
-  { href: "/wishlist", label: "Danh sách quà" },
-  { href: "/gift-history", label: "Quà đã nhận" },
-  { href: "/heart-mapping", label: "Heart Mapping" },
-  { href: "/special-days", label: "Ngày đặc biệt" },
-  { href: "/gallery", label: "Khoảnh khắc" }
-];
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
@@ -43,7 +35,7 @@ export function MobileMenu() {
           <div className="fixed inset-0 top-16 z-40 bg-black/30 backdrop-blur-xs" onClick={() => setOpen(false)} />
           <nav className="fixed inset-x-0 top-16 z-50 border-b border-white/60 bg-cream/95 px-4 pb-5 pt-3 backdrop-blur-sm dark:border-white/10 dark:bg-[#1e1a1c]/95">
             <ul className="space-y-1">
-              {links.map((link) => {
+              {APP_NAV_LINKS.map((link) => {
                 const active =
                   link.href === "/"
                     ? pathname === "/"

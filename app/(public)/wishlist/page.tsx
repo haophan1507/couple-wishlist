@@ -7,8 +7,8 @@ import { WishlistFilter } from "@/components/wishlist-filter";
 import { getCoupleProfile, getWishlistCategories, getWishlistItems } from "@/lib/data/queries";
 
 export const metadata: Metadata = {
-  title: "Danh sách quà",
-  description: "Theo dõi và quản lý danh sách quà riêng tư của tụi mình."
+  title: "Wishlist",
+  description: "Theo dõi những món quà, điều muốn có và ý tưởng bất ngờ dành cho nhau."
 };
 
 export default async function WishlistPage({
@@ -42,8 +42,8 @@ export default async function WishlistPage({
   return (
     <section className="py-10 md:py-12">
       <Container>
-        <h1 className="section-title font-(--font-heading)">Danh sách quà</h1>
-        <p className="section-subtitle">Hai bạn cùng cập nhật và theo dõi trạng thái quà dành cho nhau.</p>
+        <h1 className="section-title font-(--font-heading)">Wishlist</h1>
+        <p className="section-subtitle">Hai bạn cùng cập nhật món quà, điều muốn có và ý tưởng bất ngờ dành cho nhau.</p>
 
         <Suspense>
           <WishlistFilter categories={categories} />

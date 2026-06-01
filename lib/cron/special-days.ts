@@ -1,5 +1,6 @@
 
 import nodemailer from "nodemailer";
+import { APP_NAME } from "@/lib/constants/app";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 type SpecialDayRow = {
@@ -327,7 +328,7 @@ function createEmailHtml(
         ${items}
       </ul>
     `
-    : `<p style="margin: 0; color: #7a5964; font-size: 14px;">Bạn có một email từ Couple Wishlist.</p>`;
+    : `<p style="margin: 0; color: #7a5964; font-size: 14px;">Bạn có một email từ ${escapeHtml(APP_NAME)}.</p>`;
 
   return `
     <div style="max-width: 640px; margin: 0 auto; padding: 24px; background: #fff; border-radius: 18px; border: 1px solid #f2dce4; font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
@@ -335,7 +336,7 @@ function createEmailHtml(
       <p style="margin: 0 0 18px; color: #7a5964; font-size: 14px;">Xin chào ${escapeHtml(recipientName)},</p>
       ${messageHtml}
       ${eventsHtml}
-      <p style="margin: 20px 0 0; color: #8e6a75; font-size: 12px;">Được gửi từ Couple Wishlist.</p>
+      <p style="margin: 20px 0 0; color: #8e6a75; font-size: 12px;">Được gửi từ ${escapeHtml(APP_NAME)}.</p>
     </div>
   `;
 }
@@ -503,7 +504,7 @@ export async function executeSpecialDaysCron(
         subject:
           options.subject?.trim() ||
           (customMessage
-            ? `Couple Wishlist (${today.isoDate})`
+            ? `${APP_NAME} (${today.isoDate})`
             : `Ngày đặc biệt hôm nay (${today.isoDate})`),
         html: createEmailHtml(recipientName, pendingEvents, customMessage),
       });
