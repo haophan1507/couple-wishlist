@@ -327,7 +327,7 @@ function createEmailHtml(
         ${items}
       </ul>
     `
-    : `<p style="margin: 0; color: #7a5964; font-size: 14px;">Đây là email test từ Couple Wishlist.</p>`;
+    : `<p style="margin: 0; color: #7a5964; font-size: 14px;">Bạn có một email từ Couple Wishlist.</p>`;
 
   return `
     <div style="max-width: 640px; margin: 0 auto; padding: 24px; background: #fff; border-radius: 18px; border: 1px solid #f2dce4; font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
@@ -503,7 +503,7 @@ export async function executeSpecialDaysCron(
         subject:
           options.subject?.trim() ||
           (customMessage
-            ? `Test email Couple Wishlist (${today.isoDate})`
+            ? `Couple Wishlist (${today.isoDate})`
             : `Ngày đặc biệt hôm nay (${today.isoDate})`),
         html: createEmailHtml(recipientName, pendingEvents, customMessage),
       });

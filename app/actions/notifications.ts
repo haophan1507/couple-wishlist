@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { executeSpecialDaysCron } from "@/lib/cron/special-days";
 
-export async function sendSpecialDayTestEmailAction(formData: FormData) {
+export async function sendManualEmailAction(formData: FormData) {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -27,14 +27,14 @@ export async function sendSpecialDayTestEmailAction(formData: FormData) {
   let redirectUrl = "/admin";
 
   try {
-    const recipientInput = String(formData.get("recipient_emails") ?? "");
+    const recipientInput = String(formData.get("manual_email_recipients") ?? "");
     const recipients = recipientInput
       ? recipientInput
           .split(",")
           .map((value) => value.trim())
           .filter(Boolean)
       : undefined;
-    const customMessage = String(formData.get("test_message") ?? "").trim();
+    const customMessage = String(formData.get("manual_email_message") ?? "").trim();
     const subject = String(formData.get("subject") ?? "").trim();
 
     const result = await executeSpecialDaysCron({
@@ -45,14 +45,18 @@ export async function sendSpecialDayTestEmailAction(formData: FormData) {
       subject,
     });
 
-    if (result.error) {
-      redirectUrl = `/admin?emailTest=error&message=${encodeURIComponent(result.error)}`;
+    const failureMessage = result.failures?.length
+      ? result.failures.join("; ")
+      : "";
+
+    if (result.error || failureMessage) {
+      redirectUrl = `/admin?manualEmail=error&message=${encodeURIComponent(result.error || failureMessage)}`;
     } else {
-      redirectUrl = `/admin?emailTest=done&sent=${result.sent ?? 0}&events=${result.totalEvents ?? 0}&reason=${encodeURIComponent(result.reason ?? "")}`;
+      redirectUrl = `/admin?manualEmail=done&sent=${result.sent ?? 0}&events=${result.totalEvents ?? 0}&reason=${encodeURIComponent(result.reason ?? "")}`;
     }
   } catch (error) {
-    redirectUrl = `/admin?emailTest=error&message=${encodeURIComponent(
-      (error as Error).message || "Không thể chạy test email",
+    redirectUrl = `/admin?manualEmail=error&message=${encodeURIComponent(
+      (error as Error).message || "Không thể gửi email",
     )}`;
   }
 

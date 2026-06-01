@@ -1,5 +1,5 @@
 import { upsertCoupleProfileAction } from "@/app/actions/couple-profile";
-import { sendSpecialDayTestEmailAction } from "@/app/actions/notifications";
+import { sendManualEmailAction } from "@/app/actions/notifications";
 import { FormSubmitButton } from "@/components/admin/form-submit-button";
 import {
   getCoupleProfile,
@@ -30,7 +30,7 @@ export default async function AdminPage({
   searchParams
 }: {
   searchParams: Promise<{
-    emailTest?: string;
+    manualEmail?: string;
     sent?: string;
     events?: string;
     reason?: string;
@@ -196,13 +196,13 @@ export default async function AdminPage({
             </summary>
             <div className="mt-3 space-y-3">
               <form
-                action={sendSpecialDayTestEmailAction}
+                action={sendManualEmailAction}
                 className="grid gap-3 rounded-2xl border border-mocha/10 bg-white/50 p-4 dark:border-white/10 dark:bg-white/5"
               >
                 <div className="grid gap-3 md:grid-cols-2">
-                  <Field label="Người nhận test">
+                  <Field label="Người nhận">
                     <input
-                      name="recipient_emails"
+                      name="manual_email_recipients"
                       type="text"
                       placeholder="email@example.com, email-2@example.com"
                     />
@@ -211,35 +211,35 @@ export default async function AdminPage({
                     <input
                       name="subject"
                       type="text"
-                      placeholder="Test email Couple Wishlist"
+                      placeholder="Couple Wishlist"
                     />
                   </Field>
                 </div>
-                <Field label="Nội dung test">
+                <Field label="Nội dung">
                   <textarea
-                    name="test_message"
+                    name="manual_email_message"
                     rows={4}
-                    placeholder="Nhập nội dung muốn gửi kèm trong email test..."
+                    placeholder="Nhập nội dung muốn gửi..."
                   />
                 </Field>
                 <p className="text-xs text-mocha/55 dark:text-white/45">
                   Bỏ trống người nhận để dùng danh sách trong NOTIFICATION_TO_EMAILS.
                 </p>
                 <FormSubmitButton
-                  idleLabel="Gửi test email ngay"
-                  loadingLabel="Đang gửi test..."
+                  idleLabel="Gửi email"
+                  loadingLabel="Đang gửi..."
                   className="rounded-lg bg-transparent px-3 py-1.5 text-xs text-mocha/70 ring-1 ring-mocha/20 hover:bg-white dark:bg-transparent dark:text-white/70 dark:ring-white/20 dark:hover:bg-white/10"
                 />
               </form>
-              {params.emailTest === "done" ? (
+              {params.manualEmail === "done" ? (
                 <p className="text-xs text-emerald-700 dark:text-emerald-300">
                   Đã gửi {params.sent ?? "0"} email. Sự kiện hôm nay: {params.events ?? "0"}.
                   {params.reason ? ` ${params.reason}` : ""}
                 </p>
               ) : null}
-              {params.emailTest === "error" ? (
+              {params.manualEmail === "error" ? (
                 <p className="text-xs text-rose-700 dark:text-rose-300">
-                  Lỗi gửi test: {params.message ?? "Lỗi không xác định"}.
+                  Lỗi gửi email: {params.message ?? "Lỗi không xác định"}.
                 </p>
               ) : null}
             </div>
