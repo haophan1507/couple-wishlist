@@ -3,11 +3,11 @@ import { sendManualEmailAction } from "@/app/actions/notifications";
 import { FormSubmitButton } from "@/components/admin/form-submit-button";
 import {
   getCoupleProfile,
-  getGalleryItems,
-  getGiftHistoryItems,
-  getPlaceMemories,
-  getSpecialDays,
-  getWishlistItems
+  getGalleryCount,
+  getGiftHistoryCount,
+  getPlacesCount,
+  getSpecialDaysCount,
+  getWishlistCount
 } from "@/lib/data/queries";
 import { APP_NAME } from "@/lib/constants/app";
 import type { ReactNode } from "react";
@@ -39,13 +39,13 @@ export default async function AdminPage({
   }>;
 }) {
   const params = await searchParams;
-  const [profile, wishlist, days, gallery, giftHistory, places] = await Promise.all([
+  const [profile, wishlistCount, specialDaysCount, galleryCount, giftHistoryCount, placesCount] = await Promise.all([
     getCoupleProfile(),
-    getWishlistItems(),
-    getSpecialDays(),
-    getGalleryItems(),
-    getGiftHistoryItems(),
-    getPlaceMemories()
+    getWishlistCount(),
+    getSpecialDaysCount(),
+    getGalleryCount(),
+    getGiftHistoryCount(),
+    getPlacesCount()
   ]);
 
   return (
@@ -58,23 +58,23 @@ export default async function AdminPage({
         <div className="mt-4 grid gap-3 md:grid-cols-5">
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
             <p className="text-sm text-mocha/70 dark:text-white/55">Wishlist</p>
-            <p className="mt-1 text-2xl font-semibold dark:text-white">{wishlist.length}</p>
+            <p className="mt-1 text-2xl font-semibold dark:text-white">{wishlistCount}</p>
           </div>
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
             <p className="text-sm text-mocha/70 dark:text-white/55">Ngày đặc biệt</p>
-            <p className="mt-1 text-2xl font-semibold dark:text-white">{days.length}</p>
+            <p className="mt-1 text-2xl font-semibold dark:text-white">{specialDaysCount}</p>
           </div>
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
             <p className="text-sm text-mocha/70 dark:text-white/55">Ảnh kỷ niệm</p>
-            <p className="mt-1 text-2xl font-semibold dark:text-white">{gallery.length}</p>
+            <p className="mt-1 text-2xl font-semibold dark:text-white">{galleryCount}</p>
           </div>
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
             <p className="text-sm text-mocha/70 dark:text-white/55">Kỷ niệm quà</p>
-            <p className="mt-1 text-2xl font-semibold dark:text-white">{giftHistory.length}</p>
+            <p className="mt-1 text-2xl font-semibold dark:text-white">{giftHistoryCount}</p>
           </div>
           <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
             <p className="text-sm text-mocha/70 dark:text-white/55">Bản đồ yêu thương</p>
-            <p className="mt-1 text-2xl font-semibold dark:text-white">{places.length}</p>
+            <p className="mt-1 text-2xl font-semibold dark:text-white">{placesCount}</p>
           </div>
         </div>
       </section>

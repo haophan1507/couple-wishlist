@@ -64,9 +64,15 @@ export async function upsertCoupleProfileAction(formData: FormData) {
   };
 
   if (existing) {
-    await supabase.from("couple_profile").update(payload).eq("id", existing.id);
+    const { error: updateError } = await supabase.from("couple_profile").update(payload).eq("id", existing.id);
+    if (updateError) {
+      throw new Error(`Cập nhật hồ sơ thất bại: ${updateError.message}`);
+    }
   } else {
-    await supabase.from("couple_profile").insert(payload);
+    const { error: insertError } = await supabase.from("couple_profile").insert(payload);
+    if (insertError) {
+      throw new Error(`Tạo hồ sơ thất bại: ${insertError.message}`);
+    }
   }
 
   if (coverFile && existing?.cover_image_path && existing.cover_image_path !== nextCoverImagePath) {

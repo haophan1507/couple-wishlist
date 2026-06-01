@@ -1,5 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const NOMINATIM_TIMEOUT = 5000;
+
+async function fetchWithTimeout(url: URL, userAgent: string) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), NOMINATIM_TIMEOUT);
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        "Accept-Language": "vi,en",
+        "User-Agent": userAgent,
+      },
+      cache: "no-store",
+    });
+    return response;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get("q")?.trim() ?? "";
 
@@ -13,13 +34,18 @@ export async function GET(request: NextRequest) {
   url.searchParams.set("addressdetails", "1");
   url.searchParams.set("limit", "8");
 
-  const response = await fetch(url, {
-    headers: {
-      "Accept-Language": "vi,en",
-      "User-Agent": "couple-wishlist/1.0 (location search)",
-    },
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetchWithTimeout(
+      url,
+      "couple-wishlist/1.0 (location search)",
+    );
+  } catch {
+    return NextResponse.json(
+      { results: [], error: "Tìm địa điểm bị quá thời gian, vui lòng thử lại." },
+      { status: 504 },
+    );
+  }
 
   if (!response.ok) {
     return NextResponse.json(

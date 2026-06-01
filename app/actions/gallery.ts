@@ -50,9 +50,15 @@ export async function upsertGalleryItemAction(formData: FormData) {
   };
 
   if (id) {
-    await supabase.from("gallery_items").update(payload).eq("id", id);
+    const { error: updateError } = await supabase.from("gallery_items").update(payload).eq("id", id);
+    if (updateError) {
+      throw new Error(`Cập nhật ảnh kỷ niệm thất bại: ${updateError.message}`);
+    }
   } else {
-    await supabase.from("gallery_items").insert(payload);
+    const { error: insertError } = await supabase.from("gallery_items").insert(payload);
+    if (insertError) {
+      throw new Error(`Thêm ảnh kỷ niệm thất bại: ${insertError.message}`);
+    }
   }
 
   if (imageFile && existing?.image_path && existing.image_path !== nextImagePath) {
@@ -72,7 +78,10 @@ export async function deleteGalleryItemAction(formData: FormData) {
     .select("image_path")
     .eq("id", id)
     .maybeSingle();
-  await supabase.from("gallery_items").delete().eq("id", id);
+  const { error: deleteError } = await supabase.from("gallery_items").delete().eq("id", id);
+  if (deleteError) {
+    throw new Error(`Xóa ảnh kỷ niệm thất bại: ${deleteError.message}`);
+  }
 
   await deleteStorageFile(existing?.image_path);
 

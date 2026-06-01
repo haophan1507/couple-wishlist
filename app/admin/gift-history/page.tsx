@@ -5,7 +5,7 @@ import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
 import { GiftHistoryForm } from "@/components/admin/gift-history-form";
 import {
   getCoupleProfile,
-  getGiftHistoryItems,
+  getGiftHistoryItemsPaginated,
   getSpecialDays,
   getWishlistItems,
 } from "@/lib/data/queries";
@@ -17,17 +17,16 @@ export default async function AdminGiftHistoryPage({
   searchParams: Promise<{ page?: string }>;
 }) {
   const params = await searchParams;
-  const [profile, items, specialDays, wishlistItems] = await Promise.all([
+  const page = Math.max(1, Number(params.page ?? "1") || 1);
+  const pageSize = 4;
+  const [profile, { items, total }, specialDays, wishlistItems] = await Promise.all([
     getCoupleProfile(),
-    getGiftHistoryItems(),
+    getGiftHistoryItemsPaginated(page, pageSize),
     getSpecialDays(),
     getWishlistItems(),
   ]);
-  const page = Math.max(1, Number(params.page ?? "1") || 1);
-  const pageSize = 4;
-  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const safePage = Math.min(page, totalPages);
-  const paginatedItems = items.slice((safePage - 1) * pageSize, safePage * pageSize);
   const personOneName = profile?.person_one_name?.trim() || "Bạn 1";
   const personTwoName = profile?.person_two_name?.trim() || "Bạn 2";
 
@@ -54,7 +53,7 @@ export default async function AdminGiftHistoryPage({
 
       <section>
         <div className="max-h-[72vh] space-y-3 overflow-y-auto pr-1">
-        {paginatedItems.map((item) => (
+        {items.map((item) => (
           <div key={item.id} className="card p-4">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>

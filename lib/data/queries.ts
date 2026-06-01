@@ -17,6 +17,7 @@ import {
 import { getPublicStorageUrl } from "@/lib/storage/public-url";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseWishlistProductUrls } from "@/lib/utils/wishlist-links";
+import { AUTO_HOLIDAY_DEFINITIONS } from "@/lib/constants/special-days";
 import type { Database } from "@/types/database";
 
 type CoupleProfile = Database["public"]["Tables"]["couple_profile"]["Row"];
@@ -37,6 +38,10 @@ type TimelineEvent = {
   badge?: string;
 };
 
+function escapePostgrestLikeValue(value: string) {
+  return value.replace(/[,%()]/g, "");
+}
+
 type MilestoneTarget = {
   dayCount: number;
   title: string;
@@ -44,56 +49,7 @@ type MilestoneTarget = {
   date: Date;
 };
 
-const AUTO_HOLIDAY_DEFINITIONS = [
-  {
-    key: "valentine",
-    monthDay: "02-14",
-    title: "Valentine 14/2",
-    description: "Ngày lễ Tình nhân - dịp để gửi lời yêu thương ngọt ngào.",
-  },
-  {
-    key: "womens-day",
-    monthDay: "03-08",
-    title: "Quốc tế Phụ nữ 8/3",
-    description: "Một ngày đặc biệt để gửi lời chúc và sự quan tâm.",
-  },
-  {
-    key: "international-happiness-day",
-    monthDay: "03-21",
-    title: "Ngày Quốc tế Hạnh phúc 21/3",
-    description: "Một ngày để cùng nhau lưu giữ niềm vui và hạnh phúc.",
-  },
-  {
-    key: "girlfriend-day",
-    monthDay: "08-01",
-    title: "Ngày bạn gái 1/8",
-    description: "Dịp để dành những điều dễ thương cho người thương.",
-  },
-  {
-    key: "boyfriend-day",
-    monthDay: "10-03",
-    title: "Ngày bạn trai 3/10",
-    description: "Một ngày nhỏ để nói lời yêu và cảm ơn nửa kia.",
-  },
-  {
-    key: "vn-womens-day",
-    monthDay: "10-20",
-    title: "Phụ nữ Việt Nam 20/10",
-    description: "Ngày tôn vinh phụ nữ Việt Nam với những điều dễ thương.",
-  },
-  {
-    key: "christmas-eve",
-    monthDay: "12-24",
-    title: "Đêm Giáng Sinh 24/12",
-    description: "Đêm ấm áp để hẹn hò và trao nhau quà nhỏ.",
-  },
-  {
-    key: "new-year-day",
-    monthDay: "01-01",
-    title: "Năm mới 1/1",
-    description: "Bắt đầu năm mới cùng nhau với thật nhiều yêu thương.",
-  },
-] as const;
+// AUTO_HOLIDAY_DEFINITIONS moved to lib/constants/special-days.ts
 
 function getAnnualOccurrence(dateString: string) {
   const today = startOfDay(new Date());
@@ -210,9 +166,12 @@ export async function getWishlistItems(filters?: {
   }
 
   if (filters?.query) {
-    request = request.or(
-      `title.ilike.%${filters.query}%,description.ilike.%${filters.query}%`,
-    );
+    const safeQuery = escapePostgrestLikeValue(filters.query.trim());
+    if (safeQuery) {
+      request = request.or(
+        `title.ilike.%${safeQuery}%,description.ilike.%${safeQuery}%`,
+      );
+    }
   }
 
   const { data } = await request;
@@ -224,6 +183,57 @@ export async function getWishlistItems(filters?: {
     product_urls: parseWishlistProductUrls(item.product_url),
     is_gifted: item.status === "gifted",
   }));
+}
+
+export async function getWishlistItemsPaginated(page: number, pageSize: number) {
+  const supabase = await createSupabaseServerClient();
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  const { data, count } = await supabase
+    .from("wishlist_items")
+    .select("*", { count: "exact", head: false })
+    .order("priority", { ascending: false })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+  const items = ((data as WishlistItem[] | null) ?? []).map((item) => ({
+    ...item,
+    image_url: getPublicStorageUrl(item.image_path),
+    product_urls: parseWishlistProductUrls(item.product_url),
+    is_gifted: item.status === "gifted",
+  }));
+  return { items, total: count ?? items.length };
+}
+
+export async function getGiftHistoryItemsPaginated(page: number, pageSize: number) {
+  const supabase = await createSupabaseServerClient();
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  const [pageResult, specialDaysResult, wishlistItemsResult] = await Promise.all([
+    supabase
+      .from("gift_history_items")
+      .select("*", { count: "exact", head: false })
+      .order("received_date", { ascending: false })
+      .order("created_at", { ascending: false })
+      .range(from, to),
+    supabase.from("special_days").select("id, title, date"),
+    supabase.from("wishlist_items").select("id, title, owner_type"),
+  ]);
+
+  const dayMap = new Map(
+    (((specialDaysResult.data as Array<Pick<SpecialDay, "id" | "title" | "date">> | null) ?? [])).map((day) => [day.id, day]),
+  );
+  const wishlistMap = new Map(
+    (((wishlistItemsResult.data as Array<Pick<WishlistItem, "id" | "title" | "owner_type">> | null) ?? [])).map((item) => [item.id, item]),
+  );
+
+  const items = (((pageResult.data as GiftHistoryItem[] | null) ?? [])).map((item) => ({
+    ...item,
+    photo_url: getPublicStorageUrl(item.photo_path),
+    special_day: item.special_day_id ? dayMap.get(item.special_day_id) ?? null : null,
+    wishlist_item: item.wishlist_item_id ? wishlistMap.get(item.wishlist_item_id) ?? null : null,
+  }));
+
+  return { items, total: pageResult.count ?? items.length };
 }
 
 export async function getWishlistCategories() {
@@ -509,6 +519,46 @@ export type GiftHistoryEntry = Awaited<
   ReturnType<typeof getGiftHistoryItems>
 >[number];
 export type LoveTimelineEvent = ReturnType<typeof getTimelineEvents>[number];
+
+export async function getWishlistCount() {
+  const supabase = await createSupabaseServerClient();
+  const { count } = await supabase
+    .from("wishlist_items")
+    .select("*", { count: "exact", head: true });
+  return count ?? 0;
+}
+
+export async function getSpecialDaysCount() {
+  const supabase = await createSupabaseServerClient();
+  const { count } = await supabase
+    .from("special_days")
+    .select("*", { count: "exact", head: true });
+  return count ?? 0;
+}
+
+export async function getGalleryCount() {
+  const supabase = await createSupabaseServerClient();
+  const { count } = await supabase
+    .from("gallery_items")
+    .select("*", { count: "exact", head: true });
+  return count ?? 0;
+}
+
+export async function getGiftHistoryCount() {
+  const supabase = await createSupabaseServerClient();
+  const { count } = await supabase
+    .from("gift_history_items")
+    .select("*", { count: "exact", head: true });
+  return count ?? 0;
+}
+
+export async function getPlacesCount() {
+  const supabase = await createSupabaseServerClient();
+  const { count } = await supabase
+    .from("place_memories")
+    .select("*", { count: "exact", head: true });
+  return count ?? 0;
+}
 
 export function getCoupleFacts(profile: CoupleProfile | null) {
   if (!profile) {

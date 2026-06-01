@@ -28,9 +28,15 @@ export async function upsertSpecialDayAction(formData: FormData) {
   const supabase = createSupabaseAdminClient();
 
   if (id) {
-    await supabase.from("special_days").update(payload).eq("id", id);
+    const { error: updateError } = await supabase.from("special_days").update(payload).eq("id", id);
+    if (updateError) {
+      throw new Error(`Cập nhật ngày đặc biệt thất bại: ${updateError.message}`);
+    }
   } else {
-    await supabase.from("special_days").insert(payload);
+    const { error: insertError } = await supabase.from("special_days").insert(payload);
+    if (insertError) {
+      throw new Error(`Thêm ngày đặc biệt thất bại: ${insertError.message}`);
+    }
   }
 
   revalidatePath("/special-days");
@@ -42,7 +48,10 @@ export async function deleteSpecialDayAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const supabase = createSupabaseAdminClient();
-  await supabase.from("special_days").delete().eq("id", id);
+  const { error: deleteError } = await supabase.from("special_days").delete().eq("id", id);
+  if (deleteError) {
+    throw new Error(`Xóa ngày đặc biệt thất bại: ${deleteError.message}`);
+  }
 
   revalidatePath("/special-days");
   revalidatePath("/");
