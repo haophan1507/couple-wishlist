@@ -27,7 +27,7 @@ export function getOptionalFile(formData: FormData, key: string) {
   }
 
   if (file.size === 0) {
-    if (file.name) {
+    if (file.name && file.name !== "blob" && file.name !== "undefined") {
       throw new Error("Ảnh đang bị rỗng hoặc chưa được trình duyệt gửi lên. Vui lòng chọn lại ảnh.");
     }
 
