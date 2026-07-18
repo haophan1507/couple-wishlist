@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 import { Formik } from "formik";
 import { useRouter } from "next/navigation";
 import { upsertGalleryItemAction } from "@/app/actions/gallery";
@@ -25,7 +25,7 @@ export function GalleryForm({
   item?: GalleryFormValues;
 }) {
   const router = useRouter();
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const imageFileRef = useRef<File | null>(null);
   const isEditing = Boolean(item.id);
 
   return (
@@ -39,13 +39,13 @@ export function GalleryForm({
         formData.set("caption", values.caption.trim());
         formData.set("memory_date", values.memory_date);
 
-        if (imageFile) {
-          formData.set("image_file", imageFile);
+        if (imageFileRef.current) {
+          formData.set("image_file", imageFileRef.current);
         }
 
         try {
           await upsertGalleryItemAction(formData);
-          setImageFile(null);
+          imageFileRef.current = null;
           router.refresh();
           if (!isEditing) {
             helpers.resetForm();
@@ -68,9 +68,9 @@ export function GalleryForm({
             type="file"
             name="image_file"
             accept="image/*"
+            aria-label="Ảnh kỷ niệm"
             onChange={(event) => {
-              const file = event.currentTarget.files?.[0] ?? null;
-              setImageFile(file);
+              imageFileRef.current = event.currentTarget.files?.[0] ?? null;
             }}
           />
           <input
@@ -83,6 +83,7 @@ export function GalleryForm({
           <input
             name="memory_date"
             type="date"
+            aria-label="Ngày kỷ niệm"
             value={formik.values.memory_date}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}

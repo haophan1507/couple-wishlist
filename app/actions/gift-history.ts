@@ -129,13 +129,12 @@ export async function deleteGiftHistoryItemAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const supabase = createSupabaseAdminClient();
-  const { data: existing } = await supabase
+  const { data: existing, error } = await supabase
     .from("gift_history_items")
-    .select("photo_path")
+    .delete()
     .eq("id", id)
+    .select("photo_path")
     .maybeSingle();
-
-  const { error } = await supabase.from("gift_history_items").delete().eq("id", id);
 
   if (error) {
     throw new Error(`Xóa lịch sử quà thất bại: ${error.message}`);

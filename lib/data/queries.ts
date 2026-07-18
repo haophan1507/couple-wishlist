@@ -3,16 +3,8 @@ import {
   addYears,
   differenceInCalendarDays,
   differenceInYears,
-  endOfMonth,
-  eachDayOfInterval,
-  endOfWeek,
-  format,
   isAfter,
-  isSameDay,
-  isSameMonth,
   startOfDay,
-  startOfMonth,
-  startOfWeek,
 } from "date-fns";
 import { getPublicStorageUrl } from "@/lib/storage/public-url";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -111,19 +103,23 @@ function getMilestoneTargets(startedAt: Date, daysInLove: number) {
 
 function getAutoHolidayDays(days: SpecialDay[]) {
   const manualHolidayMonthDays = new Set(
-    days.filter((day) => day.type === "holiday").map((day) => day.date.slice(5)),
+    days.flatMap((day) => (day.type === "holiday" ? [day.date.slice(5)] : [])),
   );
 
-  return AUTO_HOLIDAY_DEFINITIONS.filter(
-    (holiday) => !manualHolidayMonthDays.has(holiday.monthDay),
-  ).map((holiday) => ({
-    id: `auto-holiday-${holiday.key}`,
-    title: holiday.title,
-    description: holiday.description,
-    date: `2000-${holiday.monthDay}`,
-    type: "holiday" as const,
-    created_at: "2000-01-01T00:00:00.000Z",
-  }));
+  return AUTO_HOLIDAY_DEFINITIONS.flatMap((holiday) =>
+    manualHolidayMonthDays.has(holiday.monthDay)
+      ? []
+      : [
+          {
+            id: `auto-holiday-${holiday.key}`,
+            title: holiday.title,
+            description: holiday.description,
+            date: `2000-${holiday.monthDay}`,
+            type: "holiday" as const,
+            created_at: "2000-01-01T00:00:00.000Z",
+          },
+        ],
+  );
 }
 
 export async function getCoupleProfile() {
@@ -243,8 +239,7 @@ export async function getWishlistCategories() {
     .select("category")
     .not("category", "is", null);
   const categories = ((data as Array<{ category: string | null }> | null) ?? [])
-    .map((item) => item.category)
-    .filter(Boolean) as string[];
+    .flatMap((item) => (item.category ? [item.category] : []));
 
   return [...new Set(categories)];
 }
@@ -414,22 +409,25 @@ function getBirthdayEvents(profile: CoupleProfile | null): TimelineEvent[] {
     },
   ];
 
-  return entries
-    .filter((entry) => entry.birthday)
-    .map((entry) => {
-      const nextBirthday = getAnnualOccurrence(entry.birthday!);
-      const age = differenceInYears(nextBirthday, new Date(entry.birthday!));
-      const pieces = [`Sinh nhật ${age} tuổi`];
+  return entries.flatMap((entry) => {
+    if (!entry.birthday) {
+      return [];
+    }
 
-      if (entry.favorite) {
-        pieces.push(`Yêu thích: ${entry.favorite}`);
-      }
+    const nextBirthday = getAnnualOccurrence(entry.birthday);
+    const age = differenceInYears(nextBirthday, new Date(entry.birthday));
+    const pieces = [`Sinh nhật ${age} tuổi`];
 
-      if (entry.hobby) {
-        pieces.push(`Sở thích: ${entry.hobby}`);
-      }
+    if (entry.favorite) {
+      pieces.push(`Yêu thích: ${entry.favorite}`);
+    }
 
-      return {
+    if (entry.hobby) {
+      pieces.push(`Sở thích: ${entry.hobby}`);
+    }
+
+    return [
+      {
         id: `birthday-${entry.key}`,
         title: `Sinh nhật ${entry.name}`,
         description: pieces.join(" • "),
@@ -438,8 +436,9 @@ function getBirthdayEvents(profile: CoupleProfile | null): TimelineEvent[] {
         source: "manual" as const,
         type: "birthday",
         badge: "Sinh nhật",
-      };
-    });
+      },
+    ];
+  });
 }
 
 export function getTimelineEvents(days: SpecialDay[], profile: CoupleProfile | null) {
@@ -479,33 +478,6 @@ export function getTimelineEvents(days: SpecialDay[], profile: CoupleProfile | n
 
   return [...manualEvents, ...autoHolidayEvents, ...birthdayEvents, ...milestoneEvents].sort(
     (a, b) => a.countdown - b.countdown,
-  );
-}
-
-export function getLoveCalendar(events: TimelineEvent[], monthDate = new Date()) {
-  const monthStart = startOfMonth(monthDate);
-  const monthEnd = endOfMonth(monthStart);
-  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
-  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
-  const eventMap = new Map<string, TimelineEvent[]>();
-
-  for (const event of events) {
-    const key = format(event.date, "yyyy-MM-dd");
-    const list = eventMap.get(key) ?? [];
-    list.push(event);
-    eventMap.set(key, list);
-  }
-
-  return eachDayOfInterval({ start: calendarStart, end: calendarEnd }).map(
-    (day) => {
-      const key = format(day, "yyyy-MM-dd");
-      return {
-        date: day,
-        inCurrentMonth: isSameMonth(day, monthStart),
-        events: eventMap.get(key) ?? [],
-        isToday: isSameDay(day, new Date()),
-      };
-    },
   );
 }
 

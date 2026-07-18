@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { format } from "date-fns";
 import { Archive, CheckCircle2, Gift, HeartHandshake, Link2, Sparkles } from "lucide-react";
 import type { GiftHistoryEntry } from "@/lib/data/queries";
@@ -34,11 +35,13 @@ export function GiftHistoryCard({
   return (
     <article className="card overflow-hidden">
       {item.photo_url ? (
-        <div className="aspect-16/10 overflow-hidden">
-          <img
+        <div className="relative aspect-16/10 overflow-hidden">
+          <Image
             src={item.photo_url}
             alt={item.gift_name}
-            className="h-full w-full object-cover transition duration-500 hover:scale-[1.03]"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover transition duration-500 hover:scale-[1.03]"
           />
         </div>
       ) : (

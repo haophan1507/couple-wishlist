@@ -79,6 +79,7 @@ export function SpecialDayForm({
             <input
               name="date"
               type="date"
+              aria-label="Ngày"
               value={formik.values.date}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -86,6 +87,7 @@ export function SpecialDayForm({
             />
             <select
               name="type"
+              aria-label="Loại ngày"
               value={formik.values.type}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}

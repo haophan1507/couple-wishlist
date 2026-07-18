@@ -142,9 +142,9 @@ export async function upsertPlaceMemoryAction(formData: FormData) {
     await supabase.from("place_memory_images").delete().eq("place_memory_id", placeId);
     await supabase.from("place_memory_images").insert(uploadedImages);
 
-    for (const image of existingImages ?? []) {
-      await deleteStorageFile(image.image_path);
-    }
+    await Promise.all(
+      (existingImages ?? []).map((image) => deleteStorageFile(image.image_path)),
+    );
   }
 
   revalidatePath("/heart-mapping");
@@ -167,10 +167,10 @@ export async function deletePlaceMemoryAction(formData: FormData) {
 
   await supabase.from("place_memories").delete().eq("id", id);
 
-  await deleteStorageFile(place?.cover_image_path);
-  for (const image of images ?? []) {
-    await deleteStorageFile(image.image_path);
-  }
+  await Promise.all([
+    deleteStorageFile(place?.cover_image_path),
+    ...(images ?? []).map((image) => deleteStorageFile(image.image_path)),
+  ]);
 
   revalidatePath("/heart-mapping");
   revalidatePath("/admin/places");

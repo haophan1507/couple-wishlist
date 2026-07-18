@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { APP_SHORT_DESCRIPTION } from "@/lib/constants/app";
@@ -8,6 +9,9 @@ type HeroSectionProps = {
   coverImageUrl: string | null;
   story: string | null;
 };
+
+const FALLBACK_COVER =
+  "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1400&q=80";
 
 export function HeroSection({ names, coverImageUrl, story }: HeroSectionProps) {
   return (
@@ -34,14 +38,16 @@ export function HeroSection({ names, coverImageUrl, story }: HeroSectionProps) {
           </div>
 
           <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-white/70 p-2 shadow-soft dark:border-white/10 dark:bg-white/5 dark:shadow-none">
-            <img
-              src={
-                coverImageUrl ??
-                "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1400&q=80"
-              }
-              alt="Ảnh bìa cặp đôi"
-              className="h-full min-h-[280px] w-full rounded-2xl object-cover sm:min-h-[360px]"
-            />
+            <div className="relative min-h-[280px] w-full sm:min-h-[360px]">
+              <Image
+                src={coverImageUrl ?? FALLBACK_COVER}
+                alt="Ảnh bìa cặp đôi"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="rounded-2xl object-cover"
+              />
+            </div>
             <div className="absolute bottom-3 left-3 right-3 rounded-2xl bg-white/85 p-3 backdrop-blur-sm sm:bottom-5 sm:left-5 sm:right-5 sm:p-4 dark:bg-[#1e1a1c]/85">
               <p className="text-sm font-medium dark:text-white">Wishlist, kỷ niệm và bản đồ yêu thương</p>
               <p className="mt-1 text-xs text-mocha/70 sm:text-sm dark:text-white/60">Một nơi để theo dõi điều muốn làm, ngày cần nhớ và những dấu mốc đã đi qua.</p>

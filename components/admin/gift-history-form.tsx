@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Formik } from "formik";
 import { useRouter } from "next/navigation";
 
@@ -44,7 +44,7 @@ export function GiftHistoryForm({
   wishlistItems: Array<{ id: string; title: string; owner_type: "me" | "honey" }>;
 }) {
   const router = useRouter();
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const photoFileRef = useRef<File | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const isEditing = Boolean(item.id);
 
@@ -65,8 +65,8 @@ export function GiftHistoryForm({
         formData.set("wishlist_item_id", values.wishlist_item_id);
         formData.set("status", values.status);
 
-        if (photoFile) {
-          formData.set("photo_file", photoFile);
+        if (photoFileRef.current) {
+          formData.set("photo_file", photoFileRef.current);
         }
 
         try {
@@ -80,7 +80,7 @@ export function GiftHistoryForm({
             throw new Error(result.message || "Không thể lưu lịch sử quà.");
           }
 
-          setPhotoFile(null);
+          photoFileRef.current = null;
           if (photoInputRef.current) {
             photoInputRef.current.value = "";
           }
@@ -227,8 +227,7 @@ export function GiftHistoryForm({
                 name="photo_file"
                 accept="image/*"
                 onChange={(event) => {
-                  const file = event.currentTarget.files?.[0] ?? null;
-                  setPhotoFile(file);
+                  photoFileRef.current = event.currentTarget.files?.[0] ?? null;
                 }}
               />
             </label>

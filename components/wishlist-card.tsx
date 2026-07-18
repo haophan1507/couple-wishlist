@@ -1,18 +1,21 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ExternalLink, NotebookText, Tag } from "lucide-react";
 import { getWishlistFallbackImage } from "@/lib/constants/wishlist";
 import type { PublicWishlistItem } from "@/lib/data/queries";
+
+const vndCurrency = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND",
+  maximumFractionDigits: 0,
+});
 
 function currency(value: number | null) {
   if (value === null) {
     return "Chưa có giá";
   }
 
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 0
-  }).format(value);
+  return vndCurrency.format(value);
 }
 
 const priorityLabel: Record<string, string> = {
@@ -32,11 +35,13 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
 
   return (
     <article className="group relative isolate overflow-hidden rounded-4xl border border-white/95 bg-white/95 shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_14px_30px_-24px_rgba(122,82,95,0.55)] ring-1 ring-rose/10 transition duration-300 hover:-translate-y-0.5 hover:border-rose/25 hover:shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_20px_36px_-24px_rgba(122,82,95,0.62)] hover:ring-rose/20 dark:border-white/10 dark:bg-white/5 dark:shadow-none dark:ring-white/10 dark:hover:border-white/20 dark:hover:ring-white/20">
-      <div className="relative overflow-hidden">
-        <img
+      <div className="relative h-44 overflow-hidden">
+        <Image
           src={item.image_url ?? getWishlistFallbackImage(item.category)}
           alt={item.title}
-          className="h-44 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          fill
+          sizes="(max-width: 768px) 100vw, 33vw"
+          className="object-cover transition duration-500 group-hover:scale-[1.03]"
         />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-black/8 to-transparent" />
       </div>
@@ -72,7 +77,7 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
           <div className="mt-4 flex flex-wrap gap-2">
             {productUrls.map((url, index) => (
               <Link
-                key={`${url}-${index}`}
+                key={url}
                 href={url}
                 target="_blank"
                 rel="noreferrer"

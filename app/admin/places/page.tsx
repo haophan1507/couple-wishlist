@@ -58,11 +58,16 @@ function PlaceForm({
       <textarea name="description" rows={3} placeholder="Mô tả cảm xúc hoặc kỷ niệm ở nơi này" defaultValue={item.description} />
 
       <div className="grid gap-3 md:grid-cols-2">
-        <select name="status" defaultValue={item.status}>
+        <select name="status" defaultValue={item.status} aria-label="Trạng thái địa điểm">
           <option value="planned">Dự định</option>
           <option value="visited">Đã đi</option>
         </select>
-        <input name="visit_date" type="date" defaultValue={item.visit_date} />
+        <input
+          name="visit_date"
+          type="date"
+          defaultValue={item.visit_date}
+          aria-label="Ngày ghé thăm"
+        />
       </div>
 
       {showLocationPicker ? (
@@ -84,7 +89,12 @@ function PlaceForm({
       )}
 
       <div className="grid gap-3 md:grid-cols-2">
-        <input type="file" name="cover_image_file" accept="image/*" />
+        <input
+          type="file"
+          name="cover_image_file"
+          accept="image/*"
+          aria-label="Ảnh cover"
+        />
         <div />
       </div>
 
@@ -92,8 +102,14 @@ function PlaceForm({
         <div className="space-y-2">
           <label className="block text-sm font-medium text-mocha/80 dark:text-white/70">
             Ảnh chi tiết
+            <input
+              type="file"
+              name="gallery_image_files"
+              accept="image/*"
+              multiple
+              className="mt-2 block w-full font-normal"
+            />
           </label>
-          <input type="file" name="gallery_image_files" accept="image/*" multiple />
           <p className="text-xs text-mocha/60 dark:text-white/45">
             Nếu tải ảnh mới khi chỉnh sửa, bộ ảnh cũ sẽ được thay thế toàn bộ.
           </p>
@@ -121,8 +137,7 @@ export default async function AdminPlacesPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  const params = await searchParams;
-  const places = await getPlaceMemories();
+  const [params, places] = await Promise.all([searchParams, getPlaceMemories()]);
   const page = Math.max(1, Number(params.page ?? "1") || 1);
   const pageSize = 3;
   const totalPages = Math.max(1, Math.ceil(places.length / pageSize));

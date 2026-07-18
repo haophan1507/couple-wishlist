@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef } from "react";
 import { Formik } from "formik";
 import { useRouter } from "next/navigation";
 import { WISHLIST_CATEGORY_OPTIONS } from "@/lib/constants/wishlist";
@@ -77,7 +77,7 @@ export function WishlistForm({
   personTwoName,
 }: WishlistFormProps) {
   const router = useRouter();
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const imageFileRef = useRef<File | null>(null);
   const isEditing = Boolean(item.id);
   const initialValues = useMemo(() => createInitialValues(item), [item]);
 
@@ -101,8 +101,8 @@ export function WishlistForm({
         formData.set("note", toTrimmedString(values.note));
         formData.set("status", values.status);
 
-        if (imageFile) {
-          formData.set("image_file", imageFile);
+        if (imageFileRef.current) {
+          formData.set("image_file", imageFileRef.current);
         }
 
         try {
@@ -116,7 +116,7 @@ export function WishlistForm({
             throw new Error(result.message || "Không thể lưu món quà lúc này.");
           }
 
-          setImageFile(null);
+          imageFileRef.current = null;
           helpers.setStatus(undefined);
           router.refresh();
           if (!isEditing) {
@@ -141,6 +141,7 @@ export function WishlistForm({
           <div className="grid gap-2 md:grid-cols-2">
             <select
               name="owner_type"
+              aria-label="Người nhận quà"
               value={formik.values.owner_type}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -173,9 +174,9 @@ export function WishlistForm({
               type="file"
               name="image_file"
               accept="image/*"
+              aria-label="Ảnh sản phẩm"
               onChange={(event) => {
-                const file = event.currentTarget.files?.[0] ?? null;
-                setImageFile(file);
+                imageFileRef.current = event.currentTarget.files?.[0] ?? null;
               }}
             />
             <textarea
@@ -208,7 +209,7 @@ export function WishlistForm({
           </div>
 
           <div className="grid gap-2 md:grid-cols-2">
-            <div className="space-y-2">
+            <label className="space-y-2">
               <span className="block text-xs font-medium text-mocha/65 dark:text-white/50">
                 Danh mục quà
               </span>
@@ -238,7 +239,7 @@ export function WishlistForm({
               ) : (
                 <input type="hidden" name="category_custom" value="" />
               )}
-            </div>
+            </label>
 
             <label className="space-y-2">
               <span className="block text-xs font-medium text-mocha/65 dark:text-white/50">
@@ -268,6 +269,7 @@ export function WishlistForm({
             />
             <select
               name="status"
+              aria-label="Trạng thái wishlist"
               value={formik.values.status}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}

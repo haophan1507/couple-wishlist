@@ -9,8 +9,7 @@ export default async function AdminSpecialDaysPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  const params = await searchParams;
-  const days = await getSpecialDays();
+  const [params, days] = await Promise.all([searchParams, getSpecialDays()]);
   const page = Math.max(1, Number(params.page ?? "1") || 1);
   const pageSize = 5;
   const totalPages = Math.max(1, Math.ceil(days.length / pageSize));

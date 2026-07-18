@@ -28,7 +28,7 @@ type LoveCalendarEvent = {
 const weekDays = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 
 export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
-  const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
+  const [currentMonth, setCurrentMonth] = useState(() => startOfMonth(new Date()));
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(monthStart);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });

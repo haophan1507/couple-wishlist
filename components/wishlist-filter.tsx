@@ -53,6 +53,7 @@ export function WishlistFilter({ categories }: WishlistFilterProps) {
       </div>
       <div className="relative">
         <select
+          aria-label="Lọc theo danh mục"
           defaultValue={searchParams.get("category") ?? ""}
           onChange={(e) => handleCategory(e.target.value)}
         >

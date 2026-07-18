@@ -9,12 +9,19 @@ export function parseWishlistProductUrls(value: string | null | undefined) {
 
   return value
     .split(/\r?\n|,/g)
-    .map(sanitize)
-    .filter(Boolean);
+    .flatMap((part) => {
+      const cleaned = sanitize(part);
+      return cleaned ? [cleaned] : [];
+    });
 }
 
 export function joinWishlistProductUrls(urls: string[]) {
-  return urls.map(sanitize).filter(Boolean).join("\n");
+  return urls
+    .flatMap((url) => {
+      const cleaned = sanitize(url);
+      return cleaned ? [cleaned] : [];
+    })
+    .join("\n");
 }
 
 export function isValidHttpUrl(value: string) {

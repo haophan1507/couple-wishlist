@@ -20,6 +20,14 @@ export async function signInAction(formData: FormData) {
 
 export async function signOutAction() {
   const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/");
+  }
+
   await supabase.auth.signOut();
   redirect("/");
 }

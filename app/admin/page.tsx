@@ -38,15 +38,16 @@ export default async function AdminPage({
     message?: string;
   }>;
 }) {
-  const params = await searchParams;
-  const [profile, wishlistCount, specialDaysCount, galleryCount, giftHistoryCount, placesCount] = await Promise.all([
-    getCoupleProfile(),
-    getWishlistCount(),
-    getSpecialDaysCount(),
-    getGalleryCount(),
-    getGiftHistoryCount(),
-    getPlacesCount()
-  ]);
+  const [params, profile, wishlistCount, specialDaysCount, galleryCount, giftHistoryCount, placesCount] =
+    await Promise.all([
+      searchParams,
+      getCoupleProfile(),
+      getWishlistCount(),
+      getSpecialDaysCount(),
+      getGalleryCount(),
+      getGiftHistoryCount(),
+      getPlacesCount(),
+    ]);
 
   return (
     <>

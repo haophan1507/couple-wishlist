@@ -32,7 +32,12 @@ export function MobileMenu() {
 
       {open ? (
         <>
-          <div className="fixed inset-0 top-16 z-40 bg-black/30 backdrop-blur-xs" onClick={() => setOpen(false)} />
+          <button
+            type="button"
+            aria-label="Đóng menu"
+            className="fixed inset-0 top-16 z-40 cursor-default bg-black/30 backdrop-blur-xs"
+            onClick={() => setOpen(false)}
+          />
           <nav className="fixed inset-x-0 top-16 z-50 border-b border-white/60 bg-cream/95 px-4 pb-5 pt-3 backdrop-blur-sm dark:border-white/10 dark:bg-[#1e1a1c]/95">
             <ul className="space-y-1">
               {APP_NAV_LINKS.map((link) => {

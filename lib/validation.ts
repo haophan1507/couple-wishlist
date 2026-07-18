@@ -17,13 +17,13 @@ export const wishlistSchema = z.object({
 export const specialDaySchema = z.object({
   title: z.string().min(2).max(120),
   description: z.string().max(400).optional(),
-  date: z.string().date(),
+  date: z.iso.date(),
   type: z.enum(["birthday", "anniversary", "relationship", "holiday", "other"])
 });
 
 export const gallerySchema = z.object({
   caption: z.string().max(200).optional(),
-  memory_date: z.string().date().optional().or(z.literal("")),
+  memory_date: z.iso.date().optional().or(z.literal("")),
   existing_image_path: z.string().max(300).optional().or(z.literal(""))
 });
 
@@ -31,20 +31,20 @@ export const giftHistorySchema = z.object({
   recipient_owner_type: z.enum(["me", "honey"]),
   gift_name: z.string().min(2).max(120),
   giver_name: z.string().min(1).max(120),
-  received_date: z.string().date(),
-  special_day_id: z.string().uuid().optional().or(z.literal("")),
+  received_date: z.iso.date(),
+  special_day_id: z.uuid().optional().or(z.literal("")),
   note: z.string().max(600).optional(),
   existing_photo_path: z.string().max(300).optional().or(z.literal("")),
-  wishlist_item_id: z.string().uuid().optional().or(z.literal("")),
+  wishlist_item_id: z.uuid().optional().or(z.literal("")),
   status: z.enum(["received", "thanked", "archived"])
 });
 
 export const coupleProfileSchema = z.object({
   person_one_name: z.string().min(1).max(80),
   person_two_name: z.string().min(1).max(80),
-  love_start_date: z.string().date().optional().or(z.literal("")),
-  person_one_birthday: z.string().date().optional().or(z.literal("")),
-  person_two_birthday: z.string().date().optional().or(z.literal("")),
+  love_start_date: z.iso.date().optional().or(z.literal("")),
+  person_one_birthday: z.iso.date().optional().or(z.literal("")),
+  person_two_birthday: z.iso.date().optional().or(z.literal("")),
   person_one_favorite: z.string().max(200).optional(),
   person_two_favorite: z.string().max(200).optional(),
   person_one_hobby: z.string().max(200).optional(),
@@ -59,7 +59,7 @@ export const placeMemorySchema = z
     slug: z.string().max(160).optional(),
     description: z.string().max(1000).optional(),
     status: z.enum(["visited", "planned"]),
-    visit_date: z.string().date().optional().or(z.literal("")),
+    visit_date: z.iso.date().optional().or(z.literal("")),
     location_name: z.string().min(2).max(160),
     latitude: z.coerce.number().min(-90).max(90).optional(),
     longitude: z.coerce.number().min(-180).max(180).optional(),

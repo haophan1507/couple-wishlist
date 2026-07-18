@@ -14,8 +14,7 @@ export default async function GalleryPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  const params = await searchParams;
-  const items = await getGalleryItems();
+  const [params, items] = await Promise.all([searchParams, getGalleryItems()]);
   const page = Math.max(1, Number(params.page ?? "1") || 1);
   const pageSize = 12;
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));

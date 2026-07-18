@@ -1,8 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { format } from "date-fns";
 import { CalendarDays, Heart, MapPin, Route } from "lucide-react";
 import type { PlaceMemoryEntry } from "@/lib/data/queries";
+
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80";
 
 export function PlaceDetailsSheet({
   place,
@@ -94,11 +98,15 @@ export function PlaceDetailsSheet({
           <div className="mt-5 space-y-3">
             {allImages.map((image) => (
               <figure key={image.id} className="overflow-hidden rounded-2xl bg-white/80 dark:bg-white/5">
-                <img
-                  src={image.image_url ?? "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80"}
-                  alt={image.image_alt ?? place.title}
-                  className="h-56 w-full object-cover"
-                />
+                <div className="relative h-56 w-full">
+                  <Image
+                    src={image.image_url ?? FALLBACK_IMAGE}
+                    alt={image.image_alt ?? place.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 40vw"
+                    className="object-cover"
+                  />
+                </div>
                 {image.caption ? (
                   <figcaption className="px-4 py-3 text-sm text-mocha/75 dark:text-white/65">
                     {image.caption}

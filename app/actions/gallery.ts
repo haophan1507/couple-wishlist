@@ -73,12 +73,12 @@ export async function deleteGalleryItemAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const supabase = createSupabaseAdminClient();
-  const { data: existing } = await supabase
+  const { data: existing, error: deleteError } = await supabase
     .from("gallery_items")
-    .select("image_path")
+    .delete()
     .eq("id", id)
+    .select("image_path")
     .maybeSingle();
-  const { error: deleteError } = await supabase.from("gallery_items").delete().eq("id", id);
   if (deleteError) {
     throw new Error(`Xóa ảnh kỷ niệm thất bại: ${deleteError.message}`);
   }

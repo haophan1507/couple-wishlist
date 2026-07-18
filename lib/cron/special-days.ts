@@ -1,4 +1,3 @@
-
 import nodemailer from "nodemailer";
 import { APP_NAME } from "@/lib/constants/app";
 import { AUTO_HOLIDAY_DEFINITIONS } from "@/lib/constants/special-days";
@@ -64,14 +63,18 @@ const TYPE_LABEL: Record<SpecialDayRow["type"], string> = {
 
 // AUTO_HOLIDAY_DEFINITIONS imported from lib/constants/special-days
 
-function getTodayParts(timeZone: string) {
-  const formatter = new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-  const parts = formatter.formatToParts(new Date());
+const NOTIFICATION_TIMEZONE =
+  process.env.NOTIFICATION_TIMEZONE || "Asia/Ho_Chi_Minh";
+
+const datePartsFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: NOTIFICATION_TIMEZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+function getTodayParts() {
+  const parts = datePartsFormatter.formatToParts(new Date());
   const year = Number(
     parts.find((part) => part.type === "year")?.value ?? "1970",
   );
@@ -111,23 +114,26 @@ function buildAutoHolidayEvents(
     .toString()
     .padStart(2, "0")}`;
   const manualHolidayMonthDays = new Set(
-    specialDays
-      .filter((day) => day.type === "holiday")
-      .map((day) => day.date.slice(5)),
+    specialDays.flatMap((day) =>
+      day.type === "holiday" ? [day.date.slice(5)] : [],
+    ),
   );
 
-  return AUTO_HOLIDAY_DEFINITIONS.filter(
-    (holiday) =>
-      holiday.monthDay === todayMonthDay &&
-      !manualHolidayMonthDays.has(holiday.monthDay),
-  ).map((holiday) => ({
-    eventKey: `auto-holiday:${holiday.key}`,
-    specialDayId: null,
-    title: holiday.title,
-    description: holiday.description,
-    dateLabel: `Hằng năm-${holiday.monthDay}`,
-    typeLabel: "Ngày lễ",
-  }));
+  return AUTO_HOLIDAY_DEFINITIONS.flatMap((holiday) =>
+    holiday.monthDay === todayMonthDay &&
+    !manualHolidayMonthDays.has(holiday.monthDay)
+      ? [
+          {
+            eventKey: `auto-holiday:${holiday.key}`,
+            specialDayId: null,
+            title: holiday.title,
+            description: holiday.description,
+            dateLabel: `Hằng năm-${holiday.monthDay}`,
+            typeLabel: "Ngày lễ",
+          },
+        ]
+      : [],
+  );
 }
 
 function buildLoveMilestoneEvents(
@@ -345,8 +351,7 @@ export async function executeSpecialDaysCron(
     };
   }
 
-  const timeZone = process.env.NOTIFICATION_TIMEZONE || "Asia/Ho_Chi_Minh";
-  const today = getTodayParts(timeZone);
+  const today = getTodayParts();
   const supabase = createSupabaseAdminClient();
 
   const [
@@ -427,67 +432,82 @@ export async function executeSpecialDaysCron(
     }
   }
 
+  const deliveryResults = await Promise.all(
+    recipients.map(async (recipient) => {
+      const normalized = recipient.toLowerCase();
+      const pendingEvents = events.filter(
+        (event) => !existingKeys.has(`${normalized}::${event.eventKey}`),
+      );
+
+      if (!pendingEvents.length && !customMessage) {
+        return { status: "skipped" as const };
+      }
+
+      const recipientName =
+        admins?.find((admin) => admin.email.toLowerCase() === normalized)?.name ??
+        recipient;
+
+      try {
+        await sendEmailViaSmtp({
+          host: smtpHost,
+          port: smtpPort,
+          secure: smtpSecure,
+          user: smtpUser,
+          pass: smtpPass,
+          from: emailFrom,
+          to: recipient,
+          subject:
+            options.subject?.trim() ||
+            (customMessage
+              ? `${APP_NAME} (${today.isoDate})`
+              : `Ngày đặc biệt hôm nay (${today.isoDate})`),
+          html: createEmailHtml(recipientName, pendingEvents, customMessage),
+        });
+
+        const failures: string[] = [];
+        if (!options.skipLogs && pendingEvents.length) {
+          const logPayload = pendingEvents.map((event) => ({
+            event_key: event.eventKey,
+            special_day_id: event.specialDayId,
+            target_email: recipient,
+            notify_date: today.isoDate,
+          }));
+
+          const { error: insertLogError } = await supabase
+            .from("special_day_notification_logs")
+            .insert(logPayload);
+
+          if (insertLogError) {
+            failures.push(
+              `Log insert failed for ${recipient}: ${insertLogError.message}`,
+            );
+          }
+        }
+
+        return { status: "sent" as const, failures };
+      } catch (error) {
+        return {
+          status: "failed" as const,
+          failures: [
+            `Send failed for ${recipient}: ${(error as Error).message}`,
+          ],
+        };
+      }
+    }),
+  );
+
   let sent = 0;
   let skipped = 0;
   const failures: string[] = [];
-
-  for (const recipient of recipients) {
-    const normalized = recipient.toLowerCase();
-    const pendingEvents = events.filter(
-      (event) => !existingKeys.has(`${normalized}::${event.eventKey}`),
-    );
-
-    if (!pendingEvents.length && !customMessage) {
+  for (const result of deliveryResults) {
+    if (result.status === "skipped") {
       skipped += 1;
       continue;
     }
-
-    const recipientName =
-      admins?.find((admin) => admin.email.toLowerCase() === normalized)?.name ??
-      recipient;
-
-    try {
-      await sendEmailViaSmtp({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpSecure,
-        user: smtpUser,
-        pass: smtpPass,
-        from: emailFrom,
-        to: recipient,
-        subject:
-          options.subject?.trim() ||
-          (customMessage
-            ? `${APP_NAME} (${today.isoDate})`
-            : `Ngày đặc biệt hôm nay (${today.isoDate})`),
-        html: createEmailHtml(recipientName, pendingEvents, customMessage),
-      });
-
-      if (!options.skipLogs && pendingEvents.length) {
-        const logPayload = pendingEvents.map((event) => ({
-          event_key: event.eventKey,
-          special_day_id: event.specialDayId,
-          target_email: recipient,
-          notify_date: today.isoDate,
-        }));
-
-        const { error: insertLogError } = await supabase
-          .from("special_day_notification_logs")
-          .insert(logPayload);
-
-        if (insertLogError) {
-          failures.push(
-            `Log insert failed for ${recipient}: ${insertLogError.message}`,
-          );
-        }
-      }
-
+    if (result.status === "sent") {
       sent += 1;
-    } catch (error) {
-      failures.push(
-        `Send failed for ${recipient}: ${(error as Error).message}`,
-      );
     }
+    failures.push(...result.failures);
   }
 
   return {

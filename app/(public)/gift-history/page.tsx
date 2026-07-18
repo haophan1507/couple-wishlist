@@ -16,8 +16,8 @@ export default async function GiftHistoryPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  const params = await searchParams;
-  const [profile, items] = await Promise.all([
+  const [params, profile, items] = await Promise.all([
+    searchParams,
     getCoupleProfile(),
     getGiftHistoryItems(),
   ]);
