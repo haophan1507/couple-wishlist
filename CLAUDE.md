@@ -18,7 +18,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ```bash
-# Install dependencies (uses Node 22.x from .nvmrc)
+# Install dependencies (uses Node 24.x from .nvmrc)
 nvm use
 npm install
 
