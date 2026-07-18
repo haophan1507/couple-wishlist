@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "22.x"
+    "node": "^22.13.0 || >=24"
   },
   "scripts": {
     "dev": "next dev",
@@ -11,40 +11,50 @@
     "build:turbo": "next build --turbopack",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typecheck:api": "tsc6 --noEmit",
+    "doctor": "react-doctor",
+    "doctor:changed": "react-doctor --verbose --scope changed"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.10.2",
-    "@supabase/supabase-js": "^2.103.3",
-    "@types/leaflet": "^1.9.21",
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.110.7",
     "clsx": "^2.1.1",
     "d3-delaunay": "^6.0.4",
     "d3-polygon": "^3.0.1",
     "date-fns": "^4.4.0",
     "formik": "^2.4.9",
     "leaflet": "^1.9.4",
-    "lucide-react": "^1.17.0",
-    "next": "^16.2.6",
-    "nodemailer": "^8.0.10",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
+    "lucide-react": "^1.25.0",
+    "next": "^16.2.10",
+    "nodemailer": "^9.0.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "react-leaflet": "^5.0.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.3",
     "tailwind-merge": "^3.6.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/d3-delaunay": "^6.0.4",
     "@types/d3-polygon": "^3.0.2",
-    "@types/node": "^25.9.1",
-    "@types/nodemailer": "^8.0.0",
-    "@types/react": "^19.2.15",
+    "@types/leaflet": "^1.9.21",
+    "@types/node": "^25.9.5",
+    "@types/nodemailer": "^8.0.1",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.6",
-    "postcss": "^8.5.15",
-    "tailwindcss": "^4.3.0",
-    "typescript": "^6.0.3"
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.10",
+    "postcss": "^8.5.19",
+    "react-doctor": "^0.8.1",
+    "tailwindcss": "^4.3.3",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "^8.5.10"
+    }
   }
 }
