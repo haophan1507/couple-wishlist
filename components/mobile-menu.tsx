@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { NavLink } from "@/components/nav-link";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { APP_NAV_LINKS } from "@/lib/constants/app";
 import { cn } from "@/lib/utils/cn";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
@@ -48,7 +49,7 @@ export function MobileMenu() {
 
                 return (
                   <li key={link.href}>
-                    <Link
+                    <NavLink
                       href={link.href}
                       onClick={() => setOpen(false)}
                       className={cn(
@@ -60,7 +61,7 @@ export function MobileMenu() {
                       aria-current={active ? "page" : undefined}
                     >
                       {link.label}
-                    </Link>
+                    </NavLink>
                   </li>
                 );
               })}

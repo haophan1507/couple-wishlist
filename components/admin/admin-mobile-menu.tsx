@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "@/app/actions/auth";
+import { NavLink } from "@/components/nav-link";
 import { ADMIN_NAV_LINKS } from "@/lib/constants/app";
 import { cn } from "@/lib/utils/cn";
 
@@ -50,7 +50,7 @@ export function AdminMobileMenu() {
                     : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
                 return (
-                  <Link
+                  <NavLink
                     key={link.href}
                     href={link.href}
                     onClick={() => setOpen(false)}
@@ -63,7 +63,7 @@ export function AdminMobileMenu() {
                     aria-current={active ? "page" : undefined}
                   >
                     {link.label}
-                  </Link>
+                  </NavLink>
                 );
               })}
             </nav>

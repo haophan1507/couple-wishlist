@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "@/app/actions/auth";
+import { NavLink } from "@/components/nav-link";
 import { ADMIN_NAV_LINKS } from "@/lib/constants/app";
 import { cn } from "@/lib/utils/cn";
 
@@ -21,7 +21,7 @@ export function AdminSidebar() {
                 : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
             return (
-          <Link
+          <NavLink
             key={link.href}
             href={link.href}
             className={cn(
@@ -33,7 +33,7 @@ export function AdminSidebar() {
             aria-current={active ? "page" : undefined}
           >
             {link.label}
-          </Link>
+          </NavLink>
             );
           })()
         ))}

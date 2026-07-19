@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
-import { HeartMappingExperience } from "@/components/heart-mapping-experience";
+import { Suspense } from "react";
 import { Container } from "@/components/ui/container";
-import { getPlaceMemories } from "@/lib/data/queries";
+import { HeartMappingContentFallback, HeartMappingPageContent } from "./heart-mapping-content";
 
 export const metadata: Metadata = {
   title: "Bản đồ yêu thương",
   description: "Những nơi đã đi qua và những nơi hai bạn còn muốn cùng nhau ghé đến.",
 };
 
-export default async function HeartMappingPage() {
-  const places = await getPlaceMemories();
-
+export default function HeartMappingPage() {
   return (
     <section className="py-10 md:py-12">
       <Container>
-        <HeartMappingExperience places={places} />
+        <Suspense fallback={<HeartMappingContentFallback />}>
+          <HeartMappingPageContent />
+        </Suspense>
       </Container>
     </section>
   );

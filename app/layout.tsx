@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import type { ReactNode } from "react";
+import { NavigationPendingProvider } from "@/components/navigation-pending";
+import { NavigationProgress } from "@/components/navigation-progress";
 import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants/app";
 import "./globals.css";
 
@@ -36,7 +38,10 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="font-(--font-body)" suppressHydrationWarning>
-        {children}
+        <NavigationPendingProvider>
+          <NavigationProgress />
+          {children}
+        </NavigationPendingProvider>
       </body>
     </html>
   );
