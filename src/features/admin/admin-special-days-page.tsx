@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { AdminItemRow } from "@/components/admin/admin-item-row";
+import { AdminListHeader } from "@/components/admin/admin-list-header";
 import { SpecialDayForm } from "@/components/admin/special-day-form";
+import { useAdminEditorMode } from "@/components/admin/use-admin-editor-mode";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import {
@@ -13,6 +15,7 @@ const PAGE_SIZE = 5;
 
 export function AdminSpecialDaysPage({ page }: { page: number }) {
   const queryClient = useQueryClient();
+  const editor = useAdminEditorMode();
   const listQuery = useQuery({
     queryKey: queryKeys.adminSpecialDaysPage({ page, pageSize: PAGE_SIZE }),
     queryFn: () => fetchAdminSpecialDaysPage(page, PAGE_SIZE),
@@ -41,40 +44,55 @@ export function AdminSpecialDaysPage({ page }: { page: number }) {
   const safePage = Math.min(page, totalPages);
   const items = listQuery.data?.items ?? [];
 
+  const handleSaved = () => {
+    invalidate();
+    editor.close();
+  };
+
   return (
     <>
-      <section className="card p-6">
-        <h1 className="text-2xl font-semibold dark:text-white">
-          Quản lý Ngày Đặc Biệt
-        </h1>
-        <div className="mt-4">
-          <SpecialDayForm onSuccess={invalidate} />
-        </div>
-      </section>
+      <AdminListHeader
+        title="Quản lý Ngày Đặc Biệt"
+        isCreating={editor.isCreating}
+        onToggleCreate={() => (editor.isCreating ? editor.close() : editor.openCreate())}
+      >
+        {editor.isCreating ? (
+          <div className="mt-4">
+            <SpecialDayForm onSuccess={handleSaved} onCancel={editor.close} />
+          </div>
+        ) : null}
+      </AdminListHeader>
 
       <section>
         <div className="max-h-[72vh] space-y-3 overflow-y-auto pr-1">
-          {items.map((day) => (
-            <div key={day.id} className="card p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-medium dark:text-white">{day.title}</p>
-                <ConfirmDeleteButton
-                  itemName={day.title}
-                  onConfirm={() => deleteMutation.mutate(day.id)}
-                />
-              </div>
-              <SpecialDayForm
-                onSuccess={invalidate}
-                item={{
-                  id: day.id,
-                  title: day.title,
-                  description: day.description ?? "",
-                  date: day.date,
-                  type: day.type,
+          {items.map((item) => {
+            const expanded = editor.isEditingId(item.id);
+            return (
+              <AdminItemRow
+                key={item.id}
+                title={item.title}
+                meta={`${item.date} · ${item.type}`}
+                isExpanded={expanded}
+                onEdit={() => (expanded ? editor.close() : editor.openEdit(item.id))}
+                onDelete={async () => {
+                  await deleteMutation.mutateAsync(item.id);
+                  if (editor.isEditingId(item.id)) editor.close();
                 }}
-              />
-            </div>
-          ))}
+              >
+                <SpecialDayForm
+                  onSuccess={handleSaved}
+                  onCancel={editor.close}
+                  item={{
+                    id: item.id,
+                    title: item.title,
+                    description: item.description ?? "",
+                    date: item.date,
+                    type: item.type,
+                  }}
+                />
+              </AdminItemRow>
+            );
+          })}
           {!items.length ? (
             <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">
               Chưa có ngày đặc biệt nào.
