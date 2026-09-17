@@ -1,6 +1,7 @@
 "use client";
 
 import { Formik } from "formik";
+import { Button } from "@/components/ui/button";
 import { upsertSpecialDayFn } from "@/src/server/special-days";
 
 type SpecialDayFormValues = {
@@ -22,9 +23,11 @@ const defaultValues: SpecialDayFormValues = {
 export function SpecialDayForm({
   item = defaultValues,
   onSuccess,
+  onCancel,
 }: {
   item?: SpecialDayFormValues;
   onSuccess?: () => void;
+  onCancel?: () => void;
 }) {
   const isEditing = Boolean(item.id);
 
@@ -102,19 +105,26 @@ export function SpecialDayForm({
           {formik.status ? (
             <p className="text-sm text-rose-700 dark:text-rose-300">{String(formik.status)}</p>
           ) : null}
-          <button
-            type="submit"
-            disabled={formik.isSubmitting}
-            className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
-          >
-            {formik.isSubmitting
-              ? isEditing
-                ? "Đang cập nhật..."
-                : "Đang thêm..."
-              : isEditing
-                ? "Cập nhật"
-                : "Thêm ngày"}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="submit"
+              disabled={formik.isSubmitting}
+              className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
+            >
+              {formik.isSubmitting
+                ? isEditing
+                  ? "Đang cập nhật..."
+                  : "Đang thêm..."
+                : isEditing
+                  ? "Cập nhật"
+                  : "Thêm ngày"}
+            </button>
+            {onCancel ? (
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Hủy
+              </Button>
+            ) : null}
+          </div>
         </form>
       )}
     </Formik>

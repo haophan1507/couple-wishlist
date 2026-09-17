@@ -2,6 +2,8 @@
 
 import { useMemo, useRef } from "react";
 import { Formik } from "formik";
+import { AdminImagePreview } from "@/components/admin/admin-image-preview";
+import { Button } from "@/components/ui/button";
 import { WISHLIST_CATEGORY_OPTIONS } from "@/lib/constants/wishlist";
 import { upsertWishlistItemFn } from "@/src/server/wishlist";
 
@@ -39,7 +41,9 @@ type WishlistFormProps = {
   item?: WishlistFormItem;
   personOneName: string;
   personTwoName: string;
+  imageUrl?: string | null;
   onSuccess?: () => void;
+  onCancel?: () => void;
 };
 
 type FormValues = WishlistFormItem & {
@@ -76,7 +80,9 @@ export function WishlistForm({
   item = defaultValues,
   personOneName,
   personTwoName,
+  imageUrl,
   onSuccess,
+  onCancel,
 }: WishlistFormProps) {
   const imageFileRef = useRef<File | null>(null);
   const isEditing = Boolean(item.id);
@@ -161,6 +167,8 @@ export function WishlistForm({
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           />
+
+          <AdminImagePreview url={imageUrl} alt={item.title || "Ảnh wishlist"} />
 
           <div className="grid gap-2 md:grid-cols-2">
             <input type="hidden" name="existing_image_path" value={formik.values.image_path ?? ""} />
@@ -277,19 +285,26 @@ export function WishlistForm({
             <p className="text-sm text-rose-700 dark:text-rose-300">{String(formik.status)}</p>
           ) : null}
 
-          <button
-            type="submit"
-            disabled={formik.isSubmitting}
-            className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
-          >
-            {formik.isSubmitting
-              ? isEditing
-                ? "Đang cập nhật..."
-                : "Đang thêm..."
-              : isEditing
-                ? "Cập nhật"
-                : "Thêm món"}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="submit"
+              disabled={formik.isSubmitting}
+              className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
+            >
+              {formik.isSubmitting
+                ? isEditing
+                  ? "Đang cập nhật..."
+                  : "Đang thêm..."
+                : isEditing
+                  ? "Cập nhật"
+                  : "Thêm món"}
+            </button>
+            {onCancel ? (
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Hủy
+              </Button>
+            ) : null}
+          </div>
         </form>
       )}
     </Formik>

@@ -2,6 +2,8 @@
 
 import { useRef } from "react";
 import { Formik } from "formik";
+import { AdminImagePreview } from "@/components/admin/admin-image-preview";
+import { Button } from "@/components/ui/button";
 import { upsertGalleryItemFn } from "@/src/server/gallery";
 
 type GalleryFormValues = {
@@ -20,10 +22,14 @@ const defaultValues: GalleryFormValues = {
 
 export function GalleryForm({
   item = defaultValues,
+  imageUrl,
   onSuccess,
+  onCancel,
 }: {
   item?: GalleryFormValues;
+  imageUrl?: string | null;
   onSuccess?: () => void;
+  onCancel?: () => void;
 }) {
   const imageFileRef = useRef<File | null>(null);
   const isEditing = Boolean(item.id);
@@ -64,6 +70,7 @@ export function GalleryForm({
         >
           <input type="hidden" name="id" value={formik.values.id ?? ""} />
           <input type="hidden" name="existing_image_path" value={formik.values.image_path ?? ""} />
+          <AdminImagePreview url={imageUrl} alt={item.caption || "Ảnh kỷ niệm"} />
           <input
             type="file"
             name="image_file"
@@ -91,19 +98,26 @@ export function GalleryForm({
           {formik.status ? (
             <p className="text-sm text-rose-700 dark:text-rose-300">{String(formik.status)}</p>
           ) : null}
-          <button
-            type="submit"
-            disabled={formik.isSubmitting}
-            className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
-          >
-            {formik.isSubmitting
-              ? isEditing
-                ? "Đang cập nhật..."
-                : "Đang thêm..."
-              : isEditing
-                ? "Cập nhật"
-                : "Thêm ảnh"}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="submit"
+              disabled={formik.isSubmitting}
+              className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
+            >
+              {formik.isSubmitting
+                ? isEditing
+                  ? "Đang cập nhật..."
+                  : "Đang thêm..."
+                : isEditing
+                  ? "Cập nhật"
+                  : "Thêm ảnh"}
+            </button>
+            {onCancel ? (
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Hủy
+              </Button>
+            ) : null}
+          </div>
         </form>
       )}
     </Formik>
