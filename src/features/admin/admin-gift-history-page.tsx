@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { format, parseISO } from "date-fns";
 import { AdminItemRow } from "@/components/admin/admin-item-row";
 import { AdminListHeader } from "@/components/admin/admin-list-header";
 import { GiftHistoryForm } from "@/components/admin/gift-history-form";
@@ -15,6 +16,12 @@ import {
 import { deleteGiftHistoryItemFn } from "@/src/server/gift-history";
 
 const PAGE_SIZE = 4;
+
+const statusLabels = {
+  received: "Đã nhận",
+  thanked: "Đã cảm ơn",
+  archived: "Lưu kỷ niệm",
+} as const;
 
 export function AdminGiftHistoryPage({ page }: { page: number }) {
   const queryClient = useQueryClient();
@@ -111,7 +118,7 @@ export function AdminGiftHistoryPage({ page }: { page: number }) {
                 key={item.id}
                 title={item.gift_name}
                 imageUrl={item.photo_url}
-                meta={`${item.giver_name} · ${item.received_date} · ${item.status}`}
+                meta={`${item.giver_name} · ${format(parseISO(item.received_date), "dd/MM/yyyy")} · ${statusLabels[item.status]}`}
                 isExpanded={expanded}
                 onEdit={() => (expanded ? editor.close() : editor.openEdit(item.id))}
                 onDelete={async () => {

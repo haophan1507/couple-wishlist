@@ -15,6 +15,17 @@ import { deleteWishlistItemFn } from "@/src/server/wishlist";
 
 const PAGE_SIZE = 4;
 
+const priorityLabels = {
+  low: "Ưu tiên thấp",
+  medium: "Ưu tiên trung bình",
+  high: "Ưu tiên cao",
+} as const;
+
+const statusLabels = {
+  available: "Có sẵn",
+  gifted: "Đã tặng",
+} as const;
+
 type AdminWishlistPageProps = {
   page: number;
 };
@@ -93,7 +104,7 @@ export function AdminWishlistPage({ page }: AdminWishlistPageProps) {
                 key={item.id}
                 title={item.title}
                 imageUrl={item.image_url}
-                meta={`${item.owner_type === "me" ? personOneName : personTwoName} · ${item.priority} · ${item.status}`}
+                meta={`${item.owner_type === "me" ? personOneName : personTwoName} · ${priorityLabels[item.priority]} · ${statusLabels[item.status]}`}
                 isExpanded={expanded}
                 onEdit={() => (expanded ? editor.close() : editor.openEdit(item.id))}
                 onDelete={async () => {

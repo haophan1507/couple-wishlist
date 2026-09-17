@@ -22,9 +22,11 @@ export function ConfirmDeleteButton({
 }: ConfirmDeleteButtonProps) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleConfirm = async () => {
     setSubmitting(true);
+    setError(null);
     try {
       if (onConfirm) {
         await onConfirm();
@@ -33,6 +35,8 @@ export function ConfirmDeleteButton({
         form?.requestSubmit();
       }
       setOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không thể xóa mục này.");
     } finally {
       setSubmitting(false);
     }
@@ -45,7 +49,10 @@ export function ConfirmDeleteButton({
         variant="link"
         size="xs"
         className="h-auto px-0 text-destructive"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setError(null);
+          setOpen(true);
+        }}
       >
         Xóa
       </Button>
@@ -60,23 +67,28 @@ export function ConfirmDeleteButton({
                 : "Bạn có chắc muốn xóa mục này không? Hành động này không thể hoàn tác."}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={submitting}
-            >
-              Hủy
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => void handleConfirm()}
-              disabled={submitting}
-            >
-              {submitting ? "Đang xóa..." : "Xác nhận xóa"}
-            </Button>
+          <DialogFooter className="sm:flex-col sm:items-end">
+            <div className="flex flex-col-reverse gap-2 sm:flex-row">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={submitting}
+              >
+                Hủy
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => void handleConfirm()}
+                disabled={submitting}
+              >
+                {submitting ? "Đang xóa..." : "Xác nhận xóa"}
+              </Button>
+            </div>
+            {error ? (
+              <p className="text-xs text-rose-700 dark:text-rose-300">{error}</p>
+            ) : null}
           </DialogFooter>
         </DialogContent>
       </Dialog>

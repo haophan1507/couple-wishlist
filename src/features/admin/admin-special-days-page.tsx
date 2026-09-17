@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { format, parseISO } from "date-fns";
 import { AdminItemRow } from "@/components/admin/admin-item-row";
 import { AdminListHeader } from "@/components/admin/admin-list-header";
 import { SpecialDayForm } from "@/components/admin/special-day-form";
@@ -12,6 +13,14 @@ import {
 import { deleteSpecialDayFn } from "@/src/server/special-days";
 
 const PAGE_SIZE = 5;
+
+const typeLabels: Record<string, string> = {
+  birthday: "Sinh nhật",
+  anniversary: "Kỷ niệm",
+  relationship: "Mốc yêu nhau",
+  holiday: "Ngày lễ",
+  other: "Khác",
+};
 
 export function AdminSpecialDaysPage({ page }: { page: number }) {
   const queryClient = useQueryClient();
@@ -71,7 +80,7 @@ export function AdminSpecialDaysPage({ page }: { page: number }) {
               <AdminItemRow
                 key={item.id}
                 title={item.title}
-                meta={`${item.date} · ${item.type}`}
+                meta={`${format(parseISO(item.date), "dd/MM/yyyy")} · ${typeLabels[item.type] ?? item.type}`}
                 isExpanded={expanded}
                 onEdit={() => (expanded ? editor.close() : editor.openEdit(item.id))}
                 onDelete={async () => {

@@ -6,6 +6,7 @@ import { AdminListHeader } from "@/components/admin/admin-list-header";
 import { EditPlaceLocation } from "@/components/admin/edit-place-location";
 import { PlaceMapPicker } from "@/components/admin/place-map-picker";
 import { useAdminEditorMode } from "@/components/admin/use-admin-editor-mode";
+import { Button } from "@/components/ui/button";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { fetchAdminPlacesPage, queryKeys } from "@/lib/data/client-queries";
@@ -50,11 +51,13 @@ function PlaceForm({
   coverImageUrl,
   showLocationPicker = true,
   onSuccess,
+  onCancel,
 }: {
   item?: PlaceFormItem;
   coverImageUrl?: string | null;
   showLocationPicker?: boolean;
   onSuccess?: () => void;
+  onCancel?: () => void;
 }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -181,19 +184,26 @@ function PlaceForm({
         <p className="text-sm text-rose-700 dark:text-rose-300">{error}</p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c]"
-      >
-        {pending
-          ? item.id
-            ? "Đang cập nhật..."
-            : "Đang thêm..."
-          : item.id
-            ? "Cập nhật địa điểm"
-            : "Thêm địa điểm"}
-      </button>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="submit"
+          disabled={pending}
+          className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c]"
+        >
+          {pending
+            ? item.id
+              ? "Đang cập nhật..."
+              : "Đang thêm..."
+            : item.id
+              ? "Cập nhật địa điểm"
+              : "Thêm địa điểm"}
+        </button>
+        {onCancel ? (
+          <Button type="button" variant="outline" onClick={onCancel} disabled={pending}>
+            Hủy
+          </Button>
+        ) : null}
+      </div>
     </form>
   );
 }
@@ -244,7 +254,11 @@ export function AdminPlacesPage({ page }: { page: number }) {
       >
         {editor.isCreating ? (
           <div className="mt-4">
-            <PlaceForm showLocationPicker onSuccess={handleSaved} />
+            <PlaceForm
+              showLocationPicker
+              onSuccess={handleSaved}
+              onCancel={editor.close}
+            />
           </div>
         ) : null}
       </AdminListHeader>
@@ -261,7 +275,7 @@ export function AdminPlacesPage({ page }: { page: number }) {
                 key={place.id}
                 title={place.title}
                 imageUrl={place.cover_image_url}
-                meta={`${place.status} · ${location}`}
+                meta={`${place.status === "visited" ? "Đã đi" : "Dự định"}${location ? ` · ${location}` : ""}`}
                 isExpanded={expanded}
                 onEdit={() => (expanded ? editor.close() : editor.openEdit(place.id))}
                 onDelete={async () => {
@@ -271,9 +285,10 @@ export function AdminPlacesPage({ page }: { page: number }) {
               >
                 {expanded ? (
                   <PlaceForm
-                    showLocationPicker
+                    showLocationPicker={false}
                     coverImageUrl={place.cover_image_url}
                     onSuccess={handleSaved}
+                    onCancel={editor.close}
                     item={{
                       id: place.id,
                       title: place.title,

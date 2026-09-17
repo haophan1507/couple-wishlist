@@ -17,6 +17,12 @@ export function useAdminEditorMode() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       const target = event.target as HTMLElement | null;
+      if (
+        target?.closest('[data-slot="dialog-content"]') ||
+        document.querySelector('[data-slot="dialog-overlay"], [role="dialog"]')
+      ) {
+        return;
+      }
       if (target?.closest("input, textarea, select, [contenteditable=true]")) {
         return;
       }
