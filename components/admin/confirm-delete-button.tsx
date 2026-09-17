@@ -15,11 +15,7 @@ type ConfirmDeleteButtonProps = {
   onConfirm?: () => void | Promise<void>;
 };
 
-export function ConfirmDeleteButton({
-  formId,
-  itemName,
-  onConfirm,
-}: ConfirmDeleteButtonProps) {
+export function ConfirmDeleteButton({ formId, itemName, onConfirm }: ConfirmDeleteButtonProps) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,9 +82,7 @@ export function ConfirmDeleteButton({
                 {submitting ? "Đang xóa..." : "Xác nhận xóa"}
               </Button>
             </div>
-            {error ? (
-              <p className="text-xs text-rose-700 dark:text-rose-300">{error}</p>
-            ) : null}
+            {error ? <p className="text-xs text-rose-700 dark:text-rose-300">{error}</p> : null}
           </DialogFooter>
         </DialogContent>
       </Dialog>

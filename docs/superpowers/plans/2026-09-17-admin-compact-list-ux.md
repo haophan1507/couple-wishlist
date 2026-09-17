@@ -19,33 +19,35 @@
 
 ## File map
 
-| File | Responsibility |
-|---|---|
-| Create `components/admin/use-admin-editor-mode.ts` | Mode state + openCreate/openEdit/close + Esc |
-| Create `components/admin/admin-list-header.tsx` | Title, description, Thêm mới / Hủy thêm |
-| Create `components/admin/admin-item-row.tsx` | Thumb, title, meta, Sửa/Xóa, expanded children |
-| Create `components/admin/admin-image-preview.tsx` | Small existing-image preview for forms |
-| Modify `components/admin/wishlist-form.tsx` | Optional `imageUrl` preview + optional `onCancel` |
-| Modify `components/admin/gallery-form.tsx` | Same |
-| Modify `components/admin/gift-history-form.tsx` | Same |
-| Modify `components/admin/special-day-form.tsx` | Optional `onCancel` only (no image) |
-| Modify `src/features/admin/admin-wishlist-page.tsx` | Compact list layout |
-| Modify `src/features/admin/admin-gallery-page.tsx` | Compact list layout |
-| Modify `src/features/admin/admin-gift-history-page.tsx` | Compact list layout |
-| Modify `src/features/admin/admin-special-days-page.tsx` | Compact list layout |
-| Modify `src/features/admin/admin-places-page.tsx` | Compact list + mount map only when panel open |
+| File                                                    | Responsibility                                    |
+| ------------------------------------------------------- | ------------------------------------------------- |
+| Create `components/admin/use-admin-editor-mode.ts`      | Mode state + openCreate/openEdit/close + Esc      |
+| Create `components/admin/admin-list-header.tsx`         | Title, description, Thêm mới / Hủy thêm           |
+| Create `components/admin/admin-item-row.tsx`            | Thumb, title, meta, Sửa/Xóa, expanded children    |
+| Create `components/admin/admin-image-preview.tsx`       | Small existing-image preview for forms            |
+| Modify `components/admin/wishlist-form.tsx`             | Optional `imageUrl` preview + optional `onCancel` |
+| Modify `components/admin/gallery-form.tsx`              | Same                                              |
+| Modify `components/admin/gift-history-form.tsx`         | Same                                              |
+| Modify `components/admin/special-day-form.tsx`          | Optional `onCancel` only (no image)               |
+| Modify `src/features/admin/admin-wishlist-page.tsx`     | Compact list layout                               |
+| Modify `src/features/admin/admin-gallery-page.tsx`      | Compact list layout                               |
+| Modify `src/features/admin/admin-gift-history-page.tsx` | Compact list layout                               |
+| Modify `src/features/admin/admin-special-days-page.tsx` | Compact list layout                               |
+| Modify `src/features/admin/admin-places-page.tsx`       | Compact list + mount map only when panel open     |
 
 ---
 
 ### Task 1: Shared editor mode hook + list chrome
 
 **Files:**
+
 - Create: `components/admin/use-admin-editor-mode.ts`
 - Create: `components/admin/admin-list-header.tsx`
 - Create: `components/admin/admin-item-row.tsx`
 - Create: `components/admin/admin-image-preview.tsx`
 
 **Interfaces:**
+
 - Produces:
   - `type AdminEditorMode = { type: "idle" } | { type: "create" } | { type: "edit"; id: string }`
   - `useAdminEditorMode(): { mode, openCreate, openEdit, close, isCreating, isEditingId }`
@@ -60,10 +62,7 @@ Create `components/admin/use-admin-editor-mode.ts`:
 ```tsx
 import { useEffect, useState } from "react";
 
-export type AdminEditorMode =
-  | { type: "idle" }
-  | { type: "create" }
-  | { type: "edit"; id: string };
+export type AdminEditorMode = { type: "idle" } | { type: "create" } | { type: "edit"; id: string };
 
 export function useAdminEditorMode() {
   const [mode, setMode] = useState<AdminEditorMode>({ type: "idle" });
@@ -182,7 +181,12 @@ export function AdminItemRow({
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Button type="button" variant={isExpanded ? "secondary" : "outline"} size="sm" onClick={onEdit}>
+          <Button
+            type="button"
+            variant={isExpanded ? "secondary" : "outline"}
+            size="sm"
+            onClick={onEdit}
+          >
             {isExpanded ? "Đóng" : "Sửa"}
           </Button>
           <ConfirmDeleteButton itemName={itemNameForDelete ?? title} onConfirm={onDelete} />
@@ -234,12 +238,14 @@ git commit -m "feat(admin): add compact list chrome helpers"
 ### Task 2: Form cancel + image preview props
 
 **Files:**
+
 - Modify: `components/admin/wishlist-form.tsx`
 - Modify: `components/admin/gallery-form.tsx`
 - Modify: `components/admin/gift-history-form.tsx`
 - Modify: `components/admin/special-day-form.tsx`
 
 **Interfaces:**
+
 - Consumes: `AdminImagePreview`
 - Produces: each form accepts optional `onCancel?: () => void` and image forms accept optional `imageUrl?: string | null`
 
@@ -299,9 +305,11 @@ git commit -m "feat(admin): add form cancel and image preview"
 ### Task 3: Wishlist admin page compact layout
 
 **Files:**
+
 - Modify: `src/features/admin/admin-wishlist-page.tsx`
 
 **Interfaces:**
+
 - Consumes: `useAdminEditorMode`, `AdminListHeader`, `AdminItemRow`, `WishlistForm`
 
 - [ ] **Step 1: Replace always-open forms with mode-driven layout**
@@ -409,10 +417,12 @@ git commit -m "feat(admin): compact wishlist list UX"
 ### Task 4: Gallery + special days compact layouts
 
 **Files:**
+
 - Modify: `src/features/admin/admin-gallery-page.tsx`
 - Modify: `src/features/admin/admin-special-days-page.tsx`
 
 **Interfaces:**
+
 - Consumes: same shared chrome + `GalleryForm` / `SpecialDayForm`
 
 - [ ] **Step 1: Refactor gallery page** like wishlist:
@@ -445,9 +455,11 @@ git commit -m "feat(admin): compact gallery and special-days UX"
 ### Task 5: Gift history compact layout
 
 **Files:**
+
 - Modify: `src/features/admin/admin-gift-history-page.tsx`
 
 **Interfaces:**
+
 - Consumes: shared chrome + `GiftHistoryForm`
 
 - [ ] **Step 1: Refactor gift-history page**
@@ -472,9 +484,11 @@ git commit -m "feat(admin): compact gift-history list UX"
 ### Task 6: Places compact layout (map only when open)
 
 **Files:**
+
 - Modify: `src/features/admin/admin-places-page.tsx`
 
 **Interfaces:**
+
 - Consumes: shared chrome; keep local `PlaceForm` but gate `showLocationPicker` / map mount by expanded state
 
 - [ ] **Step 1: Wire editor mode around places list**
@@ -495,6 +509,7 @@ If list item has `cover_image_url`, pass it into `PlaceForm` as optional `coverI
 - [ ] **Step 3: Typecheck + smoke `/admin/places`**
 
 Manual checklist:
+
 - First paint: no map canvas in DOM for closed rows
 - Thêm mới mounts map once
 - Sửa one place mounts map; closing unmounts
@@ -546,16 +561,16 @@ git status
 
 ## Spec coverage check
 
-| Spec requirement | Task |
-|---|---|
-| Pattern C create behind button | 3–6 |
-| Compact rows + one edit expand | 1, 3–6 |
-| Mode idle/create/edit + Esc | 1 |
-| Image preview on edit | 2, 3–6 |
-| Places map only when open | 6 |
-| Home unchanged | 7 checklist |
-| No server/API changes | all |
-| Image perf deferred | non-goal |
+| Spec requirement               | Task        |
+| ------------------------------ | ----------- |
+| Pattern C create behind button | 3–6         |
+| Compact rows + one edit expand | 1, 3–6      |
+| Mode idle/create/edit + Esc    | 1           |
+| Image preview on edit          | 2, 3–6      |
+| Places map only when open      | 6           |
+| Home unchanged                 | 7 checklist |
+| No server/API changes          | all         |
+| Image perf deferred            | non-goal    |
 
 ## Placeholder scan
 

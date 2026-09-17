@@ -1,10 +1,5 @@
 import type { ReactNode } from "react";
-import {
-  Outlet,
-  createRootRouteWithContext,
-  HeadContent,
-  Scripts,
-} from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants/app";
 import { NavigationPendingProvider } from "@/components/navigation-pending";

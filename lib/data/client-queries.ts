@@ -46,8 +46,7 @@ export const queryKeys = {
     ["admin", "places", filters] as const,
   adminCounts: ["admin", "counts"] as const,
   wishlistOptions: ["wishlist", "options"] as const,
-  giftHistory: (filters: { page?: number }) =>
-    ["gift-history", filters] as const,
+  giftHistory: (filters: { page?: number }) => ["gift-history", filters] as const,
   giftHistoryStats: ["gift-history", "stats"] as const,
   gallery: (filters: { page?: number }) => ["gallery", filters] as const,
   places: ["places"] as const,
@@ -55,11 +54,7 @@ export const queryKeys = {
 
 export async function fetchCoupleProfile() {
   const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
-    .from("couple_profile")
-    .select("*")
-    .limit(1)
-    .maybeSingle();
+  const { data, error } = await supabase.from("couple_profile").select("*").limit(1).maybeSingle();
 
   if (error) {
     throw error;
@@ -92,16 +87,13 @@ export async function fetchSpecialDays() {
 
 export async function fetchWishlistOwnerCounts() {
   const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
-    .from("wishlist_items")
-    .select("owner_type, status");
+  const { data, error } = await supabase.from("wishlist_items").select("owner_type, status");
 
   if (error) {
     throw error;
   }
 
-  const items =
-    (data as Array<Pick<WishlistItem, "owner_type" | "status">> | null) ?? [];
+  const items = (data as Array<Pick<WishlistItem, "owner_type" | "status">> | null) ?? [];
 
   const summarize = (ownerType: "me" | "honey") => {
     const owned = items.filter((item) => item.owner_type === ownerType);
@@ -128,9 +120,9 @@ export async function fetchWishlistCategories() {
     throw error;
   }
 
-  const categories = (
-    (data as Array<{ category: string | null }> | null) ?? []
-  ).flatMap((item) => (item.category ? [item.category] : []));
+  const categories = ((data as Array<{ category: string | null }> | null) ?? []).flatMap((item) =>
+    item.category ? [item.category] : [],
+  );
 
   return [...new Set(categories)].sort((a, b) => a.localeCompare(b));
 }
@@ -160,9 +152,7 @@ export async function fetchWishlistPage(filters: {
   if (filters.query) {
     const safeQuery = escapePostgrestLikeValue(filters.query.trim());
     if (safeQuery) {
-      request = request.or(
-        `title.ilike.%${safeQuery}%,description.ilike.%${safeQuery}%`,
-      );
+      request = request.or(`title.ilike.%${safeQuery}%,description.ilike.%${safeQuery}%`);
     }
   }
 
@@ -202,10 +192,7 @@ export async function fetchWishlistOptions() {
     .order("created_at", { ascending: false });
 
   if (error) throw error;
-  return (
-    (data as Array<Pick<WishlistItem, "id" | "title" | "owner_type">> | null) ??
-    []
-  );
+  return (data as Array<Pick<WishlistItem, "id" | "title" | "owner_type">> | null) ?? [];
 }
 
 export async function fetchAdminSpecialDaysPage(page: number, pageSize: number) {
@@ -232,16 +219,13 @@ export async function fetchAdminPlacesPage(page: number, pageSize: number) {
 
 export async function fetchAdminCounts() {
   const supabase = createSupabaseBrowserClient();
-  const [wishlist, specialDays, gallery, giftHistory, places] =
-    await Promise.all([
-      supabase.from("wishlist_items").select("*", { count: "exact", head: true }),
-      supabase.from("special_days").select("*", { count: "exact", head: true }),
-      supabase.from("gallery_items").select("*", { count: "exact", head: true }),
-      supabase
-        .from("gift_history_items")
-        .select("*", { count: "exact", head: true }),
-      supabase.from("place_memories").select("*", { count: "exact", head: true }),
-    ]);
+  const [wishlist, specialDays, gallery, giftHistory, places] = await Promise.all([
+    supabase.from("wishlist_items").select("*", { count: "exact", head: true }),
+    supabase.from("special_days").select("*", { count: "exact", head: true }),
+    supabase.from("gallery_items").select("*", { count: "exact", head: true }),
+    supabase.from("gift_history_items").select("*", { count: "exact", head: true }),
+    supabase.from("place_memories").select("*", { count: "exact", head: true }),
+  ]);
 
   return {
     wishlist: wishlist.count ?? 0,
@@ -265,10 +249,8 @@ function mapGiftHistoryItem(
   return {
     ...item,
     photo_url: getPublicStorageUrl(item.photo_path),
-    special_day: item.special_day_id ? dayMap.get(item.special_day_id) ?? null : null,
-    wishlist_item: item.wishlist_item_id
-      ? wishlistMap.get(item.wishlist_item_id) ?? null
-      : null,
+    special_day: item.special_day_id ? (dayMap.get(item.special_day_id) ?? null) : null,
+    wishlist_item: item.wishlist_item_id ? (wishlistMap.get(item.wishlist_item_id) ?? null) : null,
   };
 }
 
@@ -292,8 +274,7 @@ export async function fetchGiftHistoryStats() {
     withPhotoCount: items.filter((item) => item.photo_path).length,
     thankedCount: items.filter((item) => item.status === "thanked").length,
     meCount: items.filter((item) => item.recipient_owner_type === "me").length,
-    honeyCount: items.filter((item) => item.recipient_owner_type === "honey")
-      .length,
+    honeyCount: items.filter((item) => item.recipient_owner_type === "honey").length,
   };
 }
 
@@ -313,18 +294,10 @@ export async function fetchGiftHistoryPage(page: number, pageSize: number) {
 
   const pageItems = (data as GiftHistoryItem[] | null) ?? [];
   const dayIds = [
-    ...new Set(
-      pageItems.flatMap((item) =>
-        item.special_day_id ? [item.special_day_id] : [],
-      ),
-    ),
+    ...new Set(pageItems.flatMap((item) => (item.special_day_id ? [item.special_day_id] : []))),
   ];
   const wishlistIds = [
-    ...new Set(
-      pageItems.flatMap((item) =>
-        item.wishlist_item_id ? [item.wishlist_item_id] : [],
-      ),
-    ),
+    ...new Set(pageItems.flatMap((item) => (item.wishlist_item_id ? [item.wishlist_item_id] : []))),
   ];
 
   const [daysResult, wishlistResult] = await Promise.all([
@@ -332,10 +305,7 @@ export async function fetchGiftHistoryPage(page: number, pageSize: number) {
       ? supabase.from("special_days").select("id, title, date").in("id", dayIds)
       : Promise.resolve({ data: [], error: null }),
     wishlistIds.length
-      ? supabase
-          .from("wishlist_items")
-          .select("id, title, owner_type")
-          .in("id", wishlistIds)
+      ? supabase.from("wishlist_items").select("id, title, owner_type").in("id", wishlistIds)
       : Promise.resolve({ data: [], error: null }),
   ]);
 
@@ -343,23 +313,18 @@ export async function fetchGiftHistoryPage(page: number, pageSize: number) {
   if (wishlistResult.error) throw wishlistResult.error;
 
   const dayMap = new Map(
-    (
-      (daysResult.data as Array<Pick<SpecialDay, "id" | "title" | "date">> | null) ??
-      []
-    ).map((day) => [day.id, day]),
+    ((daysResult.data as Array<Pick<SpecialDay, "id" | "title" | "date">> | null) ?? []).map(
+      (day) => [day.id, day],
+    ),
   );
   const wishlistMap = new Map(
     (
-      (wishlistResult.data as Array<
-        Pick<WishlistItem, "id" | "title" | "owner_type">
-      > | null) ?? []
+      (wishlistResult.data as Array<Pick<WishlistItem, "id" | "title" | "owner_type">> | null) ?? []
     ).map((item) => [item.id, item]),
   );
 
   return {
-    items: pageItems.map((item) =>
-      mapGiftHistoryItem(item, dayMap, wishlistMap),
-    ),
+    items: pageItems.map((item) => mapGiftHistoryItem(item, dayMap, wishlistMap)),
     total: count ?? pageItems.length,
   };
 }
@@ -426,8 +391,6 @@ export async function fetchPlaceMemories() {
   }));
 }
 
-export type PlaceMemoryEntry = Awaited<
-  ReturnType<typeof fetchPlaceMemories>
->[number];
+export type PlaceMemoryEntry = Awaited<ReturnType<typeof fetchPlaceMemories>>[number];
 
 export type { CoupleProfile, SpecialDay };

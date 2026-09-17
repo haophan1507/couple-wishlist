@@ -37,13 +37,7 @@ type ExecuteSpecialDaysCronOptions = {
   subject?: string;
 };
 
-
-const RECURRING_TYPES = new Set([
-  "birthday",
-  "anniversary",
-  "relationship",
-  "holiday",
-]);
+const RECURRING_TYPES = new Set(["birthday", "anniversary", "relationship", "holiday"]);
 
 function escapeHtml(value: string) {
   return value
@@ -64,8 +58,7 @@ const TYPE_LABEL: Record<SpecialDayRow["type"], string> = {
 
 // AUTO_HOLIDAY_DEFINITIONS imported from lib/constants/special-days
 
-const NOTIFICATION_TIMEZONE =
-  process.env.NOTIFICATION_TIMEZONE || "Asia/Ho_Chi_Minh";
+const NOTIFICATION_TIMEZONE = process.env.NOTIFICATION_TIMEZONE || "Asia/Ho_Chi_Minh";
 
 const datePartsFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: NOTIFICATION_TIMEZONE,
@@ -76,12 +69,8 @@ const datePartsFormatter = new Intl.DateTimeFormat("en-CA", {
 
 function getTodayParts() {
   const parts = datePartsFormatter.formatToParts(new Date());
-  const year = Number(
-    parts.find((part) => part.type === "year")?.value ?? "1970",
-  );
-  const month = Number(
-    parts.find((part) => part.type === "month")?.value ?? "01",
-  );
+  const year = Number(parts.find((part) => part.type === "year")?.value ?? "1970");
+  const month = Number(parts.find((part) => part.type === "month")?.value ?? "01");
   const day = Number(parts.find((part) => part.type === "day")?.value ?? "01");
   const isoDate = `${year.toString().padStart(4, "0")}-${month
     .toString()
@@ -115,14 +104,11 @@ function buildAutoHolidayEvents(
     .toString()
     .padStart(2, "0")}`;
   const manualHolidayMonthDays = new Set(
-    specialDays.flatMap((day) =>
-      day.type === "holiday" ? [day.date.slice(5)] : [],
-    ),
+    specialDays.flatMap((day) => (day.type === "holiday" ? [day.date.slice(5)] : [])),
   );
 
   return AUTO_HOLIDAY_DEFINITIONS.flatMap((holiday) =>
-    holiday.monthDay === todayMonthDay &&
-    !manualHolidayMonthDays.has(holiday.monthDay)
+    holiday.monthDay === todayMonthDay && !manualHolidayMonthDays.has(holiday.monthDay)
       ? [
           {
             eventKey: `auto-holiday:${holiday.key}`,
@@ -167,10 +153,7 @@ function buildLoveMilestoneEvents(
   }
 
   if (daysInLove >= 1000 && daysInLove % 500 === 0) {
-    addMilestone(
-      `${daysInLove} ngày yêu nhau`,
-      `Cột mốc đặc biệt ${daysInLove} ngày của hai bạn.`,
-    );
+    addMilestone(`${daysInLove} ngày yêu nhau`, `Cột mốc đặc biệt ${daysInLove} ngày của hai bạn.`);
   }
 
   if (
@@ -228,8 +211,7 @@ function buildTodayEvents(
       eventKey: "birthday:person-one",
       specialDayId: null,
       title: `Sinh nhật ${profile?.person_one_name ?? "Người thứ nhất"}`,
-      description:
-        "Hôm nay là ngày sinh nhật. Đừng quên gửi lời chúc thật ngọt ngào.",
+      description: "Hôm nay là ngày sinh nhật. Đừng quên gửi lời chúc thật ngọt ngào.",
       dateLabel: profile?.person_one_birthday ?? today.isoDate,
       typeLabel: "Sinh nhật",
     });
@@ -245,8 +227,7 @@ function buildTodayEvents(
       eventKey: "birthday:person-two",
       specialDayId: null,
       title: `Sinh nhật ${profile?.person_two_name ?? "Người thứ hai"}`,
-      description:
-        "Hôm nay là ngày sinh nhật. Đừng quên gửi lời chúc thật ngọt ngào.",
+      description: "Hôm nay là ngày sinh nhật. Đừng quên gửi lời chúc thật ngọt ngào.",
       dateLabel: profile?.person_two_birthday ?? today.isoDate,
       typeLabel: "Sinh nhật",
     });
@@ -329,26 +310,16 @@ async function sendEmailViaSmtp(params: {
   });
 }
 
-export async function executeSpecialDaysCron(
-  options: ExecuteSpecialDaysCronOptions = {},
-) {
+export async function executeSpecialDaysCron(options: ExecuteSpecialDaysCronOptions = {}) {
   const smtpHost = process.env.SMTP_HOST;
   const smtpPort = Number(process.env.SMTP_PORT || "465");
-  const smtpSecure =
-    (process.env.SMTP_SECURE || "true").toLowerCase() !== "false";
+  const smtpSecure = (process.env.SMTP_SECURE || "true").toLowerCase() !== "false";
   const smtpUser = process.env.SMTP_USER;
   const smtpPass = process.env.SMTP_PASS;
   const emailFrom = process.env.NOTIFICATION_FROM_EMAIL;
-  if (
-    !smtpHost ||
-    !smtpUser ||
-    !smtpPass ||
-    !emailFrom ||
-    Number.isNaN(smtpPort)
-  ) {
+  if (!smtpHost || !smtpUser || !smtpPass || !emailFrom || Number.isNaN(smtpPort)) {
     return {
-      error:
-        "Missing SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS or NOTIFICATION_FROM_EMAIL",
+      error: "Missing SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS or NOTIFICATION_FROM_EMAIL",
     };
   }
 
@@ -368,10 +339,7 @@ export async function executeSpecialDaysCron(
       )
       .limit(1)
       .maybeSingle(),
-    supabase
-      .from("profiles")
-      .select("id, name, email, role")
-      .eq("role", "admin"),
+    supabase.from("profiles").select("id, name, email, role").eq("role", "admin"),
   ]);
 
   if (specialDayError || profileError || adminError) {
@@ -445,8 +413,7 @@ export async function executeSpecialDaysCron(
       }
 
       const recipientName =
-        admins?.find((admin) => admin.email.toLowerCase() === normalized)?.name ??
-        recipient;
+        admins?.find((admin) => admin.email.toLowerCase() === normalized)?.name ?? recipient;
 
       try {
         await sendEmailViaSmtp({
@@ -479,9 +446,7 @@ export async function executeSpecialDaysCron(
             .insert(logPayload);
 
           if (insertLogError) {
-            failures.push(
-              `Log insert failed for ${recipient}: ${insertLogError.message}`,
-            );
+            failures.push(`Log insert failed for ${recipient}: ${insertLogError.message}`);
           }
         }
 
@@ -489,9 +454,7 @@ export async function executeSpecialDaysCron(
       } catch (error) {
         return {
           status: "failed" as const,
-          failures: [
-            `Send failed for ${recipient}: ${(error as Error).message}`,
-          ],
+          failures: [`Send failed for ${recipient}: ${(error as Error).message}`],
         };
       }
     }),

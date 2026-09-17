@@ -61,9 +61,7 @@ export function GalleryForm({
             helpers.resetForm();
           }
         } catch (error) {
-          helpers.setStatus(
-            error instanceof Error ? error.message : "Không thể lưu ảnh.",
-          );
+          helpers.setStatus(error instanceof Error ? error.message : "Không thể lưu ảnh.");
         } finally {
           helpers.setSubmitting(false);
         }
@@ -77,10 +75,7 @@ export function GalleryForm({
           <input type="hidden" name="id" value={formik.values.id ?? ""} />
           <input type="hidden" name="existing_image_path" value={formik.values.image_path ?? ""} />
           <FormField label="Ảnh kỷ niệm">
-            <AdminImagePreview
-              path={item.image_path || null}
-              alt={item.caption || "Ảnh kỷ niệm"}
-            />
+            <AdminImagePreview path={item.image_path || null} alt={item.caption || "Ảnh kỷ niệm"} />
             <Input
               ref={imageInputRef}
               type="file"

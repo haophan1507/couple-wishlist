@@ -14,12 +14,7 @@ type HeroSectionProps = {
 const FALLBACK_COVER =
   "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1400&q=80";
 
-export function HeroSection({
-  names,
-  coverImagePath,
-  coverImageUrl,
-  story,
-}: HeroSectionProps) {
+export function HeroSection({ names, coverImagePath, coverImageUrl, story }: HeroSectionProps) {
   return (
     <section className="pt-12 md:pt-16">
       <Container>

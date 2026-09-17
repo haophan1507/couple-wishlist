@@ -38,8 +38,7 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
     "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80",
   "Thiết bị gia dụng":
     "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
-  "Sách":
-    "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=80",
+  Sách: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=80",
   "Khóa học":
     "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80",
   "Sức khỏe & thể thao":
@@ -68,6 +67,8 @@ export function getWishlistFallbackImage(category: string | null | undefined) {
   if (!category) {
     return "https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1200&q=80";
   }
-  return CATEGORY_IMAGE_MAP[category] ?? "https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1200&q=80";
+  return (
+    CATEGORY_IMAGE_MAP[category] ??
+    "https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1200&q=80"
+  );
 }
-

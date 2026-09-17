@@ -39,8 +39,7 @@ export const upsertWishlistItemFn = createServerFn({ method: "POST" })
     const validProductUrls = parsedProductUrls.filter((url) => isValidHttpUrl(url));
     const categoryPreset = normalizeTextField(formData.get("category_preset"));
     const categoryCustom = normalizeTextField(formData.get("category_custom"));
-    const categoryValue =
-      categoryPreset === "other" ? categoryCustom : categoryPreset;
+    const categoryValue = categoryPreset === "other" ? categoryCustom : categoryPreset;
 
     if (categoryPreset === "other" && !categoryCustom) {
       throw new Error("Vui lòng nhập danh mục khi chọn Khác.");
@@ -65,10 +64,7 @@ export const upsertWishlistItemFn = createServerFn({ method: "POST" })
       throw new Error(firstIssue?.message || "Dữ liệu món quà không hợp lệ.");
     }
 
-    if (
-      parsedProductUrls.length > 1 &&
-      validProductUrls.length !== parsedProductUrls.length
-    ) {
+    if (parsedProductUrls.length > 1 && validProductUrls.length !== parsedProductUrls.length) {
       throw new Error(
         "Danh sách link sản phẩm có dòng không hợp lệ. Bạn có thể để trống hoặc chỉ nhập link bắt đầu bằng http/https.",
       );
@@ -76,22 +72,15 @@ export const upsertWishlistItemFn = createServerFn({ method: "POST" })
 
     const supabase = createSupabaseAdminClient();
     const { data: existing, error: existingError } = id
-      ? await supabase
-          .from("wishlist_items")
-          .select("image_path")
-          .eq("id", id)
-          .maybeSingle()
+      ? await supabase.from("wishlist_items").select("image_path").eq("id", id).maybeSingle()
       : { data: null, error: null };
 
     if (existingError) {
       throw new Error("Không thể đọc dữ liệu món quà hiện tại.");
     }
 
-    const existingPath = (
-      existing as { image_path: string | null } | null
-    )?.image_path;
-    let nextImagePath =
-      parsed.data.existing_image_path || existingPath || null;
+    const existingPath = (existing as { image_path: string | null } | null)?.image_path;
+    let nextImagePath = parsed.data.existing_image_path || existingPath || null;
 
     if (imageFile) {
       const uploaded = await uploadImageFile({
@@ -119,10 +108,7 @@ export const upsertWishlistItemFn = createServerFn({ method: "POST" })
     };
 
     if (id) {
-      const { error } = await supabase
-        .from("wishlist_items")
-        .update(payload)
-        .eq("id", id);
+      const { error } = await supabase.from("wishlist_items").update(payload).eq("id", id);
       if (error) {
         throw new Error(`Cập nhật món quà thất bại: ${error.message}`);
       }
@@ -158,9 +144,7 @@ export const deleteWishlistItemFn = createServerFn({ method: "POST" })
       .maybeSingle();
 
     await supabase.from("wishlist_items").delete().eq("id", id);
-    await deleteStorageFile(
-      (existing as { image_path: string | null } | null)?.image_path,
-    );
+    await deleteStorageFile((existing as { image_path: string | null } | null)?.image_path);
 
     return { ok: true as const };
   });

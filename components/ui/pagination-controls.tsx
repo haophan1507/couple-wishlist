@@ -60,10 +60,7 @@ export function PaginationControls({
         search={buildSearch(searchParams, pageParam, prevPage)}
         aria-disabled={currentPage === 1}
         disabled={currentPage === 1}
-        className={cn(
-          buttonClass,
-          currentPage === 1 ? "pointer-events-none opacity-45" : "",
-        )}
+        className={cn(buttonClass, currentPage === 1 ? "pointer-events-none opacity-45" : "")}
       >
         Trước
       </Link>

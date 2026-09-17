@@ -42,8 +42,7 @@ export function MobileMenu() {
                 const active =
                   link.href === "/"
                     ? pathname === "/"
-                    : pathname === link.href ||
-                      pathname.startsWith(`${link.href}/`);
+                    : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
                 return (
                   <li key={link.href}>

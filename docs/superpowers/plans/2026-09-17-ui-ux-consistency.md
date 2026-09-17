@@ -20,22 +20,23 @@
 
 ## File map
 
-| File | Responsibility |
-|---|---|
-| Create `components/ui/page-header.tsx` | Shared page title + subtitle |
-| Create `components/ui/form-field.tsx` | Label + control + error wrapper |
-| Create `components/ui/native-select.tsx` | `h-10` select with `data-slot` |
-| Modify `src/styles.css` | One `.card`/surface; control heights; reduce dual input CSS clash |
-| Modify `src/server/gift-history.ts` | Mark wishlist `gifted` instead of delete |
-| Modify `src/server/places.ts` | Update existing image captions without new files |
-| Modify public feature pages + cards | Declutter + list height |
-| Modify admin forms/pages | FormField, slug hide, list height, shell polish |
+| File                                     | Responsibility                                                    |
+| ---------------------------------------- | ----------------------------------------------------------------- |
+| Create `components/ui/page-header.tsx`   | Shared page title + subtitle                                      |
+| Create `components/ui/form-field.tsx`    | Label + control + error wrapper                                   |
+| Create `components/ui/native-select.tsx` | `h-10` select with `data-slot`                                    |
+| Modify `src/styles.css`                  | One `.card`/surface; control heights; reduce dual input CSS clash |
+| Modify `src/server/gift-history.ts`      | Mark wishlist `gifted` instead of delete                          |
+| Modify `src/server/places.ts`            | Update existing image captions without new files                  |
+| Modify public feature pages + cards      | Declutter + list height                                           |
+| Modify admin forms/pages                 | FormField, slug hide, list height, shell polish                   |
 
 ---
 
 ### Task 1: Foundation primitives
 
 **Files:**
+
 - Create: `components/ui/page-header.tsx`
 - Create: `components/ui/form-field.tsx`
 - Create: `components/ui/native-select.tsx`
@@ -43,6 +44,7 @@
 - Modify: `components/ui/input.tsx` — use `h-10` for form parity (or `className` default override in FormField)
 
 **Interfaces:**
+
 - Produces:
   - `PageHeader({ title, description?, actions?, className? })`
   - `FormField({ label, htmlFor?, error?, children, className? })`
@@ -109,6 +111,7 @@ EOF
 ### Task 2: Behavior fixes + list height quick wins
 
 **Files:**
+
 - Modify: `src/server/gift-history.ts` (replace delete block with status update)
 - Modify: `src/server/places.ts` (caption-only update path)
 - Modify: `src/features/wishlist/wishlist-page.tsx` — remove `max-h-[70vh] overflow-y-auto`
@@ -120,6 +123,7 @@ EOF
 - Modify: `src/features/admin/admin-places-page.tsx` — hide slug input; keep hidden auto slug or omit and let server slugify title
 
 **Interfaces:**
+
 - Consumes: existing `upsertGiftHistoryItemFn` / `upsertPlaceMemoryFn` FormData contracts
 - Produces: gift save keeps `wishlist_item_id`; places captions update for existing rows
 
@@ -180,6 +184,7 @@ Manual: create gift linked to wishlist → reopen edit → select still shows th
 ### Task 3: Public Home + Nav
 
 **Files:**
+
 - Modify: `components/sections/hero-section.tsx`
 - Modify: `src/features/home/home-page.tsx`
 - Modify: `components/navbar.tsx`
@@ -195,6 +200,7 @@ Manual: create gift linked to wishlist → reopen edit → select still shows th
 ### Task 4: Public Wishlist + cards
 
 **Files:**
+
 - Modify: `components/wishlist-card.tsx`
 - Modify: `src/features/wishlist/wishlist-page.tsx`
 - Modify: `components/wishlist-filter.tsx` (spacing only if noisy)
@@ -208,6 +214,7 @@ Manual: create gift linked to wishlist → reopen edit → select still shows th
 ### Task 5: Special days, Gallery, Gift history, Heart map
 
 **Files:**
+
 - Modify: `src/features/special-days/special-days-page.tsx`
 - Modify: `components/special-day-card.tsx`
 - Modify: `components/gallery-grid.tsx`
@@ -227,6 +234,7 @@ Manual: create gift linked to wishlist → reopen edit → select still shows th
 ### Task 6: Admin forms on shared fields
 
 **Files:**
+
 - Modify: `components/admin/gift-history-form.tsx`
 - Modify: `components/admin/wishlist-form.tsx`
 - Modify: `components/admin/gallery-form.tsx`
@@ -245,6 +253,7 @@ Manual: create gift linked to wishlist → reopen edit → select still shows th
 ### Task 7: Admin shell + dashboard polish
 
 **Files:**
+
 - Modify: `components/admin/admin-sidebar.tsx`
 - Modify: `components/admin/admin-shell.tsx`
 - Modify: `src/features/admin/admin-home-page.tsx`
@@ -269,15 +278,15 @@ Manual: create gift linked to wishlist → reopen edit → select still shows th
 
 ## Spec coverage checklist
 
-| Spec section | Task(s) |
-|---|---|
-| §1 Design system | Task 1 |
-| §2 Public pages | Tasks 3–5 |
-| §3 Admin shell | Task 7 |
-| §3b Forms + bugs | Tasks 2, 6 |
-| §4 List height | Task 2 (+ 5 heart/calendar) |
-| §5 Phases | Tasks ordered 1→8 |
-| §6 Done criteria | Task 8 verification |
+| Spec section     | Task(s)                     |
+| ---------------- | --------------------------- |
+| §1 Design system | Task 1                      |
+| §2 Public pages  | Tasks 3–5                   |
+| §3 Admin shell   | Task 7                      |
+| §3b Forms + bugs | Tasks 2, 6                  |
+| §4 List height   | Task 2 (+ 5 heart/calendar) |
+| §5 Phases        | Tasks ordered 1→8           |
+| §6 Done criteria | Task 8 verification         |
 
 ## Self-review notes
 

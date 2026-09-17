@@ -6,10 +6,7 @@ import { SpecialDayForm } from "@/components/admin/special-day-form";
 import { useAdminEditorMode } from "@/components/admin/use-admin-editor-mode";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
-import {
-  fetchAdminSpecialDaysPage,
-  queryKeys,
-} from "@/lib/data/client-queries";
+import { fetchAdminSpecialDaysPage, queryKeys } from "@/lib/data/client-queries";
 import { deleteSpecialDayFn } from "@/src/server/special-days";
 
 const PAGE_SIZE = 10;

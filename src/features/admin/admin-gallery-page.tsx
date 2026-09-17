@@ -93,9 +93,7 @@ export function AdminGalleryPage({ page }: { page: number }) {
             );
           })}
           {!items.length ? (
-            <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">
-              Chưa có ảnh nào.
-            </p>
+            <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">Chưa có ảnh nào.</p>
           ) : null}
         </div>
         <PaginationControls

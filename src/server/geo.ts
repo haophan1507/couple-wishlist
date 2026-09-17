@@ -36,10 +36,7 @@ export const searchLocationsFn = createServerFn({ method: "GET" })
 
     let response: Response;
     try {
-      response = await fetchWithTimeout(
-        url,
-        "couple-wishlist/1.0 (location search)",
-      );
+      response = await fetchWithTimeout(url, "couple-wishlist/1.0 (location search)");
     } catch {
       throw new Error("Tìm địa điểm bị quá thời gian, vui lòng thử lại.");
     }
@@ -98,10 +95,7 @@ export const reverseGeocodeFn = createServerFn({ method: "GET" })
 
     let response: Response;
     try {
-      response = await fetchWithTimeout(
-        url,
-        "couple-wishlist/1.0 (reverse geocode)",
-      );
+      response = await fetchWithTimeout(url, "couple-wishlist/1.0 (reverse geocode)");
     } catch {
       throw new Error("Lấy thông tin địa điểm bị quá thời gian, vui lòng thử lại.");
     }

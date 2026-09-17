@@ -44,10 +44,7 @@ Each CRUD page becomes:
 Shared UI state per page:
 
 ```ts
-type AdminEditorMode =
-  | { type: "idle" }
-  | { type: "create" }
-  | { type: "edit"; id: string };
+type AdminEditorMode = { type: "idle" } | { type: "create" } | { type: "edit"; id: string };
 ```
 
 Rules:
@@ -67,13 +64,13 @@ Each row shows:
 - 1–2 meta chips/lines
 - Actions: **Sửa**, **Xóa**
 
-| Page | Meta |
-|---|---|
-| Wishlist | owner label · priority · status |
-| Gallery | memory date (if any) |
-| Gift history | giver · received date · status |
-| Special days | date · type |
-| Places | status · city/country (fallback location name) |
+| Page         | Meta                                           |
+| ------------ | ---------------------------------------------- |
+| Wishlist     | owner label · priority · status                |
+| Gallery      | memory date (if any)                           |
+| Gift history | giver · received date · status                 |
+| Special days | date · type                                    |
+| Places       | status · city/country (fallback location name) |
 
 ## Form behavior when expanded
 
@@ -94,13 +91,13 @@ Do **not** rewrite business validation or server functions.
 
 ## Pages in scope
 
-| Page | Feature file |
-|---|---|
-| Wishlist | `src/features/admin/admin-wishlist-page.tsx` |
-| Gallery | `src/features/admin/admin-gallery-page.tsx` |
+| Page         | Feature file                                     |
+| ------------ | ------------------------------------------------ |
+| Wishlist     | `src/features/admin/admin-wishlist-page.tsx`     |
+| Gallery      | `src/features/admin/admin-gallery-page.tsx`      |
 | Gift history | `src/features/admin/admin-gift-history-page.tsx` |
 | Special days | `src/features/admin/admin-special-days-page.tsx` |
-| Places | `src/features/admin/admin-places-page.tsx` |
+| Places       | `src/features/admin/admin-places-page.tsx`       |
 
 Out of scope this phase: `admin-home-page.tsx`.
 

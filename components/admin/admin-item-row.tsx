@@ -46,7 +46,12 @@ export function AdminItemRow({
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Button type="button" variant={isExpanded ? "secondary" : "outline"} size="sm" onClick={onEdit}>
+          <Button
+            type="button"
+            variant={isExpanded ? "secondary" : "outline"}
+            size="sm"
+            onClick={onEdit}
+          >
             {isExpanded ? "Đóng" : "Sửa"}
           </Button>
           <ConfirmDeleteButton itemName={itemNameForDelete ?? title} onConfirm={onDelete} />

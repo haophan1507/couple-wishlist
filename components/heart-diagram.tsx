@@ -46,10 +46,7 @@ function buildHeartBoundary(sampleCount = 500) {
   return points;
 }
 
-function getEvenPointsAlongBoundary(
-  boundary: Array<[number, number]>,
-  count: number,
-) {
+function getEvenPointsAlongBoundary(boundary: Array<[number, number]>, count: number) {
   if (!boundary.length || count <= 0) return [];
   if (count === 1) {
     const top = boundary.reduce((best, point) => (point[1] < best[1] ? point : best), boundary[0]);
@@ -126,7 +123,13 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
             <stop offset="100%" stopColor="#d4f0ff" />
           </linearGradient>
           <filter id="heart-soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="18" stdDeviation="16" floodColor="#b57f8f" floodOpacity="0.24" />
+            <feDropShadow
+              dx="0"
+              dy="18"
+              stdDeviation="16"
+              floodColor="#b57f8f"
+              floodOpacity="0.24"
+            />
           </filter>
         </defs>
 
@@ -169,15 +172,20 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
             {(() => {
               const isActive = hoveredId === section.id || selectedId === section.id;
               const isMuted = section.muted && selectedId !== section.id;
-              const circleFill = section.id === selectedId
-                ? "#d97c95"
-                : isMuted
-                  ? "rgba(255,255,255,0.82)"
-                  : "#e8a4b7";
+              const circleFill =
+                section.id === selectedId
+                  ? "#d97c95"
+                  : isMuted
+                    ? "rgba(255,255,255,0.82)"
+                    : "#e8a4b7";
               const circleStroke = isMuted ? "rgba(108,89,96,0.2)" : "#ffffff";
               const heartColor = isMuted ? "#6c5960" : "#ffffff";
               return (
-                <g transform={`translate(${point.x},${point.y})`} className="transition-transform duration-200" style={{ transformOrigin: `${point.x}px ${point.y}px` }}>
+                <g
+                  transform={`translate(${point.x},${point.y})`}
+                  className="transition-transform duration-200"
+                  style={{ transformOrigin: `${point.x}px ${point.y}px` }}
+                >
                   <circle r={24} fill="transparent" />
                   <circle
                     r={isActive ? 18.5 : 15.5}

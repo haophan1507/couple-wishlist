@@ -19,25 +19,27 @@
 
 ## File map
 
-| File | Role |
-|---|---|
-| Modify `lib/storage/constants.ts` | Lower size/dimension caps |
+| File                                             | Role                                      |
+| ------------------------------------------------ | ----------------------------------------- |
+| Modify `lib/storage/constants.ts`                | Lower size/dimension caps                 |
 | Modify `lib/storage/paths.ts` or `public-url.ts` | `toThumbStoragePath`, `getPublicThumbUrl` |
-| Modify `lib/storage/upload.ts` | Quality ladder + thumb upload + rollback |
-| Modify `lib/storage/delete.ts` | Delete display + thumb |
-| Create `components/ui/app-image.tsx` | Shared image component |
-| Modify card/grid/hero/admin image call sites | Use `AppImage` |
+| Modify `lib/storage/upload.ts`                   | Quality ladder + thumb upload + rollback  |
+| Modify `lib/storage/delete.ts`                   | Delete display + thumb                    |
+| Create `components/ui/app-image.tsx`             | Shared image component                    |
+| Modify card/grid/hero/admin image call sites     | Use `AppImage`                            |
 
 ---
 
 ### Task 1: Storage path helpers + tighter rules
 
 **Files:**
+
 - Modify: `lib/storage/constants.ts`
 - Modify: `lib/storage/public-url.ts`
 - Optional small helper in same file or `lib/storage/paths.ts`
 
 **Interfaces:**
+
 - Produces:
   - `toThumbStoragePath(path: string): string`
   - `getPublicThumbUrl(path: string | null): string | null`
@@ -87,10 +89,12 @@ git commit -m "feat(storage): add thumb path helpers and tighter limits"
 ### Task 2: Upload thumb + delete both
 
 **Files:**
+
 - Modify: `lib/storage/upload.ts`
 - Modify: `lib/storage/delete.ts`
 
 **Interfaces:**
+
 - Consumes: `toThumbStoragePath`, updated `STORAGE_RULES`
 - Produces: upload writes display + thumb; delete removes both
 
@@ -138,9 +142,11 @@ git commit -m "feat(storage): write and delete webp thumbs"
 ### Task 3: AppImage component
 
 **Files:**
+
 - Create: `components/ui/app-image.tsx`
 
 **Interfaces:**
+
 - Produces: `AppImage` as specified in the design doc
 
 - [ ] **Step 1: Implement AppImage**
@@ -182,11 +188,7 @@ export function AppImage({
   if (!url) return null;
 
   const aspectClass =
-    aspect === "card"
-      ? "aspect-[4/3]"
-      : aspect === "wide"
-        ? "aspect-[16/10]"
-        : undefined;
+    aspect === "card" ? "aspect-[4/3]" : aspect === "wide" ? "aspect-[16/10]" : undefined;
 
   return (
     <div className={cn("overflow-hidden", aspectClass, className)}>
@@ -221,6 +223,7 @@ git commit -m "feat(ui): add AppImage with thumb and aspect variants"
 ### Task 4: Wire public surfaces
 
 **Files:**
+
 - Modify: `components/wishlist-card.tsx`
 - Modify: `components/gift-history-card.tsx`
 - Modify: `components/gallery-grid.tsx`
@@ -259,6 +262,7 @@ git commit -m "feat(ui): use AppImage on public surfaces"
 ### Task 5: Wire admin thumbs + verify
 
 **Files:**
+
 - Modify: `components/admin/admin-item-row.tsx`
 - Modify: `components/admin/admin-image-preview.tsx`
 - Possibly admin pages if they only pass full URLs — switch to path or thumb URL
@@ -295,17 +299,17 @@ git commit -m "feat(admin): use AppImage for thumbs and previews"
 
 ## Spec coverage
 
-| Spec item | Task |
-|---|---|
-| Tighter STORAGE_RULES | 1 |
-| Thumb path helpers | 1 |
-| Upload thumb + rollback | 2 |
-| Delete both | 2 |
-| AppImage aspect variants | 3 |
-| Public surfaces | 4 |
-| Admin surfaces | 5 |
-| Fallback old assets | 3–4 |
-| No DB / no transforms | Global |
+| Spec item                | Task   |
+| ------------------------ | ------ |
+| Tighter STORAGE_RULES    | 1      |
+| Thumb path helpers       | 1      |
+| Upload thumb + rollback  | 2      |
+| Delete both              | 2      |
+| AppImage aspect variants | 3      |
+| Public surfaces          | 4      |
+| Admin surfaces           | 5      |
+| Fallback old assets      | 3–4    |
+| No DB / no transforms    | Global |
 
 ## Placeholder scan
 

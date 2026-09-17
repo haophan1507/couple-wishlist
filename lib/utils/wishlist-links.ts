@@ -7,12 +7,10 @@ export function parseWishlistProductUrls(value: string | null | undefined) {
     return [];
   }
 
-  return value
-    .split(/\r?\n|,/g)
-    .flatMap((part) => {
-      const cleaned = sanitize(part);
-      return cleaned ? [cleaned] : [];
-    });
+  return value.split(/\r?\n|,/g).flatMap((part) => {
+    const cleaned = sanitize(part);
+    return cleaned ? [cleaned] : [];
+  });
 }
 
 export function joinWishlistProductUrls(urls: string[]) {
@@ -32,4 +30,3 @@ export function isValidHttpUrl(value: string) {
     return false;
   }
 }
-

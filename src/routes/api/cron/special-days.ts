@@ -4,9 +4,7 @@ import { executeSpecialDaysCron } from "@/lib/cron/special-days";
 async function handleCron(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
   const authHeader = request.headers.get("authorization");
-  const bearerToken = authHeader?.startsWith("Bearer ")
-    ? authHeader.slice(7)
-    : "";
+  const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : "";
 
   if (!cronSecret || bearerToken !== cronSecret) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });

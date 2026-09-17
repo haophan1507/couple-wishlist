@@ -36,12 +36,7 @@ export function GiftHistoryCard({
   return (
     <article className="card overflow-hidden">
       {item.photo_path ? (
-        <AppImage
-          path={item.photo_path}
-          alt={item.gift_name}
-          variant="thumb"
-          aspect="wide"
-        />
+        <AppImage path={item.photo_path} alt={item.gift_name} variant="thumb" aspect="wide" />
       ) : (
         <div className="flex aspect-16/10 items-center justify-center bg-secondary/70">
           <Sparkles className="h-7 w-7 text-muted-foreground" />
@@ -51,9 +46,7 @@ export function GiftHistoryCard({
       <div className="space-y-3 p-4 md:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-semibold text-foreground md:text-xl">
-              {item.gift_name}
-            </h3>
+            <h3 className="text-lg font-semibold text-foreground md:text-xl">{item.gift_name}</h3>
             <p className="mt-1 text-sm text-muted-foreground">
               {item.giver_name} → {recipientName} ·{" "}
               {format(new Date(item.received_date), "dd/MM/yyyy")}
@@ -71,14 +64,10 @@ export function GiftHistoryCard({
         </div>
 
         {item.special_day?.title ? (
-          <p className="text-sm text-muted-foreground">
-            Dịp: {item.special_day.title}
-          </p>
+          <p className="text-sm text-muted-foreground">Dịp: {item.special_day.title}</p>
         ) : null}
 
-        {item.note ? (
-          <p className="text-sm leading-6 text-foreground/85">{item.note}</p>
-        ) : null}
+        {item.note ? <p className="text-sm leading-6 text-foreground/85">{item.note}</p> : null}
 
         {wishlistTitle ? (
           <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">

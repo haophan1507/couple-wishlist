@@ -15,37 +15,22 @@ export function PageHeader({
   compact?: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        "flex flex-wrap items-start justify-between gap-4",
-        className,
-      )}
-    >
+    <div className={cn("flex flex-wrap items-start justify-between gap-4", className)}>
       <div className="min-w-0">
         <h1
           className={cn(
-            compact
-              ? "text-2xl font-semibold tracking-tight text-foreground"
-              : "section-title",
+            compact ? "text-2xl font-semibold tracking-tight text-foreground" : "section-title",
           )}
         >
           {title}
         </h1>
         {description ? (
-          <p
-            className={cn(
-              compact
-                ? "mt-1 text-sm text-muted-foreground"
-                : "section-subtitle",
-            )}
-          >
+          <p className={cn(compact ? "mt-1 text-sm text-muted-foreground" : "section-subtitle")}>
             {description}
           </p>
         ) : null}
       </div>
-      {actions ? (
-        <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>
-      ) : null}
+      {actions ? <div className="flex shrink-0 flex-wrap gap-2">{actions}</div> : null}
     </div>
   );
 }

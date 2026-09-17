@@ -120,11 +120,7 @@ export function PlaceDetailsSheet({
               >
                 <AppImage
                   path={image.image_path}
-                  src={
-                    image.image_path
-                      ? undefined
-                      : (image.image_url ?? FALLBACK_IMAGE)
-                  }
+                  src={image.image_path ? undefined : (image.image_url ?? FALLBACK_IMAGE)}
                   alt={image.image_alt ?? place.title}
                   variant={image.isCover ? "thumb" : "display"}
                   aspect={image.isCover ? "wide" : "natural"}

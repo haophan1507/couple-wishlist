@@ -12,13 +12,7 @@ type NavLinkProps = {
   "aria-current"?: "page" | undefined;
 };
 
-function NavLinkPending({
-  children,
-  isPending,
-}: {
-  children: ReactNode;
-  isPending: boolean;
-}) {
+function NavLinkPending({ children, isPending }: { children: ReactNode; isPending: boolean }) {
   const { setLinkPending } = useNavigationPending();
 
   useEffect(() => {
@@ -39,12 +33,7 @@ export function NavLink({ children, className, to, onClick, ...props }: NavLinkP
   });
 
   return (
-    <Link
-      to={to}
-      onClick={onClick}
-      className={cn(className, "transition-opacity")}
-      {...props}
-    >
+    <Link to={to} onClick={onClick} className={cn(className, "transition-opacity")} {...props}>
       <NavLinkPending isPending={isPending}>{children}</NavLinkPending>
     </Link>
   );

@@ -83,19 +83,10 @@ function PlaceForm({
       className="grid gap-3 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5"
     >
       <input type="hidden" name="id" defaultValue={item.id} />
-      <input
-        type="hidden"
-        name="existing_cover_image_path"
-        defaultValue={item.cover_image_path}
-      />
+      <input type="hidden" name="existing_cover_image_path" defaultValue={item.cover_image_path} />
 
       <div className="grid gap-3 md:grid-cols-2">
-        <input
-          name="title"
-          placeholder="Tên kỷ niệm địa điểm"
-          defaultValue={item.title}
-          required
-        />
+        <input name="title" placeholder="Tên kỷ niệm địa điểm" defaultValue={item.title} required />
         <select name="status" defaultValue={item.status} aria-label="Trạng thái địa điểm">
           <option value="planned">Dự định</option>
           <option value="visited">Đã đi</option>
@@ -169,9 +160,7 @@ function PlaceForm({
         </div>
       </div>
 
-      {error ? (
-        <p className="text-sm text-rose-700 dark:text-rose-300">{error}</p>
-      ) : null}
+      {error ? <p className="text-sm text-rose-700 dark:text-rose-300">{error}</p> : null}
 
       <div className="flex flex-wrap gap-2">
         <button
@@ -243,11 +232,7 @@ export function AdminPlacesPage({ page }: { page: number }) {
       >
         {editor.isCreating ? (
           <div className="mt-4">
-            <PlaceForm
-              showLocationPicker
-              onSuccess={handleSaved}
-              onCancel={editor.close}
-            />
+            <PlaceForm showLocationPicker onSuccess={handleSaved} onCancel={editor.close} />
           </div>
         ) : null}
       </AdminListHeader>
@@ -257,8 +242,7 @@ export function AdminPlacesPage({ page }: { page: number }) {
           {places.map((place) => {
             const expanded = editor.isEditingId(place.id);
             const location =
-              [place.city, place.country].filter(Boolean).join(" / ") ||
-              place.location_name;
+              [place.city, place.country].filter(Boolean).join(" / ") || place.location_name;
             return (
               <AdminItemRow
                 key={place.id}
@@ -290,9 +274,7 @@ export function AdminPlacesPage({ page }: { page: number }) {
                       city: place.city ?? "",
                       country: place.country ?? "",
                       cover_image_path: place.cover_image_path ?? "",
-                      gallery_captions: place.images
-                        .map((image) => image.caption ?? "")
-                        .join("\n"),
+                      gallery_captions: place.images.map((image) => image.caption ?? "").join("\n"),
                     }}
                   />
                 ) : null}

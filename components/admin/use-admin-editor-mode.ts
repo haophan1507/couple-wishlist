@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 
-export type AdminEditorMode =
-  | { type: "idle" }
-  | { type: "create" }
-  | { type: "edit"; id: string };
+export type AdminEditorMode = { type: "idle" } | { type: "create" } | { type: "edit"; id: string };
 
 export function useAdminEditorMode() {
   const [mode, setMode] = useState<AdminEditorMode>({ type: "idle" });

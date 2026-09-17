@@ -15,12 +15,7 @@ type EmptyStateProps = {
   className?: string;
 };
 
-export function EmptyState({
-  title,
-  description,
-  icon,
-  className,
-}: EmptyStateProps) {
+export function EmptyState({ title, description, icon, className }: EmptyStateProps) {
   return (
     <Empty className={cn("card border-solid p-8", className)}>
       <EmptyHeader>

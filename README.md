@@ -85,7 +85,6 @@ Required env keys (see `.env.example`):
 
 On Vercel: keep Framework preset **TanStack Start**, Node **24.x**. Cron path stays `/api/cron/special-days`.
 
-
 3. Apply DB schema/seed in Supabase if needed (`db/`).
 
 4. Run the app:
@@ -102,7 +101,8 @@ Open http://localhost:3000
 - `npm run build` — production build
 - `npm run start` — run production server from `.output`
 - `npm run typecheck` — TypeScript check
-- `npm run lint` — ESLint
+- `npm run lint` — Oxlint
+- `npm run fmt` — Oxfmt
 - `npm run doctor` — react-doctor scan
 
 ## Cron

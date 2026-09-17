@@ -40,10 +40,7 @@ export function GiftHistoryPage({ page }: GiftHistoryPageProps) {
     />
   );
 
-  if (
-    (profileQuery.isPending || statsQuery.isPending || listQuery.isPending) &&
-    !listQuery.data
-  ) {
+  if ((profileQuery.isPending || statsQuery.isPending || listQuery.isPending) && !listQuery.data) {
     return (
       <section className="py-10 md:py-12">
         <Container>
@@ -71,25 +68,15 @@ export function GiftHistoryPage({ page }: GiftHistoryPageProps) {
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           <div className="card p-5">
             <p className="text-xs text-muted-foreground">Tổng món quà</p>
-            <p className="mt-2 text-3xl font-semibold text-foreground">
-              {stats?.total ?? 0}
-            </p>
+            <p className="mt-2 text-3xl font-semibold text-foreground">{stats?.total ?? 0}</p>
           </div>
           <div className="card p-5">
-            <p className="text-xs text-muted-foreground">
-              {personOneName} đã nhận
-            </p>
-            <p className="mt-2 text-3xl font-semibold text-foreground">
-              {stats?.meCount ?? 0}
-            </p>
+            <p className="text-xs text-muted-foreground">{personOneName} đã nhận</p>
+            <p className="mt-2 text-3xl font-semibold text-foreground">{stats?.meCount ?? 0}</p>
           </div>
           <div className="card p-5">
-            <p className="text-xs text-muted-foreground">
-              {personTwoName} đã nhận
-            </p>
-            <p className="mt-2 text-3xl font-semibold text-foreground">
-              {stats?.honeyCount ?? 0}
-            </p>
+            <p className="text-xs text-muted-foreground">{personTwoName} đã nhận</p>
+            <p className="mt-2 text-3xl font-semibold text-foreground">{stats?.honeyCount ?? 0}</p>
           </div>
         </div>
 
@@ -100,11 +87,7 @@ export function GiftHistoryPage({ page }: GiftHistoryPageProps) {
                 <GiftHistoryCard
                   key={item.id}
                   item={item}
-                  recipientName={
-                    item.recipient_owner_type === "me"
-                      ? personOneName
-                      : personTwoName
-                  }
+                  recipientName={item.recipient_owner_type === "me" ? personOneName : personTwoName}
                 />
               ))}
             </div>

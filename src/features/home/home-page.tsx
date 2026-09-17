@@ -26,8 +26,7 @@ export function HomePage() {
     queryFn: fetchWishlistOwnerCounts,
   });
 
-  const isLoading =
-    profileQuery.isPending || daysQuery.isPending || countsQuery.isPending;
+  const isLoading = profileQuery.isPending || daysQuery.isPending || countsQuery.isPending;
 
   if (isLoading) {
     return <SectionSkeleton cards={3} withTitle />;

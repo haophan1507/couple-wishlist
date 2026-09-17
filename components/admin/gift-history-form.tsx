@@ -90,9 +90,7 @@ export function GiftHistoryForm({
             helpers.resetForm();
           }
         } catch (error) {
-          helpers.setStatus(
-            error instanceof Error ? error.message : "Không thể lưu lịch sử quà.",
-          );
+          helpers.setStatus(error instanceof Error ? error.message : "Không thể lưu lịch sử quà.");
         } finally {
           helpers.setSubmitting(false);
         }

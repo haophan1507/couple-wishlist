@@ -45,8 +45,7 @@ export function AdminMobileMenu() {
                 const active =
                   link.href === "/admin"
                     ? pathname === "/admin"
-                    : pathname === link.href ||
-                      pathname.startsWith(`${link.href}/`);
+                    : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
                 return (
                   <NavLink

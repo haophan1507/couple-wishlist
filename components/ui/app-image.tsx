@@ -34,11 +34,7 @@ export function AppImage({
   if (!url) return null;
 
   const aspectClass =
-    aspect === "card"
-      ? "aspect-[4/3]"
-      : aspect === "wide"
-        ? "aspect-[16/10]"
-        : undefined;
+    aspect === "card" ? "aspect-[4/3]" : aspect === "wide" ? "aspect-[16/10]" : undefined;
 
   return (
     <div className={cn("overflow-hidden", aspectClass, className)}>

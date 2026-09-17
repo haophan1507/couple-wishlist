@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-17  
 **App:** Góc Của Tụi Mình (couple-wishlist)  
-**Status:** Approved — implementation in progress  
+**Status:** Approved — implementation in progress
 
 ## Goal
 
@@ -10,15 +10,15 @@ Make the whole app feel consistent, warmer, and less visually noisy — light an
 
 ## Decisions (locked)
 
-| Topic | Choice |
-|--------|--------|
-| Scope | Entire app, phased |
-| Visual tone | Warm / romantic / soft (keep cream–rose–mocha), cleaner |
-| Declutter level | Medium — fewer pills/boxes, merge sections, more whitespace; keep core content |
-| Dark mode | Equal priority with light |
-| Approach | Design system first, then apply page-by-page |
-| Gift ↔ wishlist link | Keep wishlist item; set status to `gifted` (do **not** delete) |
-| Lists | Content-height by default; internal scroll only when content exceeds viewport |
+| Topic                | Choice                                                                         |
+| -------------------- | ------------------------------------------------------------------------------ |
+| Scope                | Entire app, phased                                                             |
+| Visual tone          | Warm / romantic / soft (keep cream–rose–mocha), cleaner                        |
+| Declutter level      | Medium — fewer pills/boxes, merge sections, more whitespace; keep core content |
+| Dark mode            | Equal priority with light                                                      |
+| Approach             | Design system first, then apply page-by-page                                   |
+| Gift ↔ wishlist link | Keep wishlist item; set status to `gifted` (do **not** delete)                 |
+| Lists                | Content-height by default; internal scroll only when content exceeds viewport  |
 
 ## Related specs
 
@@ -58,14 +58,14 @@ Make the whole app feel consistent, warmer, and less visually noisy — light an
 
 ### Shared primitives
 
-| Primitive | Role |
-|-----------|------|
-| `PageHeader` | Title + subtitle for public & admin list pages |
-| Surface / card | **One** surface style (replace divergent WishlistCard shadows vs `.card`) |
-| `Button` | Primary / outline / ghost only — including hero CTAs and admin submit |
-| Badge / chip | At most 1–2 variants |
-| Empty / loading / error | Shared patterns |
-| `FormField` | Label + control + error; fixed control height (`h-10` inputs/selects; textarea separate) |
+| Primitive               | Role                                                                                     |
+| ----------------------- | ---------------------------------------------------------------------------------------- |
+| `PageHeader`            | Title + subtitle for public & admin list pages                                           |
+| Surface / card          | **One** surface style (replace divergent WishlistCard shadows vs `.card`)                |
+| `Button`                | Primary / outline / ghost only — including hero CTAs and admin submit                    |
+| Badge / chip            | At most 1–2 variants                                                                     |
+| Empty / loading / error | Shared patterns                                                                          |
+| `FormField`             | Label + control + error; fixed control height (`h-10` inputs/selects; textarea separate) |
 
 ### Declutter rules
 
@@ -154,11 +154,11 @@ Make the whole app feel consistent, warmer, and less visually noisy — light an
 
 ### Unused / noisy fields
 
-| Item | Action |
-|------|--------|
-| Places `slug` | Hide from UI; auto-generate from title |
-| Empty spacer `<div />` in gift/places forms | Remove |
-| Gallery captions UX | Save captions for existing images without requiring re-upload |
+| Item                                        | Action                                                        |
+| ------------------------------------------- | ------------------------------------------------------------- |
+| Places `slug`                               | Hide from UI; auto-generate from title                        |
+| Empty spacer `<div />` in gift/places forms | Remove                                                        |
+| Gallery captions UX                         | Save captions for existing images without requiring re-upload |
 
 ### Form layout consistency
 
@@ -193,12 +193,12 @@ Fixed `max-h-[70vh]` / `72vh` + `overflow-y-auto` forces inner scroll even on ta
 
 ## 5. Implementation phases
 
-| Phase | Work |
-|-------|------|
-| **1 — Foundation** | Tokens (light/dark), `PageHeader`, one surface, Button/Badge/Empty/Loading/Error, `FormField` |
-| **2 — Public** | Home → Wishlist → Special days → Gallery → Gift history → Heart map + list height |
-| **3 — Admin** | Shell, list headers/rows, dashboard, **forms** (wishlist gift link fix, caption fix, slug hide, heights) + list height |
-| **4 — Polish** | Dark pass, spacing/motion light touch, empty/loading parity, mobile check |
+| Phase              | Work                                                                                                                   |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **1 — Foundation** | Tokens (light/dark), `PageHeader`, one surface, Button/Badge/Empty/Loading/Error, `FormField`                          |
+| **2 — Public**     | Home → Wishlist → Special days → Gallery → Gift history → Heart map + list height                                      |
+| **3 — Admin**      | Shell, list headers/rows, dashboard, **forms** (wishlist gift link fix, caption fix, slug hide, heights) + list height |
+| **4 — Polish**     | Dark pass, spacing/motion light touch, empty/loading parity, mobile check                                              |
 
 Phases may overlap slightly (e.g. list height can ship with each page), but foundation lands first.
 

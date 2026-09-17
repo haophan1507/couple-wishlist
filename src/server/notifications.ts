@@ -29,9 +29,7 @@ export const sendManualEmailFn = createServerFn({ method: "POST" })
       subject: data.subject?.trim() || "",
     });
 
-    const failureMessage = result.failures?.length
-      ? result.failures.join("; ")
-      : "";
+    const failureMessage = result.failures?.length ? result.failures.join("; ") : "";
 
     if (result.error || failureMessage) {
       return {

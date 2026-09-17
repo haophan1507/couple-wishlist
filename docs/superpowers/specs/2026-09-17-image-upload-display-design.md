@@ -49,12 +49,12 @@ Helpers:
 
 1. Lower caps in `STORAGE_RULES` (targets, approximate):
 
-| Target | maxWidth×Height | maxSizeBytes |
-|---|---|---|
-| wishlist / giftHistory | 1600×1600 | 2.5 MB |
-| gallery / placeGallery | 2000×2000 | 4 MB |
-| cover | 2000×1200 | 3.5 MB |
-| placeCover | 2000×1500 | 3.5 MB |
+| Target                 | maxWidth×Height | maxSizeBytes |
+| ---------------------- | --------------- | ------------ |
+| wishlist / giftHistory | 1600×1600       | 2.5 MB       |
+| gallery / placeGallery | 2000×2000       | 4 MB         |
+| cover                  | 2000×1200       | 3.5 MB       |
+| placeCover             | 2000×1500       | 3.5 MB       |
 
 2. WebP quality ladder start lower: `[78, 72, 66, 60, 55]`.
 
@@ -78,14 +78,14 @@ Create `components/ui/app-image.tsx`:
 
 ```ts
 type AppImageProps = {
-  path?: string | null;       // storage path preferred
-  src?: string | null;        // absolute URL override / Unsplash fallback
+  path?: string | null; // storage path preferred
+  src?: string | null; // absolute URL override / Unsplash fallback
   alt: string;
   variant?: "thumb" | "display";
   aspect?: "card" | "wide" | "natural";
   className?: string;
   imgClassName?: string;
-  priority?: boolean;         // skip lazy for LCP/hero
+  priority?: boolean; // skip lazy for LCP/hero
 };
 ```
 
@@ -100,16 +100,16 @@ Behavior:
 
 ## Surface mapping
 
-| Surface | File | variant | aspect |
-|---|---|---|---|
-| Wishlist card | `components/wishlist-card.tsx` | thumb | card |
-| Gift history card | `components/gift-history-card.tsx` | thumb | wide |
-| Hero cover | `components/sections/hero-section.tsx` | display | wide (or keep min-h with cover) |
-| Gallery grid | `components/gallery-grid.tsx` | display | natural |
-| Place details cover | `components/place-details-sheet.tsx` | display/thumb | card/wide |
-| Place gallery images | same | display | natural |
-| Admin row thumb | `components/admin/admin-item-row.tsx` | thumb | card (square-ish via existing box or aspect-square) |
-| Admin form preview | `components/admin/admin-image-preview.tsx` | thumb | wide |
+| Surface              | File                                       | variant       | aspect                                              |
+| -------------------- | ------------------------------------------ | ------------- | --------------------------------------------------- |
+| Wishlist card        | `components/wishlist-card.tsx`             | thumb         | card                                                |
+| Gift history card    | `components/gift-history-card.tsx`         | thumb         | wide                                                |
+| Hero cover           | `components/sections/hero-section.tsx`     | display       | wide (or keep min-h with cover)                     |
+| Gallery grid         | `components/gallery-grid.tsx`              | display       | natural                                             |
+| Place details cover  | `components/place-details-sheet.tsx`       | display/thumb | card/wide                                           |
+| Place gallery images | same                                       | display       | natural                                             |
+| Admin row thumb      | `components/admin/admin-item-row.tsx`      | thumb         | card (square-ish via existing box or aspect-square) |
+| Admin form preview   | `components/admin/admin-image-preview.tsx` | thumb         | wide                                                |
 
 Pass storage `path` when available from queries; keep Unsplash fallbacks as `src`.
 

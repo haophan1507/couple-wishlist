@@ -13,7 +13,5 @@ export const Route = createFileRoute("/admin/special-days")({
 
 function AdminSpecialDaysRoute() {
   const { page } = Route.useSearch();
-  return (
-    <AdminSpecialDaysPage page={Math.max(1, Number(page ?? "1") || 1)} />
-  );
+  return <AdminSpecialDaysPage page={Math.max(1, Number(page ?? "1") || 1)} />;
 }

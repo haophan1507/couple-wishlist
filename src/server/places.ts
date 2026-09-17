@@ -24,8 +24,9 @@ function splitCaptionLines(value: FormDataEntryValue | null) {
     .map((line) => line.trim());
 }
 
-export const upsertPlaceMemoryFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
-  async ({ data: formData }) => {
+export const upsertPlaceMemoryFn = createServerFn({ method: "POST" })
+  .validator(formDataValidator)
+  .handler(async ({ data: formData }) => {
     await requireAdminServer();
 
     const id = String(formData.get("id") ?? "");
@@ -55,17 +56,11 @@ export const upsertPlaceMemoryFn = createServerFn({ method: "POST" }).validator(
 
     const supabase = createSupabaseAdminClient();
     const { data: existing } = id
-      ? await supabase
-          .from("place_memories")
-          .select("cover_image_path")
-          .eq("id", id)
-          .maybeSingle()
+      ? await supabase.from("place_memories").select("cover_image_path").eq("id", id).maybeSingle()
       : { data: null };
 
-    const existingPath = (existing as { cover_image_path: string | null } | null)
-      ?.cover_image_path;
-    let nextCoverImagePath =
-      parsed.data.existing_cover_image_path || existingPath || null;
+    const existingPath = (existing as { cover_image_path: string | null } | null)?.cover_image_path;
+    let nextCoverImagePath = parsed.data.existing_cover_image_path || existingPath || null;
 
     if (coverFile) {
       const uploaded = await uploadImageFile({
@@ -78,9 +73,7 @@ export const upsertPlaceMemoryFn = createServerFn({ method: "POST" }).validator(
 
     const payload = {
       title: parsed.data.title,
-      slug: parsed.data.slug
-        ? slugify(parsed.data.slug)
-        : slugify(parsed.data.title),
+      slug: parsed.data.slug ? slugify(parsed.data.slug) : slugify(parsed.data.title),
       description: parsed.data.description || null,
       status: parsed.data.status,
       visit_date: parsed.data.visit_date || null,
@@ -142,16 +135,13 @@ export const upsertPlaceMemoryFn = createServerFn({ method: "POST" }).validator(
         ),
       );
 
-      await supabase
-        .from("place_memory_images")
-        .delete()
-        .eq("place_memory_id", placeId);
+      await supabase.from("place_memory_images").delete().eq("place_memory_id", placeId);
       await supabase.from("place_memory_images").insert(uploadedImages);
 
       await Promise.all(
-        (
-          (existingImages as Array<{ image_path: string }> | null) ?? []
-        ).map((image) => deleteStorageFile(image.image_path)),
+        ((existingImages as Array<{ image_path: string }> | null) ?? []).map((image) =>
+          deleteStorageFile(image.image_path),
+        ),
       );
     } else if (id) {
       const captions = splitCaptionLines(formData.get("gallery_captions"));
@@ -165,9 +155,7 @@ export const upsertPlaceMemoryFn = createServerFn({ method: "POST" }).validator(
         throw new Error("Không thể đọc ảnh chi tiết hiện tại.");
       }
 
-      const images =
-        (existingImages as Array<{ id: string; sort_order: number }> | null) ??
-        [];
+      const images = (existingImages as Array<{ id: string; sort_order: number }> | null) ?? [];
 
       if (images.length) {
         await Promise.all(
@@ -186,37 +174,27 @@ export const upsertPlaceMemoryFn = createServerFn({ method: "POST" }).validator(
     }
 
     return { ok: true as const, created: !id };
-  },
-);
+  });
 
-export const deletePlaceMemoryFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
-  async ({ data: formData }) => {
+export const deletePlaceMemoryFn = createServerFn({ method: "POST" })
+  .validator(formDataValidator)
+  .handler(async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");
     const supabase = createSupabaseAdminClient();
     const [{ data: place }, { data: images }] = await Promise.all([
-      supabase
-        .from("place_memories")
-        .select("cover_image_path")
-        .eq("id", id)
-        .maybeSingle(),
-      supabase
-        .from("place_memory_images")
-        .select("image_path")
-        .eq("place_memory_id", id),
+      supabase.from("place_memories").select("cover_image_path").eq("id", id).maybeSingle(),
+      supabase.from("place_memory_images").select("image_path").eq("place_memory_id", id),
     ]);
 
     await supabase.from("place_memories").delete().eq("id", id);
 
     await Promise.all([
-      deleteStorageFile(
-        (place as { cover_image_path: string | null } | null)?.cover_image_path,
-      ),
+      deleteStorageFile((place as { cover_image_path: string | null } | null)?.cover_image_path),
       ...((images as Array<{ image_path: string }> | null) ?? []).map((image) =>
         deleteStorageFile(image.image_path),
       ),
     ]);
 
     return { ok: true as const };
-  },
-);
+  });

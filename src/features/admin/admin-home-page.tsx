@@ -2,20 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { APP_NAME } from "@/lib/constants/app";
-import {
-  fetchAdminCounts,
-  fetchCoupleProfile,
-  queryKeys,
-} from "@/lib/data/client-queries";
+import { fetchAdminCounts, fetchCoupleProfile, queryKeys } from "@/lib/data/client-queries";
 import { upsertCoupleProfileFn } from "@/src/server/couple-profile";
 import { sendManualEmailFn } from "@/src/server/notifications";
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="block space-y-2">
-      <span className="block text-sm font-medium text-foreground/80">
-        {label}
-      </span>
+      <span className="block text-sm font-medium text-foreground/80">{label}</span>
       {children}
     </label>
   );
@@ -56,10 +50,7 @@ export function AdminHomePage() {
     },
   });
 
-  if (
-    (profileQuery.isPending || countsQuery.isPending) &&
-    !profileQuery.data
-  ) {
+  if ((profileQuery.isPending || countsQuery.isPending) && !profileQuery.data) {
     return <SectionSkeleton cards={3} withTitle />;
   }
 
@@ -71,8 +62,8 @@ export function AdminHomePage() {
       <section className="card p-6">
         <h1 className="text-2xl font-semibold dark:text-white">Bảng điều khiển</h1>
         <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">
-          Tổng quan không gian riêng của hai bạn: wishlist, kỷ niệm quà, ngày đặc biệt,
-          ảnh và địa điểm yêu thương.
+          Tổng quan không gian riêng của hai bạn: wishlist, kỷ niệm quà, ngày đặc biệt, ảnh và địa
+          điểm yêu thương.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-5">
           {[
@@ -109,9 +100,7 @@ export function AdminHomePage() {
                 });
               })
               .catch((error) => {
-                setProfileError(
-                  error instanceof Error ? error.message : "Không thể lưu hồ sơ.",
-                );
+                setProfileError(error instanceof Error ? error.message : "Không thể lưu hồ sơ.");
               })
               .finally(() => setProfilePending(false));
           }}
@@ -184,10 +173,7 @@ export function AdminHomePage() {
                   />
                 </Field>
                 <Field label="Sở thích">
-                  <input
-                    name="person_one_hobby"
-                    defaultValue={profile?.person_one_hobby ?? ""}
-                  />
+                  <input name="person_one_hobby" defaultValue={profile?.person_one_hobby ?? ""} />
                 </Field>
               </div>
             </div>
@@ -210,10 +196,7 @@ export function AdminHomePage() {
                   />
                 </Field>
                 <Field label="Sở thích">
-                  <input
-                    name="person_two_hobby"
-                    defaultValue={profile?.person_two_hobby ?? ""}
-                  />
+                  <input name="person_two_hobby" defaultValue={profile?.person_two_hobby ?? ""} />
                 </Field>
               </div>
             </div>
@@ -245,13 +228,9 @@ export function AdminHomePage() {
                   const formData = new FormData(event.currentTarget);
                   emailMutation.mutate({
                     data: {
-                      recipients: String(
-                        formData.get("manual_email_recipients") ?? "",
-                      ),
+                      recipients: String(formData.get("manual_email_recipients") ?? ""),
                       subject: String(formData.get("subject") ?? ""),
-                      customMessage: String(
-                        formData.get("manual_email_message") ?? "",
-                      ),
+                      customMessage: String(formData.get("manual_email_message") ?? ""),
                     },
                   });
                 }}
@@ -284,9 +263,7 @@ export function AdminHomePage() {
                 </button>
               </form>
               {emailMessage ? (
-                <p className="text-xs text-emerald-700 dark:text-emerald-300">
-                  {emailMessage}
-                </p>
+                <p className="text-xs text-emerald-700 dark:text-emerald-300">{emailMessage}</p>
               ) : null}
               {emailError ? (
                 <p className="text-xs text-rose-700 dark:text-rose-300">

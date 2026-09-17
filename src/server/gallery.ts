@@ -7,8 +7,9 @@ import { gallerySchema } from "@/lib/validation";
 import { createServerFn } from "@tanstack/react-start";
 import { formDataValidator } from "@/src/server/form-data";
 
-export const upsertGalleryItemFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
-  async ({ data: formData }) => {
+export const upsertGalleryItemFn = createServerFn({ method: "POST" })
+  .validator(formDataValidator)
+  .handler(async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");
     const imageFile = getOptionalFile(formData, "image_file");
@@ -25,15 +26,10 @@ export const upsertGalleryItemFn = createServerFn({ method: "POST" }).validator(
 
     const supabase = createSupabaseAdminClient();
     const { data: existing } = id
-      ? await supabase
-          .from("gallery_items")
-          .select("image_path")
-          .eq("id", id)
-          .maybeSingle()
+      ? await supabase.from("gallery_items").select("image_path").eq("id", id).maybeSingle()
       : { data: null };
 
-    const existingPath = (existing as { image_path: string | null } | null)
-      ?.image_path;
+    const existingPath = (existing as { image_path: string | null } | null)?.image_path;
     let nextImagePath = parsed.data.existing_image_path || existingPath || null;
 
     if (imageFile) {
@@ -57,10 +53,7 @@ export const upsertGalleryItemFn = createServerFn({ method: "POST" }).validator(
     };
 
     if (id) {
-      const { error } = await supabase
-        .from("gallery_items")
-        .update(payload)
-        .eq("id", id);
+      const { error } = await supabase.from("gallery_items").update(payload).eq("id", id);
       if (error) throw new Error(`Cập nhật ảnh kỷ niệm thất bại: ${error.message}`);
     } else {
       const { error } = await supabase.from("gallery_items").insert(payload);
@@ -72,11 +65,11 @@ export const upsertGalleryItemFn = createServerFn({ method: "POST" }).validator(
     }
 
     return { ok: true as const };
-  },
-);
+  });
 
-export const deleteGalleryItemFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
-  async ({ data: formData }) => {
+export const deleteGalleryItemFn = createServerFn({ method: "POST" })
+  .validator(formDataValidator)
+  .handler(async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");
     const supabase = createSupabaseAdminClient();
@@ -88,9 +81,6 @@ export const deleteGalleryItemFn = createServerFn({ method: "POST" }).validator(
       .maybeSingle();
 
     if (error) throw new Error(`Xóa ảnh kỷ niệm thất bại: ${error.message}`);
-    await deleteStorageFile(
-      (existing as { image_path: string | null } | null)?.image_path,
-    );
+    await deleteStorageFile((existing as { image_path: string | null } | null)?.image_path);
     return { ok: true as const };
-  },
-);
+  });

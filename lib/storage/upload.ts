@@ -33,14 +33,12 @@ export async function uploadImageFile(options: {
   let finalBuffer: Buffer | null = null;
 
   try {
-    const pipeline = sharp(originalBuffer, { failOn: "none" })
-      .rotate()
-      .resize({
-        width: rule.maxWidth,
-        height: rule.maxHeight,
-        fit: "inside",
-        withoutEnlargement: true,
-      });
+    const pipeline = sharp(originalBuffer, { failOn: "none" }).rotate().resize({
+      width: rule.maxWidth,
+      height: rule.maxHeight,
+      fit: "inside",
+      withoutEnlargement: true,
+    });
 
     const qualityLevels = [78, 72, 66, 60, 55];
 

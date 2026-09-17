@@ -34,13 +34,9 @@ export function PlaceMapPicker({
 }) {
   const abortRef = useRef<AbortController | null>(null);
   const initialLatitude =
-    defaultLatitude && !Number.isNaN(Number(defaultLatitude))
-      ? Number(defaultLatitude)
-      : null;
+    defaultLatitude && !Number.isNaN(Number(defaultLatitude)) ? Number(defaultLatitude) : null;
   const initialLongitude =
-    defaultLongitude && !Number.isNaN(Number(defaultLongitude))
-      ? Number(defaultLongitude)
-      : null;
+    defaultLongitude && !Number.isNaN(Number(defaultLongitude)) ? Number(defaultLongitude) : null;
   const [latitude, setLatitude] = useState<number | null>(initialLatitude);
   const [longitude, setLongitude] = useState<number | null>(initialLongitude);
   const [locationName, setLocationName] = useState(defaultLocationName ?? "");
@@ -88,11 +84,7 @@ export function PlaceMapPicker({
       if ((error as Error).name === "AbortError") {
         return;
       }
-      setSearchError(
-        error instanceof Error
-          ? error.message
-          : "Không thể tìm địa điểm lúc này.",
-      );
+      setSearchError(error instanceof Error ? error.message : "Không thể tìm địa điểm lúc này.");
       setResults([]);
       setShowResults(true);
     } finally {
@@ -117,10 +109,7 @@ export function PlaceMapPicker({
     };
   }, [searchQuery]);
 
-  const reverseGeocode = async (
-    nextLatitude: number,
-    nextLongitude: number,
-  ) => {
+  const reverseGeocode = async (nextLatitude: number, nextLongitude: number) => {
     try {
       const payload = await reverseGeocodeFn({
         data: {
@@ -154,8 +143,7 @@ export function PlaceMapPicker({
             Chọn vị trí trên bản đồ
           </p>
           <p className="mt-1 text-xs text-mocha/60 dark:text-white/45">
-            Tìm địa điểm, bấm lên bản đồ hoặc kéo marker để cập nhật tọa độ,
-            thành phố và quốc gia.
+            Tìm địa điểm, bấm lên bản đồ hoặc kéo marker để cập nhật tọa độ, thành phố và quốc gia.
           </p>
         </div>
         <button
@@ -224,14 +212,9 @@ export function PlaceMapPicker({
               onTouchMoveCapture={(event) => event.stopPropagation()}
             >
               {searchError ? (
-                <p className="px-3 py-3 text-sm text-rose-700 dark:text-rose-300">
-                  {searchError}
-                </p>
+                <p className="px-3 py-3 text-sm text-rose-700 dark:text-rose-300">{searchError}</p>
               ) : null}
-              {!searching &&
-              !searchError &&
-              searchQuery.trim().length >= 2 &&
-              !results.length ? (
+              {!searching && !searchError && searchQuery.trim().length >= 2 && !results.length ? (
                 <p className="px-3 py-3 text-sm text-mocha/65 dark:text-white/55">
                   Không tìm thấy kết quả phù hợp.
                 </p>
@@ -271,45 +254,43 @@ export function PlaceMapPicker({
 
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3 px-1">
-            <p className="text-sm font-medium text-mocha/80 dark:text-white/70">
-              Bản đồ chọn điểm
-            </p>
+            <p className="text-sm font-medium text-mocha/80 dark:text-white/70">Bản đồ chọn điểm</p>
             <p className="text-xs text-mocha/55 dark:text-white/45">
               Cuộn chuột để zoom, kéo marker để chỉnh
             </p>
           </div>
 
           <div className="relative">
-          <div className="overflow-hidden rounded-3xl border border-white/70 dark:border-white/10">
-            <Suspense
-              fallback={
-                <div className="flex h-[320px] items-center justify-center text-sm text-mocha/60 dark:text-white/45">
-                  Đang tải bản đồ...
-                </div>
-              }
-            >
-              <DynamicPlaceMapCanvas
-                center={center}
-                zoom={initialLatitude && initialLongitude ? 8 : 5}
-                latitude={latitude}
-                longitude={longitude}
-                tileUrl={useFallbackTile ? OSM_TILE_URL : WIKIMEDIA_TILE_URL}
-                attribution={
-                  useFallbackTile
-                    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
+            <div className="overflow-hidden rounded-3xl border border-white/70 dark:border-white/10">
+              <Suspense
+                fallback={
+                  <div className="flex h-[320px] items-center justify-center text-sm text-mocha/60 dark:text-white/45">
+                    Đang tải bản đồ...
+                  </div>
                 }
-                onTileError={() => {
-                  setUseFallbackTile(true);
-                }}
-                onPick={(coords) => {
-                  setLatitude(coords.latitude);
-                  setLongitude(coords.longitude);
-                  void reverseGeocode(coords.latitude, coords.longitude);
-                }}
-              />
-            </Suspense>
-          </div>
+              >
+                <DynamicPlaceMapCanvas
+                  center={center}
+                  zoom={initialLatitude && initialLongitude ? 8 : 5}
+                  latitude={latitude}
+                  longitude={longitude}
+                  tileUrl={useFallbackTile ? OSM_TILE_URL : WIKIMEDIA_TILE_URL}
+                  attribution={
+                    useFallbackTile
+                      ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
+                  }
+                  onTileError={() => {
+                    setUseFallbackTile(true);
+                  }}
+                  onPick={(coords) => {
+                    setLatitude(coords.latitude);
+                    setLongitude(coords.longitude);
+                    void reverseGeocode(coords.latitude, coords.longitude);
+                  }}
+                />
+              </Suspense>
+            </div>
           </div>
         </div>
       </div>

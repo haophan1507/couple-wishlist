@@ -109,9 +109,7 @@ export function getUpcomingDay(days: SpecialDay[]) {
 
   return allDays
     .map((day) => {
-      const currentYear = new Date(
-        `${new Date().getFullYear()}-${day.date.slice(5)}`,
-      );
+      const currentYear = new Date(`${new Date().getFullYear()}-${day.date.slice(5)}`);
       const nextDate = isAfter(today, currentYear)
         ? new Date(`${new Date().getFullYear() + 1}-${day.date.slice(5)}`)
         : currentYear;
@@ -197,10 +195,7 @@ function getBirthdayEvents(profile: CoupleProfile | null): TimelineEvent[] {
   });
 }
 
-export function getTimelineEvents(
-  days: SpecialDay[],
-  profile: CoupleProfile | null,
-) {
+export function getTimelineEvents(days: SpecialDay[], profile: CoupleProfile | null) {
   const today = startOfDay(new Date());
   const manualEvents: TimelineEvent[] = days.map((day) => {
     const nextDate = getAnnualOccurrence(day.date);
@@ -234,12 +229,9 @@ export function getTimelineEvents(
   const milestoneEvents = loveStats?.milestones ?? [];
   const birthdayEvents = getBirthdayEvents(profile);
 
-  return [
-    ...manualEvents,
-    ...autoHolidayEvents,
-    ...birthdayEvents,
-    ...milestoneEvents,
-  ].sort((a, b) => a.countdown - b.countdown);
+  return [...manualEvents, ...autoHolidayEvents, ...birthdayEvents, ...milestoneEvents].sort(
+    (a, b) => a.countdown - b.countdown,
+  );
 }
 
 export function getCoupleFacts(profile: CoupleProfile | null) {
@@ -261,10 +253,7 @@ export function getCoupleFacts(profile: CoupleProfile | null) {
   ].map((person) => ({
     ...person,
     age: person.birthday
-      ? differenceInYears(
-          startOfDay(new Date()),
-          startOfDay(new Date(person.birthday)),
-        )
+      ? differenceInYears(startOfDay(new Date()), startOfDay(new Date(person.birthday)))
       : null,
   }));
 }

@@ -16,13 +16,9 @@ export function FormField({
 }) {
   return (
     <label className={cn("block space-y-2", className)} htmlFor={htmlFor}>
-      <span className="block text-sm font-medium text-foreground/80">
-        {label}
-      </span>
+      <span className="block text-sm font-medium text-foreground/80">{label}</span>
       {children}
-      {error ? (
-        <span className="block text-sm text-destructive">{error}</span>
-      ) : null}
+      {error ? <span className="block text-sm text-destructive">{error}</span> : null}
     </label>
   );
 }

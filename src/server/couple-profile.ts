@@ -7,8 +7,9 @@ import { coupleProfileSchema } from "@/lib/validation";
 import { createServerFn } from "@tanstack/react-start";
 import { formDataValidator } from "@/src/server/form-data";
 
-export const upsertCoupleProfileFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
-  async ({ data: formData }) => {
+export const upsertCoupleProfileFn = createServerFn({ method: "POST" })
+  .validator(formDataValidator)
+  .handler(async ({ data: formData }) => {
     await requireAdminServer();
     const coverFile = getOptionalFile(formData, "cover_image_file");
 
@@ -43,9 +44,7 @@ export const upsertCoupleProfileFn = createServerFn({ method: "POST" }).validato
     } | null;
 
     let nextCoverImagePath =
-      parsed.data.existing_cover_image_path ||
-      existingRow?.cover_image_path ||
-      null;
+      parsed.data.existing_cover_image_path || existingRow?.cover_image_path || null;
 
     if (coverFile) {
       const uploaded = await uploadImageFile({
@@ -92,5 +91,4 @@ export const upsertCoupleProfileFn = createServerFn({ method: "POST" }).validato
     }
 
     return { ok: true as const };
-  },
-);
+  });

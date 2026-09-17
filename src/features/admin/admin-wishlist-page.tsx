@@ -5,11 +5,7 @@ import { useAdminEditorMode } from "@/components/admin/use-admin-editor-mode";
 import { WishlistForm } from "@/components/admin/wishlist-form";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
-import {
-  fetchAdminWishlistPage,
-  fetchCoupleProfile,
-  queryKeys,
-} from "@/lib/data/client-queries";
+import { fetchAdminWishlistPage, fetchCoupleProfile, queryKeys } from "@/lib/data/client-queries";
 import { parseWishlistProductUrls } from "@/lib/utils/wishlist-links";
 import { deleteWishlistItemFn } from "@/src/server/wishlist";
 

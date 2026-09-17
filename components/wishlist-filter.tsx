@@ -46,9 +46,7 @@ export function WishlistFilter({
         <select
           aria-label="Lọc theo danh mục"
           value={search.category ?? ""}
-          onChange={(e) =>
-            onSearchChange({ category: e.target.value || undefined })
-          }
+          onChange={(e) => onSearchChange({ category: e.target.value || undefined })}
         >
           <option value="">Tất cả danh mục</option>
           {categories.map((category) => (

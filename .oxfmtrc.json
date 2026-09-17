@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    ".output/**",
+    "dist/**",
+    ".tanstack/**",
+    "src/routeTree.gen.ts",
+    "package-lock.json"
+  ]
+}

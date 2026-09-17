@@ -7,8 +7,9 @@ import { giftHistorySchema } from "@/lib/validation";
 import { createServerFn } from "@tanstack/react-start";
 import { formDataValidator } from "@/src/server/form-data";
 
-export const upsertGiftHistoryItemFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
-  async ({ data: formData }) => {
+export const upsertGiftHistoryItemFn = createServerFn({ method: "POST" })
+  .validator(formDataValidator)
+  .handler(async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");
     const photoFile = getOptionalFile(formData, "photo_file");
@@ -58,8 +59,7 @@ export const upsertGiftHistoryItemFn = createServerFn({ method: "POST" }).valida
       photo_path: string | null;
     } | null;
 
-    let nextPhotoPath =
-      parsed.data.existing_photo_path || existingRow?.photo_path || null;
+    let nextPhotoPath = parsed.data.existing_photo_path || existingRow?.photo_path || null;
     let wishlistItemTitle = existingRow?.wishlist_item_title ?? null;
 
     if (payload.wishlist_item_id) {
@@ -73,8 +73,7 @@ export const upsertGiftHistoryItemFn = createServerFn({ method: "POST" }).valida
         throw new Error("Không thể đọc món quà trong wishlist được liên kết.");
       }
 
-      wishlistItemTitle =
-        (wishlistItem as { title: string } | null)?.title ?? wishlistItemTitle;
+      wishlistItemTitle = (wishlistItem as { title: string } | null)?.title ?? wishlistItemTitle;
     }
 
     if (photoFile) {
@@ -94,15 +93,10 @@ export const upsertGiftHistoryItemFn = createServerFn({ method: "POST" }).valida
     };
 
     if (id) {
-      const { error } = await supabase
-        .from("gift_history_items")
-        .update(finalPayload)
-        .eq("id", id);
+      const { error } = await supabase.from("gift_history_items").update(finalPayload).eq("id", id);
       if (error) throw new Error(`Cập nhật lịch sử quà thất bại: ${error.message}`);
     } else {
-      const { error } = await supabase
-        .from("gift_history_items")
-        .insert(finalPayload);
+      const { error } = await supabase.from("gift_history_items").insert(finalPayload);
       if (error) throw new Error(`Thêm lịch sử quà thất bại: ${error.message}`);
     }
 
@@ -118,20 +112,16 @@ export const upsertGiftHistoryItemFn = createServerFn({ method: "POST" }).valida
       }
     }
 
-    if (
-      photoFile &&
-      existingRow?.photo_path &&
-      existingRow.photo_path !== nextPhotoPath
-    ) {
+    if (photoFile && existingRow?.photo_path && existingRow.photo_path !== nextPhotoPath) {
       await deleteStorageFile(existingRow.photo_path);
     }
 
     return { ok: true as const };
-  },
-);
+  });
 
-export const deleteGiftHistoryItemFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
-  async ({ data: formData }) => {
+export const deleteGiftHistoryItemFn = createServerFn({ method: "POST" })
+  .validator(formDataValidator)
+  .handler(async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");
     const supabase = createSupabaseAdminClient();
@@ -143,9 +133,6 @@ export const deleteGiftHistoryItemFn = createServerFn({ method: "POST" }).valida
       .maybeSingle();
 
     if (error) throw new Error(`Xóa lịch sử quà thất bại: ${error.message}`);
-    await deleteStorageFile(
-      (existing as { photo_path: string | null } | null)?.photo_path,
-    );
+    await deleteStorageFile((existing as { photo_path: string | null } | null)?.photo_path);
     return { ok: true as const };
-  },
-);
+  });

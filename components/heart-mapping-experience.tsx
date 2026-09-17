@@ -16,12 +16,11 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const timelinePlaces = useMemo(
     () =>
-      places
-        .sort((a, b) => {
-          const aDate = a.visit_date ?? a.created_at;
-          const bDate = b.visit_date ?? b.created_at;
-          return aDate.localeCompare(bDate) || a.id.localeCompare(b.id);
-        }),
+      places.sort((a, b) => {
+        const aDate = a.visit_date ?? a.created_at;
+        const bDate = b.visit_date ?? b.created_at;
+        return aDate.localeCompare(bDate) || a.id.localeCompare(b.id);
+      }),
     [places],
   );
   const visitedPlaces = useMemo(
@@ -37,15 +36,18 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
         <div>
           <h1 className="section-title font-(--font-heading)">Bản đồ yêu thương</h1>
           <p className="section-subtitle">
-            Một bản đồ vừa tượng trưng vừa thực tế cho những nơi hai bạn đã đi qua và còn muốn ghé đến.
+            Một bản đồ vừa tượng trưng vừa thực tế cho những nơi hai bạn đã đi qua và còn muốn ghé
+            đến.
           </p>
         </div>
 
         <div className="inline-flex rounded-full border border-mocha/15 bg-white/70 p-1 dark:border-white/10 dark:bg-white/5">
-          {([
-            { key: "heart", label: "Trái tim", icon: Heart },
-            { key: "map", label: "Bản đồ", icon: MapPinned },
-          ] as const).map((item) => {
+          {(
+            [
+              { key: "heart", label: "Trái tim", icon: Heart },
+              { key: "map", label: "Bản đồ", icon: MapPinned },
+            ] as const
+          ).map((item) => {
             const Icon = item.icon;
             return (
               <button
@@ -87,7 +89,9 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
             ) : (
               <div className="flex min-h-[420px] items-center justify-center rounded-4xl bg-blush/40 text-center dark:bg-white/5">
                 <div>
-                  <p className="text-lg font-medium dark:text-white">Chưa có địa điểm nào để hiển thị.</p>
+                  <p className="text-lg font-medium dark:text-white">
+                    Chưa có địa điểm nào để hiển thị.
+                  </p>
                   <p className="mt-2 text-sm text-mocha/70 dark:text-white/55">
                     Khi thêm địa điểm, chúng sẽ xuất hiện thành các nhịp tim nhỏ.
                   </p>
@@ -99,9 +103,7 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
               <Suspense
                 fallback={
                   <div className="flex h-[560px] items-center justify-center rounded-4xl bg-blush/40 md:h-[660px] xl:h-[760px] dark:bg-white/5">
-                    <p className="text-sm text-mocha/70 dark:text-white/55">
-                      Đang tải bản đồ...
-                    </p>
+                    <p className="text-sm text-mocha/70 dark:text-white/55">Đang tải bản đồ...</p>
                   </div>
                 }
               >
@@ -122,7 +124,9 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
             <div className="mt-4 grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
               <div className="rounded-2xl bg-blush/80 p-4 dark:bg-white/5">
                 <p className="text-xs text-mocha/55 dark:text-white/45">Đã đi cùng nhau</p>
-                <p className="mt-1 text-2xl font-semibold dark:text-white">{visitedPlaces.length}</p>
+                <p className="mt-1 text-2xl font-semibold dark:text-white">
+                  {visitedPlaces.length}
+                </p>
               </div>
               <div className="rounded-2xl bg-blush/80 p-4 dark:bg-white/5">
                 <p className="text-xs text-mocha/55 dark:text-white/45">Dự định tiếp theo</p>
@@ -143,7 +147,7 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
             <h2 className="text-lg font-semibold dark:text-white">
               {mode === "heart" ? "Những địa điểm trong tim" : "Danh sách địa điểm"}
             </h2>
-            <div className="mt-4 max-h-[min(100%,calc(100dvh-12rem))] space-y-3 overflow-y-auto pr-1">
+            <div className="mt-4 max-h-[min(28rem,55vh)] space-y-3 overflow-y-auto overscroll-contain pr-1">
               {displayedPlaces.map((place) => (
                 <button
                   key={place.id}

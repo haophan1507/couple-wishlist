@@ -49,9 +49,7 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
       />
       <div className="space-y-3 p-5">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-lg font-semibold tracking-tight text-foreground">
-            {item.title}
-          </h3>
+          <h3 className="text-lg font-semibold tracking-tight text-foreground">{item.title}</h3>
           <span
             className={cn(
               "mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full",
@@ -63,9 +61,7 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
         </div>
 
         {item.description ? (
-          <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">
-            {item.description}
-          </p>
+          <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">{item.description}</p>
         ) : null}
 
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
@@ -98,16 +94,16 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
         <p
           className={cn(
             "text-sm font-medium",
-            item.status === "gifted" ? "text-green-700 dark:text-green-400" : "text-rose-700 dark:text-rose-300",
+            item.status === "gifted"
+              ? "text-green-700 dark:text-green-400"
+              : "text-rose-700 dark:text-rose-300",
           )}
         >
           {item.status === "gifted" ? "Đã tặng" : "Có sẵn"}
         </p>
 
         {item.note ? (
-          <p className="line-clamp-2 text-sm italic leading-6 text-muted-foreground">
-            {item.note}
-          </p>
+          <p className="line-clamp-2 text-sm italic leading-6 text-muted-foreground">{item.note}</p>
         ) : null}
       </div>
     </article>

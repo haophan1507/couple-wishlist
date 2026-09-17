@@ -13,7 +13,5 @@ export const Route = createFileRoute("/admin/gift-history")({
 
 function AdminGiftHistoryRoute() {
   const { page } = Route.useSearch();
-  return (
-    <AdminGiftHistoryPage page={Math.max(1, Number(page ?? "1") || 1)} />
-  );
+  return <AdminGiftHistoryPage page={Math.max(1, Number(page ?? "1") || 1)} />;
 }

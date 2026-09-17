@@ -110,7 +110,9 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
                   </div>
                 ))}
                 {day.events.length > 2 ? (
-                  <div className="text-[11px] text-mocha/55 dark:text-white/45">+{day.events.length - 2} sự kiện</div>
+                  <div className="text-[11px] text-mocha/55 dark:text-white/45">
+                    +{day.events.length - 2} sự kiện
+                  </div>
                 ) : null}
               </div>
             </div>
@@ -123,8 +125,13 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
         <div className="mt-4 max-h-[min(100%,calc(100dvh-14rem))] space-y-3 overflow-y-auto pr-1">
           {visibleEvents.length ? (
             visibleEvents.map((day) => (
-              <div key={day.date.toISOString()} className="rounded-2xl bg-blush/70 p-4 dark:bg-white/5">
-                <p className="text-sm font-semibold dark:text-white">{format(day.date, "dd/MM/yyyy")}</p>
+              <div
+                key={day.date.toISOString()}
+                className="rounded-2xl bg-blush/70 p-4 dark:bg-white/5"
+              >
+                <p className="text-sm font-semibold dark:text-white">
+                  {format(day.date, "dd/MM/yyyy")}
+                </p>
                 <div className="mt-2 space-y-2">
                   {day.events.map((event) => (
                     <div key={event.id}>
@@ -137,7 +144,9 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
                         ) : null}
                       </div>
                       {event.description ? (
-                        <p className="text-xs text-mocha/70 dark:text-white/55">{event.description}</p>
+                        <p className="text-xs text-mocha/70 dark:text-white/55">
+                          {event.description}
+                        </p>
                       ) : null}
                     </div>
                   ))}
@@ -145,7 +154,9 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
               </div>
             ))
           ) : (
-            <p className="text-sm text-mocha/70 dark:text-white/55">Không có sự kiện nào trong tháng này.</p>
+            <p className="text-sm text-mocha/70 dark:text-white/55">
+              Không có sự kiện nào trong tháng này.
+            </p>
           )}
         </div>
       </div>

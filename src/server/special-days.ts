@@ -4,8 +4,9 @@ import { specialDaySchema } from "@/lib/validation";
 import { createServerFn } from "@tanstack/react-start";
 import { formDataValidator } from "@/src/server/form-data";
 
-export const upsertSpecialDayFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
-  async ({ data: formData }) => {
+export const upsertSpecialDayFn = createServerFn({ method: "POST" })
+  .validator(formDataValidator)
+  .handler(async ({ data: formData }) => {
     await requireAdminServer();
 
     const id = String(formData.get("id") ?? "");
@@ -28,10 +29,7 @@ export const upsertSpecialDayFn = createServerFn({ method: "POST" }).validator(f
     const supabase = createSupabaseAdminClient();
 
     if (id) {
-      const { error } = await supabase
-        .from("special_days")
-        .update(payload)
-        .eq("id", id);
+      const { error } = await supabase.from("special_days").update(payload).eq("id", id);
       if (error) throw new Error(`Cập nhật ngày đặc biệt thất bại: ${error.message}`);
     } else {
       const { error } = await supabase.from("special_days").insert(payload);
@@ -39,16 +37,15 @@ export const upsertSpecialDayFn = createServerFn({ method: "POST" }).validator(f
     }
 
     return { ok: true as const };
-  },
-);
+  });
 
-export const deleteSpecialDayFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
-  async ({ data: formData }) => {
+export const deleteSpecialDayFn = createServerFn({ method: "POST" })
+  .validator(formDataValidator)
+  .handler(async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");
     const supabase = createSupabaseAdminClient();
     const { error } = await supabase.from("special_days").delete().eq("id", id);
     if (error) throw new Error(`Xóa ngày đặc biệt thất bại: ${error.message}`);
     return { ok: true as const };
-  },
-);
+  });

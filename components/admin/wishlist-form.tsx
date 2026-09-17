@@ -123,9 +123,7 @@ export function WishlistForm({
           }
         } catch (error) {
           helpers.setStatus(
-            error instanceof Error
-              ? error.message
-              : "Không thể lưu món quà lúc này.",
+            error instanceof Error ? error.message : "Không thể lưu món quà lúc này.",
           );
         } finally {
           helpers.setSubmitting(false);
@@ -169,13 +167,14 @@ export function WishlistForm({
             onBlur={formik.handleBlur}
           />
 
-          <AdminImagePreview
-            path={item.image_path || null}
-            alt={item.title || "Ảnh wishlist"}
-          />
+          <AdminImagePreview path={item.image_path || null} alt={item.title || "Ảnh wishlist"} />
 
           <div className="grid gap-4 md:grid-cols-2">
-            <input type="hidden" name="existing_image_path" value={formik.values.image_path ?? ""} />
+            <input
+              type="hidden"
+              name="existing_image_path"
+              value={formik.values.image_path ?? ""}
+            />
             <Input
               type="file"
               name="image_file"
@@ -216,9 +215,7 @@ export function WishlistForm({
 
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2">
-              <span className="block text-sm font-medium text-foreground/80">
-                Danh mục quà
-              </span>
+              <span className="block text-sm font-medium text-foreground/80">Danh mục quà</span>
               <NativeSelect
                 name="category_preset"
                 value={formik.values.category_preset}
@@ -248,9 +245,7 @@ export function WishlistForm({
             </label>
 
             <label className="space-y-2">
-              <span className="block text-sm font-medium text-foreground/80">
-                Mức độ ưu tiên
-              </span>
+              <span className="block text-sm font-medium text-foreground/80">Mức độ ưu tiên</span>
               <NativeSelect
                 name="priority"
                 value={formik.values.priority}

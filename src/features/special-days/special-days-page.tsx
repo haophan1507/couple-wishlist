@@ -5,16 +5,8 @@ import { SpecialDayCard } from "@/components/special-day-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { Container } from "@/components/ui/container";
-import {
-  fetchCoupleProfile,
-  fetchSpecialDays,
-  queryKeys,
-} from "@/lib/data/client-queries";
-import {
-  getCoupleFacts,
-  getLoveStats,
-  getTimelineEvents,
-} from "@/lib/data/special-day-utils";
+import { fetchCoupleProfile, fetchSpecialDays, queryKeys } from "@/lib/data/client-queries";
+import { getCoupleFacts, getLoveStats, getTimelineEvents } from "@/lib/data/special-day-utils";
 
 export function SpecialDaysPage() {
   const profileQuery = useQuery({
@@ -59,9 +51,7 @@ export function SpecialDaysPage() {
 
         <div className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="card p-6">
-            <p className="text-sm text-muted-foreground">
-              Ngày bắt đầu hành trình của chúng mình
-            </p>
+            <p className="text-sm text-muted-foreground">Ngày bắt đầu hành trình của chúng mình</p>
             <p className="mt-2 text-3xl font-semibold text-foreground">
               {profile?.love_start_date
                 ? format(new Date(profile.love_start_date), "dd/MM/yyyy")
@@ -82,9 +72,7 @@ export function SpecialDaysPage() {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Ngày tự thêm</p>
-                <p className="mt-1 text-2xl font-semibold text-foreground">
-                  {specialDays.length}
-                </p>
+                <p className="mt-1 text-2xl font-semibold text-foreground">{specialDays.length}</p>
               </div>
             </div>
           </div>
@@ -130,18 +118,12 @@ export function SpecialDaysPage() {
 
         {coupleFacts.length ? (
           <div className="mt-8">
-            <h2 className="text-2xl font-semibold text-foreground">
-              Điều thú vị về hai bạn
-            </h2>
+            <h2 className="text-2xl font-semibold text-foreground">Điều thú vị về hai bạn</h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               {coupleFacts.map((person) => (
                 <div key={person.name} className="card space-y-2 p-6">
-                  <h3 className="text-xl font-semibold text-foreground">
-                    {person.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Tuổi: {person.age ?? "--"}
-                  </p>
+                  <h3 className="text-xl font-semibold text-foreground">{person.name}</h3>
+                  <p className="text-sm text-muted-foreground">Tuổi: {person.age ?? "--"}</p>
                   <p className="text-sm text-muted-foreground">
                     Yêu thích: {person.favorite || "Chưa cập nhật"}
                   </p>

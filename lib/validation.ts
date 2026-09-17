@@ -11,20 +11,20 @@ export const wishlistSchema = z.object({
   category: z.string().max(60).optional(),
   priority: z.enum(["low", "medium", "high"]),
   note: z.string().max(280).optional(),
-  status: z.enum(["available", "gifted"])
+  status: z.enum(["available", "gifted"]),
 });
 
 export const specialDaySchema = z.object({
   title: z.string().min(2).max(120),
   description: z.string().max(400).optional(),
   date: z.iso.date(),
-  type: z.enum(["birthday", "anniversary", "relationship", "holiday", "other"])
+  type: z.enum(["birthday", "anniversary", "relationship", "holiday", "other"]),
 });
 
 export const gallerySchema = z.object({
   caption: z.string().max(200).optional(),
   memory_date: z.iso.date().optional().or(z.literal("")),
-  existing_image_path: z.string().max(300).optional().or(z.literal(""))
+  existing_image_path: z.string().max(300).optional().or(z.literal("")),
 });
 
 export const giftHistorySchema = z.object({
@@ -36,7 +36,7 @@ export const giftHistorySchema = z.object({
   note: z.string().max(600).optional(),
   existing_photo_path: z.string().max(300).optional().or(z.literal("")),
   wishlist_item_id: z.uuid().optional().or(z.literal("")),
-  status: z.enum(["received", "thanked", "archived"])
+  status: z.enum(["received", "thanked", "archived"]),
 });
 
 export const coupleProfileSchema = z.object({
@@ -50,7 +50,7 @@ export const coupleProfileSchema = z.object({
   person_one_hobby: z.string().max(200).optional(),
   person_two_hobby: z.string().max(200).optional(),
   story: z.string().max(1000).optional(),
-  existing_cover_image_path: z.string().max(300).optional().or(z.literal(""))
+  existing_cover_image_path: z.string().max(300).optional().or(z.literal("")),
 });
 
 export const placeMemorySchema = z
@@ -66,7 +66,7 @@ export const placeMemorySchema = z
     city: z.string().max(80).optional(),
     country: z.string().max(80).optional(),
     existing_cover_image_path: z.string().max(300).optional().or(z.literal("")),
-    gallery_captions: z.string().max(4000).optional()
+    gallery_captions: z.string().max(4000).optional(),
   })
   .refine(
     (value) =>
@@ -74,6 +74,6 @@ export const placeMemorySchema = z
       (typeof value.latitude === "number" && typeof value.longitude === "number"),
     {
       message: "Latitude và longitude phải đi cùng nhau.",
-      path: ["latitude"]
-    }
+      path: ["latitude"],
+    },
   );

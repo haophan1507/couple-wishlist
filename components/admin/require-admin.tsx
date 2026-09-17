@@ -41,11 +41,7 @@ export function RequireAdmin({ children }: { children: ReactNode }) {
 
   if (!ready) {
     return (
-      <PageLoading
-        title="Đang kiểm tra..."
-        description="Đang xác nhận quyền quản trị."
-        cards={2}
-      />
+      <PageLoading title="Đang kiểm tra..." description="Đang xác nhận quyền quản trị." cards={2} />
     );
   }
 

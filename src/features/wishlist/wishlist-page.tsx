@@ -131,9 +131,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
                   <WishlistCard key={item.id} item={item} />
                 ))}
                 {!meTotal ? (
-                  <p className="card p-6 text-sm text-muted-foreground">
-                    Chưa có món quà nào.
-                  </p>
+                  <p className="card p-6 text-sm text-muted-foreground">Chưa có món quà nào.</p>
                 ) : null}
               </div>
             </div>
@@ -146,9 +144,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
                 category,
                 q,
                 honeyPage:
-                  honeyTotalPages > 1 || safeHoneyPage > 1
-                    ? String(safeHoneyPage)
-                    : undefined,
+                  honeyTotalPages > 1 || safeHoneyPage > 1 ? String(safeHoneyPage) : undefined,
               }}
             />
           </section>
@@ -163,9 +159,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
                   <WishlistCard key={item.id} item={item} />
                 ))}
                 {!honeyTotal ? (
-                  <p className="card p-6 text-sm text-muted-foreground">
-                    Chưa có món quà nào.
-                  </p>
+                  <p className="card p-6 text-sm text-muted-foreground">Chưa có món quà nào.</p>
                 ) : null}
               </div>
             </div>
@@ -177,10 +171,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
               searchParams={{
                 category,
                 q,
-                mePage:
-                  meTotalPages > 1 || safeMePage > 1
-                    ? String(safeMePage)
-                    : undefined,
+                mePage: meTotalPages > 1 || safeMePage > 1 ? String(safeMePage) : undefined,
               }}
             />
           </section>
