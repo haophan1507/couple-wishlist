@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { AdminItemRow } from "@/components/admin/admin-item-row";
+import { AdminListHeader } from "@/components/admin/admin-list-header";
 import { GiftHistoryForm } from "@/components/admin/gift-history-form";
+import { useAdminEditorMode } from "@/components/admin/use-admin-editor-mode";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import {
@@ -16,6 +18,7 @@ const PAGE_SIZE = 4;
 
 export function AdminGiftHistoryPage({ page }: { page: number }) {
   const queryClient = useQueryClient();
+  const editor = useAdminEditorMode();
 
   const profileQuery = useQuery({
     queryKey: queryKeys.coupleProfile,
@@ -72,66 +75,74 @@ export function AdminGiftHistoryPage({ page }: { page: number }) {
   const safePage = Math.min(page, totalPages);
   const items = listQuery.data?.items ?? [];
 
+  const handleSaved = () => {
+    invalidate();
+    editor.close();
+  };
+
   return (
     <>
-      <section className="card p-6">
-        <h1 className="text-2xl font-semibold dark:text-white">Kỷ niệm quà</h1>
-        <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">
-          Lưu lại những món quà đã nhận như một phần ký ức của hai bạn.
-        </p>
-        <div className="mt-4">
-          <GiftHistoryForm
-            personOneName={personOneName}
-            personTwoName={personTwoName}
-            specialDays={specialDays}
-            wishlistItems={wishlistItems}
-            onSuccess={invalidate}
-          />
-        </div>
-      </section>
+      <AdminListHeader
+        title="Kỷ niệm quà"
+        description="Lưu lại những món quà đã nhận như một phần ký ức của hai bạn."
+        isCreating={editor.isCreating}
+        onToggleCreate={() => (editor.isCreating ? editor.close() : editor.openCreate())}
+      >
+        {editor.isCreating ? (
+          <div className="mt-4">
+            <GiftHistoryForm
+              personOneName={personOneName}
+              personTwoName={personTwoName}
+              specialDays={specialDays}
+              wishlistItems={wishlistItems}
+              onSuccess={handleSaved}
+              onCancel={editor.close}
+            />
+          </div>
+        ) : null}
+      </AdminListHeader>
 
       <section>
         <div className="max-h-[72vh] space-y-3 overflow-y-auto pr-1">
-          {items.map((item) => (
-            <div key={item.id} className="card p-4">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-medium dark:text-white">
-                    {item.gift_name}
-                  </p>
-                  <p className="mt-1 text-xs text-mocha/65 dark:text-white/45">
-                    {item.giver_name} tặng cho{" "}
-                    {item.recipient_owner_type === "me"
-                      ? personOneName
-                      : personTwoName}
-                  </p>
-                </div>
-                <ConfirmDeleteButton
-                  itemName={item.gift_name}
-                  onConfirm={() => deleteMutation.mutate(item.id)}
-                />
-              </div>
-              <GiftHistoryForm
-                personOneName={personOneName}
-                personTwoName={personTwoName}
-                specialDays={specialDays}
-                wishlistItems={wishlistItems}
-                onSuccess={invalidate}
-                item={{
-                  id: item.id,
-                  recipient_owner_type: item.recipient_owner_type,
-                  gift_name: item.gift_name,
-                  giver_name: item.giver_name,
-                  received_date: item.received_date,
-                  special_day_id: item.special_day_id ?? "",
-                  note: item.note ?? "",
-                  photo_path: item.photo_path ?? "",
-                  wishlist_item_id: item.wishlist_item_id ?? "",
-                  status: item.status,
+          {items.map((item) => {
+            const expanded = editor.isEditingId(item.id);
+            return (
+              <AdminItemRow
+                key={item.id}
+                title={item.gift_name}
+                imageUrl={item.photo_url}
+                meta={`${item.giver_name} · ${item.received_date} · ${item.status}`}
+                isExpanded={expanded}
+                onEdit={() => (expanded ? editor.close() : editor.openEdit(item.id))}
+                onDelete={async () => {
+                  await deleteMutation.mutateAsync(item.id);
+                  if (editor.isEditingId(item.id)) editor.close();
                 }}
-              />
-            </div>
-          ))}
+              >
+                <GiftHistoryForm
+                  personOneName={personOneName}
+                  personTwoName={personTwoName}
+                  specialDays={specialDays}
+                  wishlistItems={wishlistItems}
+                  imageUrl={item.photo_url}
+                  onSuccess={handleSaved}
+                  onCancel={editor.close}
+                  item={{
+                    id: item.id,
+                    recipient_owner_type: item.recipient_owner_type,
+                    gift_name: item.gift_name,
+                    giver_name: item.giver_name,
+                    received_date: item.received_date,
+                    special_day_id: item.special_day_id ?? "",
+                    note: item.note ?? "",
+                    photo_path: item.photo_path ?? "",
+                    wishlist_item_id: item.wishlist_item_id ?? "",
+                    status: item.status,
+                  }}
+                />
+              </AdminItemRow>
+            );
+          })}
           {!items.length ? (
             <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">
               Chưa có món quà nào được lưu vào lịch sử.
