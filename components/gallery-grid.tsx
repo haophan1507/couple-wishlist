@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { ImageIcon } from "lucide-react";
 import type { GalleryEntry } from "@/lib/data/client-queries";
+import { AppImage } from "@/components/ui/app-image";
 import { EmptyState } from "@/components/ui/empty-state";
 
 const FALLBACK_IMAGE =
@@ -21,10 +22,13 @@ export function GalleryGrid({ items }: { items: GalleryEntry[] }) {
     <div className="columns-1 gap-4 md:columns-2 lg:columns-3">
       {items.map((item) => (
         <article key={item.id} className="card mb-4 break-inside-avoid p-3">
-          <img
-            src={item.image_url ?? FALLBACK_IMAGE}
+          <AppImage
+            path={item.image_path}
+            src={item.image_path ? undefined : FALLBACK_IMAGE}
             alt={item.image_alt ?? item.caption ?? "Ảnh kỷ niệm"}
-            className="h-auto w-full rounded-2xl object-cover"
+            variant="display"
+            aspect="natural"
+            className="rounded-2xl"
           />
           <div className="px-1 pb-1 pt-3">
             {item.caption ? (

@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { CalendarDays, Heart, MapPin, Route } from "lucide-react";
+import { AppImage } from "@/components/ui/app-image";
 import type { PlaceMemoryEntry } from "@/lib/data/client-queries";
 
 const FALLBACK_IMAGE =
@@ -20,25 +21,31 @@ export function PlaceDetailsSheet({
 
   const allImages: Array<{
     id: string;
+    image_path: string | null;
     image_url: string | null;
     image_alt: string | null;
     caption: string | null;
+    isCover: boolean;
   }> = [
-    ...(place.cover_image_url
+    ...(place.cover_image_path || place.cover_image_url
       ? [
           {
             id: `${place.id}-cover`,
+            image_path: place.cover_image_path,
             image_url: place.cover_image_url,
             image_alt: place.cover_image_alt,
             caption: null,
+            isCover: true,
           },
         ]
       : []),
     ...place.images.map((image) => ({
       id: image.id,
+      image_path: image.image_path,
       image_url: image.image_url,
       image_alt: image.image_alt,
       caption: image.caption,
+      isCover: false,
     })),
   ];
 
@@ -111,13 +118,17 @@ export function PlaceDetailsSheet({
                 key={image.id}
                 className="overflow-hidden rounded-2xl bg-white/80 dark:bg-white/5"
               >
-                <div className="relative h-56 w-full">
-                  <img
-                    src={image.image_url ?? FALLBACK_IMAGE}
-                    alt={image.image_alt ?? place.title}
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                </div>
+                <AppImage
+                  path={image.image_path}
+                  src={
+                    image.image_path
+                      ? undefined
+                      : (image.image_url ?? FALLBACK_IMAGE)
+                  }
+                  alt={image.image_alt ?? place.title}
+                  variant={image.isCover ? "thumb" : "display"}
+                  aspect={image.isCover ? "wide" : "natural"}
+                />
                 {image.caption ? (
                   <figcaption className="px-4 py-3 text-sm text-mocha/75 dark:text-white/65">
                     {image.caption}

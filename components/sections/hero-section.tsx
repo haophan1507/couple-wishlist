@@ -1,18 +1,25 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { AppImage } from "@/components/ui/app-image";
 import { Container } from "@/components/ui/container";
 import { APP_SHORT_DESCRIPTION } from "@/lib/constants/app";
 
 type HeroSectionProps = {
   names: string;
-  coverImageUrl: string | null;
+  coverImagePath?: string | null;
+  coverImageUrl?: string | null;
   story: string | null;
 };
 
 const FALLBACK_COVER =
   "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1400&q=80";
 
-export function HeroSection({ names, coverImageUrl, story }: HeroSectionProps) {
+export function HeroSection({
+  names,
+  coverImagePath,
+  coverImageUrl,
+  story,
+}: HeroSectionProps) {
   return (
     <section className="pt-12 md:pt-16">
       <Container>
@@ -45,13 +52,16 @@ export function HeroSection({ names, coverImageUrl, story }: HeroSectionProps) {
           </div>
 
           <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-white/70 p-2 shadow-soft dark:border-white/10 dark:bg-white/5 dark:shadow-none">
-            <div className="relative min-h-[280px] w-full sm:min-h-[360px]">
-              <img
-                src={coverImageUrl ?? FALLBACK_COVER}
-                alt="Ảnh bìa cặp đôi"
-                className="absolute inset-0 h-full w-full rounded-2xl object-cover"
-              />
-            </div>
+            <AppImage
+              path={coverImagePath}
+              src={coverImagePath ? undefined : (coverImageUrl ?? FALLBACK_COVER)}
+              alt="Ảnh bìa cặp đôi"
+              variant="display"
+              aspect="wide"
+              priority
+              className="min-h-[280px] rounded-2xl sm:min-h-[360px]"
+              imgClassName="rounded-2xl"
+            />
             <div className="absolute bottom-3 left-3 right-3 rounded-2xl bg-white/85 p-3 backdrop-blur-sm sm:bottom-5 sm:left-5 sm:right-5 sm:p-4 dark:bg-[#1e1a1c]/85">
               <p className="text-sm font-medium dark:text-white">
                 Wishlist, kỷ niệm và bản đồ yêu thương

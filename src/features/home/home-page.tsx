@@ -55,6 +55,7 @@ export function HomePage() {
     <>
       <HeroSection
         names={`${profile?.person_one_name ?? "Bạn"} & ${profile?.person_two_name ?? "Người thương"}`}
+        coverImagePath={profile?.cover_image_path ?? null}
         coverImageUrl={profile?.cover_image_url ?? null}
         story={profile?.story ?? null}
       />

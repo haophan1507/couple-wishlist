@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { Archive, CheckCircle2, Gift, HeartHandshake, Link2, Sparkles } from "lucide-react";
+import { AppImage } from "@/components/ui/app-image";
 import type { GiftHistoryEntry } from "@/lib/data/client-queries";
 import { cn } from "@/lib/utils/cn";
 
@@ -33,14 +34,14 @@ export function GiftHistoryCard({
 
   return (
     <article className="card overflow-hidden">
-      {item.photo_url ? (
-        <div className="relative aspect-16/10 overflow-hidden">
-          <img
-            src={item.photo_url}
-            alt={item.gift_name}
-            className="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-[1.03]"
-          />
-        </div>
+      {item.photo_path ? (
+        <AppImage
+          path={item.photo_path}
+          alt={item.gift_name}
+          variant="thumb"
+          aspect="wide"
+          imgClassName="transition duration-500 hover:scale-[1.03]"
+        />
       ) : (
         <div className="flex aspect-16/10 items-center justify-center bg-blush/70 dark:bg-white/5">
           <Sparkles className="h-7 w-7 text-mocha/60 dark:text-white/45" />
