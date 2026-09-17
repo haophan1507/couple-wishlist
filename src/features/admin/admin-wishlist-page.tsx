@@ -103,7 +103,7 @@ export function AdminWishlistPage({ page }: AdminWishlistPageProps) {
               <AdminItemRow
                 key={item.id}
                 title={item.title}
-                imageUrl={item.image_url}
+                imagePath={item.image_path}
                 meta={`${item.owner_type === "me" ? personOneName : personTwoName} · ${priorityLabels[item.priority]} · ${statusLabels[item.status]}`}
                 isExpanded={expanded}
                 onEdit={() => (expanded ? editor.close() : editor.openEdit(item.id))}
@@ -115,7 +115,6 @@ export function AdminWishlistPage({ page }: AdminWishlistPageProps) {
                 <WishlistForm
                   personOneName={personOneName}
                   personTwoName={personTwoName}
-                  imageUrl={item.image_url}
                   onSuccess={handleSaved}
                   onCancel={editor.close}
                   item={{

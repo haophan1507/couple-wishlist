@@ -48,13 +48,11 @@ const defaultValues: PlaceFormItem = {
 
 function PlaceForm({
   item = defaultValues,
-  coverImageUrl,
   showLocationPicker = true,
   onSuccess,
   onCancel,
 }: {
   item?: PlaceFormItem;
-  coverImageUrl?: string | null;
   showLocationPicker?: boolean;
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -146,7 +144,7 @@ function PlaceForm({
       <div className="grid gap-3 md:grid-cols-2">
         <div className="space-y-2">
           <AdminImagePreview
-            url={coverImageUrl}
+            path={item.cover_image_path || null}
             alt={item.title || "Ảnh cover địa điểm"}
           />
           <input type="file" name="cover_image_file" accept="image/*" aria-label="Ảnh cover" />
@@ -274,7 +272,7 @@ export function AdminPlacesPage({ page }: { page: number }) {
               <AdminItemRow
                 key={place.id}
                 title={place.title}
-                imageUrl={place.cover_image_url}
+                imagePath={place.cover_image_path}
                 meta={`${place.status === "visited" ? "Đã đi" : "Dự định"}${location ? ` · ${location}` : ""}`}
                 isExpanded={expanded}
                 onEdit={() => (expanded ? editor.close() : editor.openEdit(place.id))}
@@ -286,7 +284,6 @@ export function AdminPlacesPage({ page }: { page: number }) {
                 {expanded ? (
                   <PlaceForm
                     showLocationPicker={false}
-                    coverImageUrl={place.cover_image_url}
                     onSuccess={handleSaved}
                     onCancel={editor.close}
                     item={{

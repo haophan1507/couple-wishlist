@@ -22,12 +22,10 @@ const defaultValues: GalleryFormValues = {
 
 export function GalleryForm({
   item = defaultValues,
-  imageUrl,
   onSuccess,
   onCancel,
 }: {
   item?: GalleryFormValues;
-  imageUrl?: string | null;
   onSuccess?: () => void;
   onCancel?: () => void;
 }) {
@@ -70,7 +68,10 @@ export function GalleryForm({
         >
           <input type="hidden" name="id" value={formik.values.id ?? ""} />
           <input type="hidden" name="existing_image_path" value={formik.values.image_path ?? ""} />
-          <AdminImagePreview url={imageUrl} alt={item.caption || "Ảnh kỷ niệm"} />
+          <AdminImagePreview
+            path={item.image_path || null}
+            alt={item.caption || "Ảnh kỷ niệm"}
+          />
           <input
             type="file"
             name="image_file"

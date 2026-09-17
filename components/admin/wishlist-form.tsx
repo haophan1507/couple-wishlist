@@ -41,7 +41,6 @@ type WishlistFormProps = {
   item?: WishlistFormItem;
   personOneName: string;
   personTwoName: string;
-  imageUrl?: string | null;
   onSuccess?: () => void;
   onCancel?: () => void;
 };
@@ -80,7 +79,6 @@ export function WishlistForm({
   item = defaultValues,
   personOneName,
   personTwoName,
-  imageUrl,
   onSuccess,
   onCancel,
 }: WishlistFormProps) {
@@ -168,7 +166,10 @@ export function WishlistForm({
             onBlur={formik.handleBlur}
           />
 
-          <AdminImagePreview url={imageUrl} alt={item.title || "Ảnh wishlist"} />
+          <AdminImagePreview
+            path={item.image_path || null}
+            alt={item.title || "Ảnh wishlist"}
+          />
 
           <div className="grid gap-2 md:grid-cols-2">
             <input type="hidden" name="existing_image_path" value={formik.values.image_path ?? ""} />

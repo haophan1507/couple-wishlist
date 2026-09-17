@@ -38,7 +38,6 @@ export function GiftHistoryForm({
   personTwoName,
   specialDays,
   wishlistItems,
-  imageUrl,
   onSuccess,
   onCancel,
 }: {
@@ -47,7 +46,6 @@ export function GiftHistoryForm({
   personTwoName: string;
   specialDays: Array<{ id: string; title: string }>;
   wishlistItems: Array<{ id: string; title: string; owner_type: "me" | "honey" }>;
-  imageUrl?: string | null;
   onSuccess?: () => void;
   onCancel?: () => void;
 }) {
@@ -220,7 +218,10 @@ export function GiftHistoryForm({
                 Ảnh kỷ niệm
               </span>
               <input type="hidden" name="existing_photo_path" value={formik.values.photo_path} />
-              <AdminImagePreview url={imageUrl} alt={item.gift_name || "Ảnh kỷ niệm quà"} />
+              <AdminImagePreview
+                path={item.photo_path || null}
+                alt={item.gift_name || "Ảnh kỷ niệm quà"}
+              />
               <input
                 ref={photoInputRef}
                 type="file"

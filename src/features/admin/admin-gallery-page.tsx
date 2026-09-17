@@ -69,7 +69,7 @@ export function AdminGalleryPage({ page }: { page: number }) {
               <AdminItemRow
                 key={item.id}
                 title={item.caption ?? "Ảnh"}
-                imageUrl={item.image_url}
+                imagePath={item.image_path}
                 meta={item.memory_date ? format(new Date(item.memory_date), "PPP") : undefined}
                 itemNameForDelete={item.caption ?? "ảnh này"}
                 isExpanded={expanded}
@@ -80,7 +80,6 @@ export function AdminGalleryPage({ page }: { page: number }) {
                 }}
               >
                 <GalleryForm
-                  imageUrl={item.image_url}
                   onSuccess={handleSaved}
                   onCancel={editor.close}
                   item={{

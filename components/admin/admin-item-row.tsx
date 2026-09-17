@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { AppImage } from "@/components/ui/app-image";
 import { Button } from "@/components/ui/button";
 
 type AdminItemRowProps = {
   title: string;
   meta?: ReactNode;
-  imageUrl?: string | null;
+  imagePath?: string | null;
   itemNameForDelete?: string;
   isExpanded: boolean;
   onEdit: () => void;
@@ -16,7 +17,7 @@ type AdminItemRowProps = {
 export function AdminItemRow({
   title,
   meta,
-  imageUrl,
+  imagePath,
   itemNameForDelete,
   isExpanded,
   onEdit,
@@ -27,8 +28,15 @@ export function AdminItemRow({
     <div className="card overflow-hidden">
       <div className="flex items-center gap-3 p-4">
         <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-blush/60 dark:bg-white/10">
-          {imageUrl ? (
-            <img src={imageUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+          {imagePath ? (
+            <AppImage
+              path={imagePath}
+              alt=""
+              variant="thumb"
+              aspect="natural"
+              className="h-full w-full"
+              imgClassName="h-full w-full object-cover"
+            />
           ) : null}
         </div>
         <div className="min-w-0 flex-1">

@@ -117,7 +117,7 @@ export function AdminGiftHistoryPage({ page }: { page: number }) {
               <AdminItemRow
                 key={item.id}
                 title={item.gift_name}
-                imageUrl={item.photo_url}
+                imagePath={item.photo_path}
                 meta={`${item.giver_name} · ${format(parseISO(item.received_date), "dd/MM/yyyy")} · ${statusLabels[item.status]}`}
                 isExpanded={expanded}
                 onEdit={() => (expanded ? editor.close() : editor.openEdit(item.id))}
@@ -131,7 +131,6 @@ export function AdminGiftHistoryPage({ page }: { page: number }) {
                   personTwoName={personTwoName}
                   specialDays={specialDays}
                   wishlistItems={wishlistItems}
-                  imageUrl={item.photo_url}
                   onSuccess={handleSaved}
                   onCancel={editor.close}
                   item={{
