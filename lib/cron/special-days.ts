@@ -1,3 +1,4 @@
+import "@tanstack/react-start/server-only";
 import nodemailer from "nodemailer";
 import { APP_NAME } from "@/lib/constants/app";
 import { AUTO_HOLIDAY_DEFINITIONS } from "@/lib/constants/special-days";

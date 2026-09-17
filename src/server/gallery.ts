@@ -4,9 +4,10 @@ import { uploadImageFile } from "@/lib/storage/upload";
 import { getOptionalFile } from "@/lib/storage/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { gallerySchema } from "@/lib/validation";
-import { createFormDataServerFn } from "@/src/server/form-data";
+import { createServerFn } from "@tanstack/react-start";
+import { formDataValidator } from "@/src/server/form-data";
 
-export const upsertGalleryItemFn = createFormDataServerFn().handler(
+export const upsertGalleryItemFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
   async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");
@@ -74,7 +75,7 @@ export const upsertGalleryItemFn = createFormDataServerFn().handler(
   },
 );
 
-export const deleteGalleryItemFn = createFormDataServerFn().handler(
+export const deleteGalleryItemFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
   async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");

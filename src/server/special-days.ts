@@ -1,9 +1,10 @@
 import { requireAdminServer } from "@/lib/auth/require-admin-server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { specialDaySchema } from "@/lib/validation";
-import { createFormDataServerFn } from "@/src/server/form-data";
+import { createServerFn } from "@tanstack/react-start";
+import { formDataValidator } from "@/src/server/form-data";
 
-export const upsertSpecialDayFn = createFormDataServerFn().handler(
+export const upsertSpecialDayFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
   async ({ data: formData }) => {
     await requireAdminServer();
 
@@ -41,7 +42,7 @@ export const upsertSpecialDayFn = createFormDataServerFn().handler(
   },
 );
 
-export const deleteSpecialDayFn = createFormDataServerFn().handler(
+export const deleteSpecialDayFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
   async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");

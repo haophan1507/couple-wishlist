@@ -4,9 +4,10 @@ import { uploadImageFile } from "@/lib/storage/upload";
 import { getOptionalFile } from "@/lib/storage/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { coupleProfileSchema } from "@/lib/validation";
-import { createFormDataServerFn } from "@/src/server/form-data";
+import { createServerFn } from "@tanstack/react-start";
+import { formDataValidator } from "@/src/server/form-data";
 
-export const upsertCoupleProfileFn = createFormDataServerFn().handler(
+export const upsertCoupleProfileFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
   async ({ data: formData }) => {
     await requireAdminServer();
     const coverFile = getOptionalFile(formData, "cover_image_file");

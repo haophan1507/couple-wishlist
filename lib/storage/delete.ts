@@ -1,3 +1,4 @@
+import "@tanstack/react-start/server-only";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { STORAGE_BUCKET } from "@/lib/storage/constants";
 

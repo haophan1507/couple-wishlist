@@ -4,7 +4,8 @@ import { uploadImageFile } from "@/lib/storage/upload";
 import { getOptionalFile, validateImageFile } from "@/lib/storage/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { placeMemorySchema } from "@/lib/validation";
-import { createFormDataServerFn } from "@/src/server/form-data";
+import { createServerFn } from "@tanstack/react-start";
+import { formDataValidator } from "@/src/server/form-data";
 
 function slugify(value: string) {
   return value
@@ -23,7 +24,7 @@ function splitLines(value: FormDataEntryValue | null) {
     .filter(Boolean);
 }
 
-export const upsertPlaceMemoryFn = createFormDataServerFn().handler(
+export const upsertPlaceMemoryFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
   async ({ data: formData }) => {
     await requireAdminServer();
 
@@ -158,7 +159,7 @@ export const upsertPlaceMemoryFn = createFormDataServerFn().handler(
   },
 );
 
-export const deletePlaceMemoryFn = createFormDataServerFn().handler(
+export const deletePlaceMemoryFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
   async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");

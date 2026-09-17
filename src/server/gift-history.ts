@@ -4,9 +4,10 @@ import { uploadImageFile } from "@/lib/storage/upload";
 import { getOptionalFile } from "@/lib/storage/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { giftHistorySchema } from "@/lib/validation";
-import { createFormDataServerFn } from "@/src/server/form-data";
+import { createServerFn } from "@tanstack/react-start";
+import { formDataValidator } from "@/src/server/form-data";
 
-export const upsertGiftHistoryItemFn = createFormDataServerFn().handler(
+export const upsertGiftHistoryItemFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
   async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");
@@ -129,7 +130,7 @@ export const upsertGiftHistoryItemFn = createFormDataServerFn().handler(
   },
 );
 
-export const deleteGiftHistoryItemFn = createFormDataServerFn().handler(
+export const deleteGiftHistoryItemFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
   async ({ data: formData }) => {
     await requireAdminServer();
     const id = String(formData.get("id") ?? "");

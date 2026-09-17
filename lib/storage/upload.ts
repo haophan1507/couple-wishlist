@@ -1,3 +1,4 @@
+import "@tanstack/react-start/server-only";
 import sharp from "sharp";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { STORAGE_BUCKET, STORAGE_RULES } from "@/lib/storage/constants";

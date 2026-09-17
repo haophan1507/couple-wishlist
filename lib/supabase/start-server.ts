@@ -1,3 +1,4 @@
+import "@tanstack/react-start/server-only";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { getCookies, setCookie } from "@tanstack/react-start/server";
 import { getSupabasePublicEnv } from "@/lib/supabase/public-env";
