@@ -8,17 +8,17 @@ const statusMap = {
   received: {
     label: "Đã nhận",
     icon: Gift,
-    className: "bg-blush text-mocha dark:bg-white/10 dark:text-white/85",
+    className: "bg-secondary text-foreground",
   },
   thanked: {
     label: "Đã cảm ơn",
     icon: HeartHandshake,
-    className: "bg-[#f4e7d7] text-mocha dark:bg-[#3a2e28] dark:text-[#f6e8de]",
+    className: "bg-muted text-foreground",
   },
   archived: {
     label: "Lưu kỷ niệm",
     icon: Archive,
-    className: "bg-white text-mocha/80 dark:bg-white/5 dark:text-white/75",
+    className: "bg-muted/60 text-muted-foreground",
   },
 } as const;
 
@@ -31,6 +31,7 @@ export function GiftHistoryCard({
 }) {
   const status = statusMap[item.status];
   const StatusIcon = status.icon;
+  const wishlistTitle = item.wishlist_item?.title || item.wishlist_item_title;
 
   return (
     <article className="card overflow-hidden">
@@ -40,27 +41,27 @@ export function GiftHistoryCard({
           alt={item.gift_name}
           variant="thumb"
           aspect="wide"
-          imgClassName="transition duration-500 hover:scale-[1.03]"
         />
       ) : (
-        <div className="flex aspect-16/10 items-center justify-center bg-blush/70 dark:bg-white/5">
-          <Sparkles className="h-7 w-7 text-mocha/60 dark:text-white/45" />
+        <div className="flex aspect-16/10 items-center justify-center bg-secondary/70">
+          <Sparkles className="h-7 w-7 text-muted-foreground" />
         </div>
       )}
 
-      <div className="space-y-3.5 p-4 md:p-5">
+      <div className="space-y-3 p-4 md:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-mocha/45 dark:text-white/35">
-              Món quà đã nhận
-            </p>
-            <h3 className="mt-1 text-lg font-semibold dark:text-white md:text-xl">
+            <h3 className="text-lg font-semibold text-foreground md:text-xl">
               {item.gift_name}
             </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {item.giver_name} → {recipientName} ·{" "}
+              {format(new Date(item.received_date), "dd/MM/yyyy")}
+            </p>
           </div>
           <span
             className={cn(
-              "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium",
+              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
               status.className,
             )}
           >
@@ -69,52 +70,29 @@ export function GiftHistoryCard({
           </span>
         </div>
 
-        <div className="grid gap-2.5 sm:grid-cols-2">
-          <div className="rounded-2xl bg-blush/70 p-3 dark:bg-white/5">
-            <p className="text-xs text-mocha/55 dark:text-white/45">Người nhận</p>
-            <p className="mt-1 text-sm font-medium dark:text-white">{recipientName}</p>
-          </div>
-          <div className="rounded-2xl bg-blush/70 p-3 dark:bg-white/5">
-            <p className="text-xs text-mocha/55 dark:text-white/45">Người tặng</p>
-            <p className="mt-1 text-sm font-medium dark:text-white">{item.giver_name}</p>
-          </div>
-          <div className="rounded-2xl bg-blush/70 p-3 dark:bg-white/5">
-            <p className="text-xs text-mocha/55 dark:text-white/45">Ngày nhận</p>
-            <p className="mt-1 text-sm font-medium dark:text-white">
-              {format(new Date(item.received_date), "dd/MM/yyyy")}
-            </p>
-          </div>
-          <div className="rounded-2xl bg-blush/70 p-3 dark:bg-white/5">
-            <p className="text-xs text-mocha/55 dark:text-white/45">Dịp gắn với món quà</p>
-            <p className="mt-1 text-sm font-medium dark:text-white">
-              {item.special_day?.title ?? "Một ngày bình thường nhưng đáng nhớ"}
-            </p>
-          </div>
-        </div>
-
-        {item.note ? (
-          <div className="rounded-2xl border border-rose/15 bg-white/70 p-3 dark:border-white/10 dark:bg-white/5">
-            <p className="text-xs text-mocha/55 dark:text-white/45">Lời nhắn / ghi chú</p>
-            <p className="mt-1.5 text-sm leading-5 text-mocha/85 dark:text-white/75">
-              {item.note}
-            </p>
-          </div>
+        {item.special_day?.title ? (
+          <p className="text-sm text-muted-foreground">
+            Dịp: {item.special_day.title}
+          </p>
         ) : null}
 
-        <div className="flex flex-wrap gap-2 text-xs">
-          {item.wishlist_item?.title || item.wishlist_item_title ? (
-            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-mocha/80 dark:bg-white/5 dark:text-white/75">
-              <Link2 className="h-3.5 w-3.5" />
-              Từ wishlist: {item.wishlist_item?.title ?? item.wishlist_item_title}
-            </span>
-          ) : null}
-          {item.status === "thanked" ? (
-            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-mocha/80 dark:bg-white/5 dark:text-white/75">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              Đã gửi lời cảm ơn
-            </span>
-          ) : null}
-        </div>
+        {item.note ? (
+          <p className="text-sm leading-6 text-foreground/85">{item.note}</p>
+        ) : null}
+
+        {wishlistTitle ? (
+          <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Link2 className="h-3.5 w-3.5" />
+            Từ wishlist: {wishlistTitle}
+          </p>
+        ) : null}
+
+        {item.status === "thanked" ? (
+          <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Đã gửi lời cảm ơn
+          </p>
+        ) : null}
       </div>
     </article>
   );

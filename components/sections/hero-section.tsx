@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Sparkles } from "lucide-react";
 import { AppImage } from "@/components/ui/app-image";
+import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { APP_SHORT_DESCRIPTION } from "@/lib/constants/app";
 
@@ -23,35 +23,25 @@ export function HeroSection({
   return (
     <section className="pt-12 md:pt-16">
       <Container>
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
-          <div className="card p-8 md:p-12">
-            <p className="inline-flex items-center gap-2 rounded-full bg-blush px-3 py-1 text-xs font-medium text-mocha/80 dark:bg-white/10 dark:text-white/70">
-              <Sparkles className="h-3.5 w-3.5" />
-              Góc nhỏ của tụi mình
-            </p>
-            <h1 className="mt-5 font-(--font-heading) text-4xl leading-tight dark:text-white md:text-6xl">
+        <div className="grid gap-6 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
+          <div className="card flex flex-col justify-center p-8 md:p-12">
+            <h1 className="font-(--font-heading) text-4xl leading-tight text-foreground md:text-6xl">
               {names}
             </h1>
-            <p className="mt-4 max-w-xl text-mocha/80 dark:text-white/65 md:text-lg">
+            <p className="mt-4 max-w-xl text-muted-foreground md:text-lg">
               {story ?? APP_SHORT_DESCRIPTION}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                to="/wishlist"
-                className="rounded-full bg-mocha px-5 py-2.5 text-sm text-white transition hover:opacity-90 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
-              >
-                Mở wishlist
-              </Link>
-              <Link
-                to="/special-days"
-                className="rounded-full border border-mocha/20 bg-white px-5 py-2.5 text-sm text-mocha transition hover:border-mocha/40 dark:border-white/20 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
-              >
-                Xem ngày đặc biệt
-              </Link>
+              <Button asChild size="lg" className="rounded-full px-5">
+                <Link to="/wishlist">Mở wishlist</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="rounded-full px-5">
+                <Link to="/special-days">Xem ngày đặc biệt</Link>
+              </Button>
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-white/70 p-2 shadow-soft dark:border-white/10 dark:bg-white/5 dark:shadow-none">
+          <div className="overflow-hidden rounded-3xl border border-border bg-card p-2 shadow-soft dark:shadow-none">
             <AppImage
               path={coverImagePath}
               src={coverImagePath ? undefined : (coverImageUrl ?? FALLBACK_COVER)}
@@ -62,16 +52,6 @@ export function HeroSection({
               className="min-h-[280px] rounded-2xl sm:min-h-[360px]"
               imgClassName="rounded-2xl"
             />
-            <div className="absolute bottom-3 left-3 right-3 rounded-2xl bg-white/85 p-3 backdrop-blur-sm sm:bottom-5 sm:left-5 sm:right-5 sm:p-4 dark:bg-[#1e1a1c]/85">
-              <p className="text-sm font-medium dark:text-white">
-                Wishlist, kỷ niệm và bản đồ yêu thương
-              </p>
-              <p className="mt-1 text-xs text-mocha/70 sm:text-sm dark:text-white/60">
-                Một nơi để theo dõi điều muốn làm, ngày cần nhớ và những dấu mốc đã
-                đi qua.
-              </p>
-              <ArrowRight className="mt-2 h-4 w-4 text-rose" />
-            </div>
           </div>
         </div>
       </Container>

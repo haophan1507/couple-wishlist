@@ -109,11 +109,11 @@ export const upsertGiftHistoryItemFn = createServerFn({ method: "POST" }).valida
     if (payload.wishlist_item_id) {
       const { error } = await supabase
         .from("wishlist_items")
-        .delete()
+        .update({ status: "gifted", updated_at: new Date().toISOString() })
         .eq("id", payload.wishlist_item_id);
       if (error) {
         throw new Error(
-          `Đã lưu lịch sử quà nhưng không thể xóa món trong wishlist: ${error.message}`,
+          `Đã lưu lịch sử quà nhưng không thể đánh dấu wishlist đã tặng: ${error.message}`,
         );
       }
     }

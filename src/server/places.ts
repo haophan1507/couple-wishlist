@@ -17,11 +17,11 @@ function slugify(value: string) {
     .slice(0, 160);
 }
 
-function splitLines(value: FormDataEntryValue | null) {
+/** Preserve empty lines so caption index matches gallery image order. */
+function splitCaptionLines(value: FormDataEntryValue | null) {
   return String(value ?? "")
     .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
+    .map((line) => line.trim());
 }
 
 export const upsertPlaceMemoryFn = createServerFn({ method: "POST" }).validator(formDataValidator).handler(
@@ -125,7 +125,7 @@ export const upsertPlaceMemoryFn = createServerFn({ method: "POST" }).validator(
         .select("id, image_path")
         .eq("place_memory_id", placeId);
 
-      const captions = splitLines(formData.get("gallery_captions"));
+      const captions = splitCaptionLines(formData.get("gallery_captions"));
       const uploadedImages = await Promise.all(
         galleryFiles.map((file, index) =>
           uploadImageFile({
@@ -153,6 +153,36 @@ export const upsertPlaceMemoryFn = createServerFn({ method: "POST" }).validator(
           (existingImages as Array<{ image_path: string }> | null) ?? []
         ).map((image) => deleteStorageFile(image.image_path)),
       );
+    } else if (id) {
+      const captions = splitCaptionLines(formData.get("gallery_captions"));
+      const { data: existingImages, error: imagesError } = await supabase
+        .from("place_memory_images")
+        .select("id, sort_order")
+        .eq("place_memory_id", placeId)
+        .order("sort_order", { ascending: true });
+
+      if (imagesError) {
+        throw new Error("Không thể đọc ảnh chi tiết hiện tại.");
+      }
+
+      const images =
+        (existingImages as Array<{ id: string; sort_order: number }> | null) ??
+        [];
+
+      if (images.length) {
+        await Promise.all(
+          images.map((image, index) => {
+            const caption = captions[index] || null;
+            return supabase
+              .from("place_memory_images")
+              .update({
+                caption,
+                image_alt: caption || payload.title,
+              })
+              .eq("id", image.id);
+          }),
+        );
+      }
     }
 
     return { ok: true as const, created: !id };

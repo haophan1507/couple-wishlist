@@ -2,6 +2,10 @@
 
 import { Formik } from "formik";
 import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/form-field";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Textarea } from "@/components/ui/textarea";
 import { upsertSpecialDayFn } from "@/src/server/special-days";
 
 type SpecialDayFormValues = {
@@ -50,7 +54,9 @@ export function SpecialDayForm({
             helpers.resetForm();
           }
         } catch (error) {
-          helpers.setStatus(error instanceof Error ? error.message : "Không thể lưu ngày đặc biệt.");
+          helpers.setStatus(
+            error instanceof Error ? error.message : "Không thể lưu ngày đặc biệt.",
+          );
         } finally {
           helpers.setSubmitting(false);
         }
@@ -59,58 +65,60 @@ export function SpecialDayForm({
       {(formik) => (
         <form
           onSubmit={formik.handleSubmit}
-          className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5"
+          className="grid gap-4 rounded-2xl border border-border bg-card/60 p-4"
         >
           <input type="hidden" name="id" value={formik.values.id ?? ""} />
-          <input
-            name="title"
-            placeholder="Tiêu đề"
-            value={formik.values.title}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            required
-          />
-          <textarea
-            name="description"
-            rows={2}
-            placeholder="Mô tả"
-            value={formik.values.description}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          <div className="grid gap-2 md:grid-cols-2">
-            <input
-              name="date"
-              type="date"
-              aria-label="Ngày"
-              value={formik.values.date}
+          <FormField label="Tiêu đề">
+            <Input
+              name="title"
+              placeholder="Tiêu đề"
+              value={formik.values.title}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               required
             />
-            <select
-              name="type"
-              aria-label="Loại ngày"
-              value={formik.values.type}
+          </FormField>
+          <FormField label="Mô tả">
+            <Textarea
+              name="description"
+              rows={2}
+              placeholder="Mô tả"
+              value={formik.values.description}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-            >
-              <option value="birthday">Sinh nhật</option>
-              <option value="anniversary">Kỷ niệm</option>
-              <option value="relationship">Mốc yêu nhau</option>
-              <option value="holiday">Ngày lễ</option>
-              <option value="other">Khác</option>
-            </select>
+            />
+          </FormField>
+          <div className="grid gap-4 md:grid-cols-2">
+            <FormField label="Ngày">
+              <Input
+                name="date"
+                type="date"
+                value={formik.values.date}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                required
+              />
+            </FormField>
+            <FormField label="Loại ngày">
+              <NativeSelect
+                name="type"
+                value={formik.values.type}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              >
+                <option value="birthday">Sinh nhật</option>
+                <option value="anniversary">Kỷ niệm</option>
+                <option value="relationship">Mốc yêu nhau</option>
+                <option value="holiday">Ngày lễ</option>
+                <option value="other">Khác</option>
+              </NativeSelect>
+            </FormField>
           </div>
           {formik.status ? (
-            <p className="text-sm text-rose-700 dark:text-rose-300">{String(formik.status)}</p>
+            <p className="text-sm text-destructive">{String(formik.status)}</p>
           ) : null}
           <div className="flex flex-wrap gap-2">
-            <button
-              type="submit"
-              disabled={formik.isSubmitting}
-              className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
-            >
+            <Button type="submit" disabled={formik.isSubmitting}>
               {formik.isSubmitting
                 ? isEditing
                   ? "Đang cập nhật..."
@@ -118,7 +126,7 @@ export function SpecialDayForm({
                 : isEditing
                   ? "Cập nhật"
                   : "Thêm ngày"}
-            </button>
+            </Button>
             {onCancel ? (
               <Button type="button" variant="outline" onClick={onCancel}>
                 Hủy
@@ -130,4 +138,3 @@ export function SpecialDayForm({
     </Formik>
   );
 }
-

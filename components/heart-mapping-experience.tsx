@@ -143,7 +143,7 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
             <h2 className="text-lg font-semibold dark:text-white">
               {mode === "heart" ? "Những địa điểm trong tim" : "Danh sách địa điểm"}
             </h2>
-            <div className="mt-4 max-h-[55vh] space-y-3 overflow-y-auto pr-1 md:max-h-[60vh] xl:max-h-[68vh]">
+            <div className="mt-4 max-h-[min(100%,calc(100dvh-12rem))] space-y-3 overflow-y-auto pr-1">
               {displayedPlaces.map((place) => (
                 <button
                   key={place.id}

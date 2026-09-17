@@ -21,25 +21,27 @@ export function GalleryGrid({ items }: { items: GalleryEntry[] }) {
   return (
     <div className="columns-1 gap-4 md:columns-2 lg:columns-3">
       {items.map((item) => (
-        <article key={item.id} className="card mb-4 break-inside-avoid p-3">
+        <article key={item.id} className="mb-4 break-inside-avoid">
           <AppImage
             path={item.image_path}
             src={item.image_path ? undefined : FALLBACK_IMAGE}
             alt={item.image_alt ?? item.caption ?? "Ảnh kỷ niệm"}
             variant="display"
             aspect="natural"
-            className="rounded-2xl"
+            className="overflow-hidden rounded-2xl"
           />
-          <div className="px-1 pb-1 pt-3">
-            {item.caption ? (
-              <p className="text-sm font-medium dark:text-white">{item.caption}</p>
-            ) : null}
-            {item.memory_date ? (
-              <p className="mt-1 text-xs text-mocha/65 dark:text-white/50">
-                {format(new Date(item.memory_date), "PPP")}
-              </p>
-            ) : null}
-          </div>
+          {(item.caption || item.memory_date) && (
+            <div className="px-1 pt-3">
+              {item.caption ? (
+                <p className="text-sm font-medium text-foreground">{item.caption}</p>
+              ) : null}
+              {item.memory_date ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {format(new Date(item.memory_date), "PPP")}
+                </p>
+              ) : null}
+            </div>
+          )}
         </article>
       ))}
     </div>

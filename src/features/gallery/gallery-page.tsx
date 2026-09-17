@@ -1,6 +1,7 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { GalleryGrid } from "@/components/gallery-grid";
 import { PaginationControls } from "@/components/ui/pagination-controls";
+import { PageHeader } from "@/components/ui/page-header";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { Container } from "@/components/ui/container";
 import { fetchGalleryPage, queryKeys } from "@/lib/data/client-queries";
@@ -18,14 +19,18 @@ export function GalleryPage({ page }: GalleryPageProps) {
     placeholderData: keepPreviousData,
   });
 
+  const header = (
+    <PageHeader
+      title="Khoảnh khắc"
+      description="Những bức ảnh và kỷ niệm nhỏ hai bạn muốn giữ lại."
+    />
+  );
+
   if (listQuery.isPending && !listQuery.data) {
     return (
       <section className="py-10 md:py-12">
         <Container>
-          <h1 className="section-title">Khoảnh khắc</h1>
-          <p className="section-subtitle">
-            Những bức ảnh và kỷ niệm nhỏ hai bạn muốn giữ lại.
-          </p>
+          {header}
           <SectionSkeleton cards={6} />
         </Container>
       </section>
@@ -39,11 +44,8 @@ export function GalleryPage({ page }: GalleryPageProps) {
   return (
     <section className="py-10 md:py-12">
       <Container>
-        <h1 className="section-title">Khoảnh khắc</h1>
-        <p className="section-subtitle">
-          Những bức ảnh và kỷ niệm nhỏ hai bạn muốn giữ lại.
-        </p>
-        <div className="mt-8 max-h-[75vh] overflow-y-auto pr-1">
+        {header}
+        <div className="mt-8">
           <GalleryGrid items={listQuery.data?.items ?? []} />
         </div>
         <PaginationControls

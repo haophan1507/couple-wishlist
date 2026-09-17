@@ -1,7 +1,7 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Gift, MessageCircleHeart } from "lucide-react";
 import { GiftHistoryCard } from "@/components/gift-history-card";
 import { PaginationControls } from "@/components/ui/pagination-controls";
+import { PageHeader } from "@/components/ui/page-header";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Container } from "@/components/ui/container";
@@ -33,6 +33,13 @@ export function GiftHistoryPage({ page }: GiftHistoryPageProps) {
     placeholderData: keepPreviousData,
   });
 
+  const header = (
+    <PageHeader
+      title="Kỷ niệm quà"
+      description="Nhật ký nhỏ về những món quà hai bạn đã nhận và gửi."
+    />
+  );
+
   if (
     (profileQuery.isPending || statsQuery.isPending || listQuery.isPending) &&
     !listQuery.data
@@ -40,10 +47,7 @@ export function GiftHistoryPage({ page }: GiftHistoryPageProps) {
     return (
       <section className="py-10 md:py-12">
         <Container>
-          <h1 className="section-title">Kỷ niệm quà</h1>
-          <p className="section-subtitle">
-            Nhật ký nhỏ về những món quà hai bạn đã nhận và gửi.
-          </p>
+          {header}
           <SectionSkeleton cards={6} />
         </Container>
       </section>
@@ -62,84 +66,47 @@ export function GiftHistoryPage({ page }: GiftHistoryPageProps) {
   return (
     <section className="py-10 md:py-12">
       <Container>
-        <h1 className="section-title">Kỷ niệm quà</h1>
-        <p className="section-subtitle">
-          Nhật ký nhỏ về những món quà hai bạn đã nhận và gửi.
-        </p>
+        {header}
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-3xl bg-blush p-5 dark:bg-white/5">
-            <p className="text-xs text-mocha/55 dark:text-white/45">Tổng món quà đã lưu</p>
-            <p className="mt-2 text-3xl font-semibold dark:text-white">
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="card p-5">
+            <p className="text-xs text-muted-foreground">Tổng món quà</p>
+            <p className="mt-2 text-3xl font-semibold text-foreground">
               {stats?.total ?? 0}
             </p>
           </div>
-          <div className="rounded-3xl bg-blush p-5 dark:bg-white/5">
-            <p className="text-xs text-mocha/55 dark:text-white/45">Ảnh kỷ niệm đi kèm</p>
-            <p className="mt-2 text-3xl font-semibold dark:text-white">
-              {stats?.withPhotoCount ?? 0}
+          <div className="card p-5">
+            <p className="text-xs text-muted-foreground">
+              {personOneName} đã nhận
+            </p>
+            <p className="mt-2 text-3xl font-semibold text-foreground">
+              {stats?.meCount ?? 0}
             </p>
           </div>
-          <div className="rounded-3xl bg-blush p-5 dark:bg-white/5">
-            <p className="text-xs text-mocha/55 dark:text-white/45">Đã gửi lời cảm ơn</p>
-            <p className="mt-2 text-3xl font-semibold dark:text-white">
-              {stats?.thankedCount ?? 0}
+          <div className="card p-5">
+            <p className="text-xs text-muted-foreground">
+              {personTwoName} đã nhận
+            </p>
+            <p className="mt-2 text-3xl font-semibold text-foreground">
+              {stats?.honeyCount ?? 0}
             </p>
           </div>
         </div>
 
         {total ? (
           <>
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <div className="card p-6">
-                <div className="flex items-center gap-3">
-                  <Gift className="h-5 w-5 text-rose" />
-                  <div>
-                    <p className="text-sm font-medium dark:text-white">{personOneName}</p>
-                    <p className="text-xs text-mocha/65 dark:text-white/45">
-                      Đã nhận {stats?.meCount ?? 0} món quà
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="card p-6">
-                <div className="flex items-center gap-3">
-                  <Gift className="h-5 w-5 text-rose" />
-                  <div>
-                    <p className="text-sm font-medium dark:text-white">{personTwoName}</p>
-                    <p className="text-xs text-mocha/65 dark:text-white/45">
-                      Đã nhận {stats?.honeyCount ?? 0} món quà
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="card p-6">
-                <div className="flex items-center gap-3">
-                  <MessageCircleHeart className="h-5 w-5 text-rose" />
-                  <div>
-                    <p className="text-sm font-medium dark:text-white">Lưu bằng cảm xúc</p>
-                    <p className="text-xs text-mocha/65 dark:text-white/45">
-                      Ưu tiên ghi chú và bối cảnh hơn là trạng thái giao dịch.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 max-h-[70vh] overflow-y-auto pr-1">
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {items.map((item) => (
-                  <GiftHistoryCard
-                    key={item.id}
-                    item={item}
-                    recipientName={
-                      item.recipient_owner_type === "me"
-                        ? personOneName
-                        : personTwoName
-                    }
-                  />
-                ))}
-              </div>
+            <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {items.map((item) => (
+                <GiftHistoryCard
+                  key={item.id}
+                  item={item}
+                  recipientName={
+                    item.recipient_owner_type === "me"
+                      ? personOneName
+                      : personTwoName
+                  }
+                />
+              ))}
             </div>
             <PaginationControls
               basePath="/gift-history"

@@ -9,7 +9,7 @@ export function AdminSidebar() {
 
   return (
     <aside className="card hidden h-fit p-4 md:block md:w-[220px] md:sticky md:top-4 md:max-h-[calc(100dvh-2rem)] md:overflow-y-auto md:self-start">
-      <h2 className="px-2 py-2 font-semibold dark:text-white">Quản trị</h2>
+      <h2 className="px-2 py-2 font-semibold text-foreground">Quản trị</h2>
       <nav className="mt-2 space-y-1">
         {ADMIN_NAV_LINKS.map((link) => {
           const active =
@@ -24,8 +24,8 @@ export function AdminSidebar() {
               className={cn(
                 "block rounded-xl px-3 py-2 text-sm transition",
                 active
-                  ? "bg-blush font-medium text-mocha dark:bg-white/10 dark:text-white"
-                  : "text-mocha/80 hover:bg-blush hover:text-mocha dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white",
+                  ? "bg-secondary font-medium text-foreground"
+                  : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
               )}
               aria-current={active ? "page" : undefined}
             >
@@ -38,7 +38,7 @@ export function AdminSidebar() {
       <div className="mt-4 border-t border-mocha/10 pt-4 dark:border-white/10">
         <button
           type="button"
-          className="w-full rounded-xl border border-mocha/20 px-3 py-2 text-sm hover:bg-white dark:border-white/20 dark:text-white/80 dark:hover:bg-white/10"
+          className="w-full rounded-xl border border-border px-3 py-2 text-sm text-foreground hover:bg-background"
           onClick={async () => {
             const supabase = createSupabaseBrowserClient();
             await supabase.auth.signOut();

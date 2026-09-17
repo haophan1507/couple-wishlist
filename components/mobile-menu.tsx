@@ -23,7 +23,7 @@ export function MobileMenu() {
         type="button"
         aria-label={open ? "Đóng menu" : "Mở menu"}
         onClick={() => setOpen(!open)}
-        className="rounded-full border border-mocha/20 p-2 text-mocha/80 transition hover:bg-white dark:border-white/20 dark:text-white/80 dark:hover:bg-white/10"
+        className="rounded-full border border-border p-2 text-muted-foreground transition hover:bg-background hover:text-foreground"
       >
         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
@@ -36,7 +36,7 @@ export function MobileMenu() {
             className="fixed inset-0 top-16 z-40 cursor-default bg-black/30 backdrop-blur-xs"
             onClick={() => setOpen(false)}
           />
-          <nav className="fixed inset-x-0 top-16 z-50 border-b border-white/60 bg-cream/95 px-4 pb-5 pt-3 backdrop-blur-sm dark:border-white/10 dark:bg-[#1e1a1c]/95">
+          <nav className="fixed inset-x-0 top-16 z-50 border-b border-border bg-background/95 px-4 pb-5 pt-3 backdrop-blur-sm">
             <ul className="space-y-1">
               {APP_NAV_LINKS.map((link) => {
                 const active =
@@ -53,8 +53,8 @@ export function MobileMenu() {
                       className={cn(
                         "block rounded-xl px-4 py-2.5 text-sm font-medium transition",
                         active
-                          ? "bg-blush text-mocha dark:bg-white/10 dark:text-white"
-                          : "text-mocha/75 hover:bg-white/70 dark:text-white/70 dark:hover:bg-white/5",
+                          ? "bg-secondary text-foreground"
+                          : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
                       )}
                       aria-current={active ? "page" : undefined}
                     >
@@ -64,12 +64,12 @@ export function MobileMenu() {
                 );
               })}
             </ul>
-            <div className="mt-3 flex items-center gap-3 border-t border-mocha/10 px-4 pt-3 dark:border-white/10">
+            <div className="mt-3 flex items-center gap-3 border-t border-border px-4 pt-3">
               <ThemeToggle />
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="rounded-full border border-mocha/20 px-4 py-2 text-sm hover:bg-white dark:border-white/20 dark:text-white/80 dark:hover:bg-white/10"
+                className="rounded-full border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
               >
                 Quản trị
               </Link>

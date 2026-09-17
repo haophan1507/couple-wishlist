@@ -164,28 +164,20 @@
 }
 
 .card {
-  @apply rounded-3xl border border-white/70 bg-white/80 shadow-soft backdrop-blur-sm;
+  @apply rounded-3xl border border-border bg-card text-card-foreground shadow-soft backdrop-blur-sm;
 }
 
 .dark .card {
-  @apply border-white/10 bg-white/5 shadow-none;
+  @apply shadow-none;
 }
 
 .section-title {
-  @apply text-3xl font-semibold tracking-tight text-mocha md:text-4xl;
+  @apply text-3xl font-semibold tracking-tight text-foreground md:text-4xl;
   font-family: var(--font-heading);
 }
 
-.dark .section-title {
-  @apply text-[#f4e9e7];
-}
-
 .section-subtitle {
-  @apply mt-2 text-base text-mocha/70 md:text-lg;
-}
-
-.dark .section-subtitle {
-  @apply text-[#f4e9e7]/65;
+  @apply mt-2 text-base text-muted-foreground md:text-lg;
 }
 
 input:not([data-slot]),

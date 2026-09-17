@@ -1,7 +1,8 @@
-import { ExternalLink, NotebookText, Tag } from "lucide-react";
+import { ExternalLink, Tag } from "lucide-react";
 import { AppImage } from "@/components/ui/app-image";
 import { getWishlistFallbackImage } from "@/lib/constants/wishlist";
 import type { PublicWishlistItem } from "@/lib/data/client-queries";
+import { cn } from "@/lib/utils/cn";
 
 const vndCurrency = new Intl.NumberFormat("vi-VN", {
   style: "currency",
@@ -31,86 +32,82 @@ const priorityDotClass: Record<string, string> = {
 
 export function WishlistCard({ item }: { item: PublicWishlistItem }) {
   const productUrls = item.product_urls ?? [];
+  const priceLabel =
+    item.price_max && item.price_max !== item.price_min
+      ? `${currency(item.price_min)} – ${currency(item.price_max)}`
+      : currency(item.price_min);
 
   return (
-    <article className="group relative isolate overflow-hidden rounded-4xl border border-white/95 bg-white/95 shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_14px_30px_-24px_rgba(122,82,95,0.55)] ring-1 ring-rose/10 transition duration-300 hover:-translate-y-0.5 hover:border-rose/25 hover:shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_20px_36px_-24px_rgba(122,82,95,0.62)] hover:ring-rose/20 dark:border-white/10 dark:bg-white/5 dark:shadow-none dark:ring-white/10 dark:hover:border-white/20 dark:hover:ring-white/20">
-      <div className="relative overflow-hidden">
-        <AppImage
-          path={item.image_path}
-          src={item.image_path ? undefined : getWishlistFallbackImage(item.category)}
-          alt={item.title}
-          variant="thumb"
-          aspect="card"
-          imgClassName="transition duration-500 group-hover:scale-[1.03]"
-        />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-black/8 to-transparent" />
-      </div>
-      <div className="bg-linear-to-b from-white/95 to-white/92 p-5 dark:from-transparent dark:to-transparent">
+    <article className="card overflow-hidden transition hover:border-rose/30">
+      <AppImage
+        path={item.image_path}
+        src={item.image_path ? undefined : getWishlistFallbackImage(item.category)}
+        alt={item.title}
+        variant="thumb"
+        aspect="card"
+        imgClassName="transition duration-500 group-hover:scale-[1.02]"
+      />
+      <div className="space-y-3 p-5">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-lg font-semibold tracking-tight dark:text-white">
+          <h3 className="text-lg font-semibold tracking-tight text-foreground">
             {item.title}
           </h3>
           <span
-            className={`mt-1 inline-block h-3.5 w-3.5 rounded-full ${priorityDotClass[item.priority]}`}
+            className={cn(
+              "mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full",
+              priorityDotClass[item.priority],
+            )}
             aria-label={priorityLabel[item.priority]}
             title={priorityLabel[item.priority]}
           />
         </div>
+
         {item.description ? (
-          <p className="mt-2 line-clamp-3 text-sm leading-6 text-mocha/75 dark:text-white/60">
+          <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">
             {item.description}
           </p>
         ) : null}
 
-        <div className="mt-4 flex flex-wrap gap-2 text-xs text-mocha/70 dark:text-white/60">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
           {item.category ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-sand px-2.5 py-1.5 dark:bg-white/10">
+            <span className="inline-flex items-center gap-1">
               <Tag className="h-3 w-3" />
               {item.category}
             </span>
           ) : null}
-          <span className="rounded-full bg-sand px-2.5 py-1.5 dark:bg-white/10">
-            {currency(item.price_min)}
-          </span>
-          {item.price_max && item.price_max !== item.price_min ? (
-            <span className="rounded-full bg-sand px-2.5 py-1.5 dark:bg-white/10">
-              đến {currency(item.price_max)}
-            </span>
-          ) : null}
+          <span>{priceLabel}</span>
         </div>
 
         {productUrls.length ? (
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
             {productUrls.map((url, index) => (
               <a
                 key={url}
                 href={url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-mocha/20 bg-white px-3 py-1.5 text-xs font-medium text-mocha/85 transition hover:bg-blush dark:border-white/20 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground/80 underline-offset-2 hover:underline"
               >
-                Link sản phẩm {index + 1}
-                <ExternalLink className="h-3.5 w-3.5" />
+                Link {index + 1}
+                <ExternalLink className="h-3 w-3" />
               </a>
             ))}
           </div>
         ) : null}
 
-        {item.status === "gifted" ? (
-          <p className="mt-4 rounded-2xl bg-green-50 px-3 py-2 text-sm font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
-            Đã tặng
-          </p>
-        ) : (
-          <p className="mt-4 rounded-2xl bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">
-            Có sẵn
-          </p>
-        )}
+        <p
+          className={cn(
+            "text-sm font-medium",
+            item.status === "gifted" ? "text-green-700 dark:text-green-400" : "text-rose-700 dark:text-rose-300",
+          )}
+        >
+          {item.status === "gifted" ? "Đã tặng" : "Có sẵn"}
+        </p>
 
         {item.note ? (
-          <div className="mt-4 flex gap-2 rounded-2xl border border-rose/15 bg-blush/60 px-3 py-2.5 text-mocha/70 dark:border-white/10 dark:bg-white/10 dark:text-white/65">
-            <NotebookText className="mt-0.5 h-4 w-4 shrink-0 opacity-65" />
-            <p className="line-clamp-2 text-sm italic leading-6">{item.note}</p>
-          </div>
+          <p className="line-clamp-2 text-sm italic leading-6 text-muted-foreground">
+            {item.note}
+          </p>
         ) : null}
       </div>
     </article>

@@ -4,6 +4,10 @@ import { useRef } from "react";
 import { Formik } from "formik";
 import { AdminImagePreview } from "@/components/admin/admin-image-preview";
 import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/form-field";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Textarea } from "@/components/ui/textarea";
 import { upsertGiftHistoryItemFn } from "@/src/server/gift-history";
 
 type GiftHistoryFormValues = {
@@ -86,7 +90,9 @@ export function GiftHistoryForm({
             helpers.resetForm();
           }
         } catch (error) {
-          helpers.setStatus(error instanceof Error ? error.message : "Không thể lưu lịch sử quà.");
+          helpers.setStatus(
+            error instanceof Error ? error.message : "Không thể lưu lịch sử quà.",
+          );
         } finally {
           helpers.setSubmitting(false);
         }
@@ -95,15 +101,12 @@ export function GiftHistoryForm({
       {(formik) => (
         <form
           onSubmit={formik.handleSubmit}
-          className="grid gap-3 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5"
+          className="grid gap-4 rounded-2xl border border-border bg-card/60 p-4"
         >
           <input type="hidden" name="id" value={formik.values.id} />
-          <div className="grid gap-3 md:grid-cols-2">
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-                Người nhận
-              </span>
-              <select
+          <div className="grid gap-4 md:grid-cols-2">
+            <FormField label="Người nhận">
+              <NativeSelect
                 name="recipient_owner_type"
                 value={formik.values.recipient_owner_type}
                 onChange={formik.handleChange}
@@ -111,13 +114,10 @@ export function GiftHistoryForm({
               >
                 <option value="me">{personOneName}</option>
                 <option value="honey">{personTwoName}</option>
-              </select>
-            </label>
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-                Trạng thái
-              </span>
-              <select
+              </NativeSelect>
+            </FormField>
+            <FormField label="Trạng thái">
+              <NativeSelect
                 name="status"
                 value={formik.values.status}
                 onChange={formik.handleChange}
@@ -126,16 +126,13 @@ export function GiftHistoryForm({
                 <option value="received">Đã nhận</option>
                 <option value="thanked">Đã cảm ơn</option>
                 <option value="archived">Lưu kỷ niệm</option>
-              </select>
-            </label>
+              </NativeSelect>
+            </FormField>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-                Tên món quà
-              </span>
-              <input
+          <div className="grid gap-4 md:grid-cols-2">
+            <FormField label="Tên món quà">
+              <Input
                 name="gift_name"
                 value={formik.values.gift_name}
                 onChange={formik.handleChange}
@@ -143,12 +140,9 @@ export function GiftHistoryForm({
                 placeholder="Ví dụ: Máy ảnh film bỏ túi"
                 required
               />
-            </label>
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-                Người tặng
-              </span>
-              <input
+            </FormField>
+            <FormField label="Người tặng">
+              <Input
                 name="giver_name"
                 value={formik.values.giver_name}
                 onChange={formik.handleChange}
@@ -156,15 +150,12 @@ export function GiftHistoryForm({
                 placeholder="Ví dụ: Trà"
                 required
               />
-            </label>
+            </FormField>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-                Ngày nhận
-              </span>
-              <input
+          <div className="grid gap-4 md:grid-cols-2">
+            <FormField label="Ngày nhận">
+              <Input
                 name="received_date"
                 type="date"
                 value={formik.values.received_date}
@@ -172,12 +163,9 @@ export function GiftHistoryForm({
                 onBlur={formik.handleBlur}
                 required
               />
-            </label>
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-                Dịp đặc biệt
-              </span>
-              <select
+            </FormField>
+            <FormField label="Dịp đặc biệt">
+              <NativeSelect
                 name="special_day_id"
                 value={formik.values.special_day_id}
                 onChange={formik.handleChange}
@@ -189,15 +177,12 @@ export function GiftHistoryForm({
                     {day.title}
                   </option>
                 ))}
-              </select>
-            </label>
+              </NativeSelect>
+            </FormField>
           </div>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-              Link tới wishlist gốc
-            </span>
-            <select
+          <FormField label="Link tới wishlist gốc">
+            <NativeSelect
               name="wishlist_item_id"
               value={formik.values.wishlist_item_id}
               onChange={formik.handleChange}
@@ -206,59 +191,48 @@ export function GiftHistoryForm({
               <option value="">Không liên kết wishlist</option>
               {wishlistItems.map((wishlistItem) => (
                 <option key={wishlistItem.id} value={wishlistItem.id}>
-                  {wishlistItem.owner_type === "me" ? personOneName : personTwoName}: {wishlistItem.title}
+                  {wishlistItem.owner_type === "me" ? personOneName : personTwoName}:{" "}
+                  {wishlistItem.title}
                 </option>
               ))}
-            </select>
-          </label>
+            </NativeSelect>
+          </FormField>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-                Ảnh kỷ niệm
-              </span>
-              <input type="hidden" name="existing_photo_path" value={formik.values.photo_path} />
-              <AdminImagePreview
-                path={item.photo_path || null}
-                alt={item.gift_name || "Ảnh kỷ niệm quà"}
-              />
-              <input
-                ref={photoInputRef}
-                type="file"
-                name="photo_file"
-                accept="image/*"
-                onChange={(event) => {
-                  photoFileRef.current = event.currentTarget.files?.[0] ?? null;
-                }}
-              />
-            </label>
-            <div />
-          </div>
+          <FormField label="Ảnh kỷ niệm">
+            <input type="hidden" name="existing_photo_path" value={formik.values.photo_path} />
+            <AdminImagePreview
+              path={item.photo_path || null}
+              alt={item.gift_name || "Ảnh kỷ niệm quà"}
+            />
+            <Input
+              ref={photoInputRef}
+              type="file"
+              name="photo_file"
+              accept="image/*"
+              className="mt-2"
+              onChange={(event) => {
+                photoFileRef.current = event.currentTarget.files?.[0] ?? null;
+              }}
+            />
+          </FormField>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
-              Ghi chú kỷ niệm
-            </span>
-            <textarea
+          <FormField label="Ghi chú kỷ niệm">
+            <Textarea
               name="note"
               rows={4}
               value={formik.values.note}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              placeholder="Ví dụ: Món quà đầu tiên sau chuyến đi Đà Lạt, vẫn còn giữ hộp quà và tấm thiệp."
+              placeholder="Ví dụ: Món quà đầu tiên sau chuyến đi Đà Lạt..."
             />
-          </label>
+          </FormField>
 
           {formik.status ? (
-            <p className="text-sm text-rose-700 dark:text-rose-300">{String(formik.status)}</p>
+            <p className="text-sm text-destructive">{String(formik.status)}</p>
           ) : null}
 
           <div className="flex flex-wrap gap-2">
-            <button
-              type="submit"
-              disabled={formik.isSubmitting}
-              className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
-            >
+            <Button type="submit" disabled={formik.isSubmitting}>
               {formik.isSubmitting
                 ? isEditing
                   ? "Đang cập nhật..."
@@ -266,7 +240,7 @@ export function GiftHistoryForm({
                 : isEditing
                   ? "Cập nhật kỷ niệm quà"
                   : "Thêm kỷ niệm quà"}
-            </button>
+            </Button>
             {onCancel ? (
               <Button type="button" variant="outline" onClick={onCancel}>
                 Hủy

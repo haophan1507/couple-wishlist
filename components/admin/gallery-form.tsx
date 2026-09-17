@@ -4,6 +4,8 @@ import { useRef } from "react";
 import { Formik } from "formik";
 import { AdminImagePreview } from "@/components/admin/admin-image-preview";
 import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/form-field";
+import { Input } from "@/components/ui/input";
 import { upsertGalleryItemFn } from "@/src/server/gallery";
 
 type GalleryFormValues = {
@@ -30,6 +32,7 @@ export function GalleryForm({
   onCancel?: () => void;
 }) {
   const imageFileRef = useRef<File | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const isEditing = Boolean(item.id);
 
   return (
@@ -50,12 +53,17 @@ export function GalleryForm({
         try {
           await upsertGalleryItemFn({ data: formData });
           imageFileRef.current = null;
+          if (imageInputRef.current) {
+            imageInputRef.current.value = "";
+          }
           onSuccess?.();
           if (!isEditing) {
             helpers.resetForm();
           }
         } catch (error) {
-          helpers.setStatus(error instanceof Error ? error.message : "Không thể lưu ảnh.");
+          helpers.setStatus(
+            error instanceof Error ? error.message : "Không thể lưu ảnh.",
+          );
         } finally {
           helpers.setSubmitting(false);
         }
@@ -64,47 +72,49 @@ export function GalleryForm({
       {(formik) => (
         <form
           onSubmit={formik.handleSubmit}
-          className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5"
+          className="grid gap-4 rounded-2xl border border-border bg-card/60 p-4"
         >
           <input type="hidden" name="id" value={formik.values.id ?? ""} />
           <input type="hidden" name="existing_image_path" value={formik.values.image_path ?? ""} />
-          <AdminImagePreview
-            path={item.image_path || null}
-            alt={item.caption || "Ảnh kỷ niệm"}
-          />
-          <input
-            type="file"
-            name="image_file"
-            accept="image/*"
-            aria-label="Ảnh kỷ niệm"
-            onChange={(event) => {
-              imageFileRef.current = event.currentTarget.files?.[0] ?? null;
-            }}
-          />
-          <input
-            name="caption"
-            placeholder="Chú thích"
-            value={formik.values.caption}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          <input
-            name="memory_date"
-            type="date"
-            aria-label="Ngày kỷ niệm"
-            value={formik.values.memory_date}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
+          <FormField label="Ảnh kỷ niệm">
+            <AdminImagePreview
+              path={item.image_path || null}
+              alt={item.caption || "Ảnh kỷ niệm"}
+            />
+            <Input
+              ref={imageInputRef}
+              type="file"
+              name="image_file"
+              accept="image/*"
+              className="mt-2"
+              onChange={(event) => {
+                imageFileRef.current = event.currentTarget.files?.[0] ?? null;
+              }}
+            />
+          </FormField>
+          <FormField label="Chú thích">
+            <Input
+              name="caption"
+              placeholder="Chú thích"
+              value={formik.values.caption}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </FormField>
+          <FormField label="Ngày kỷ niệm">
+            <Input
+              name="memory_date"
+              type="date"
+              value={formik.values.memory_date}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </FormField>
           {formik.status ? (
-            <p className="text-sm text-rose-700 dark:text-rose-300">{String(formik.status)}</p>
+            <p className="text-sm text-destructive">{String(formik.status)}</p>
           ) : null}
           <div className="flex flex-wrap gap-2">
-            <button
-              type="submit"
-              disabled={formik.isSubmitting}
-              className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
-            >
+            <Button type="submit" disabled={formik.isSubmitting}>
               {formik.isSubmitting
                 ? isEditing
                   ? "Đang cập nhật..."
@@ -112,7 +122,7 @@ export function GalleryForm({
                 : isEditing
                   ? "Cập nhật"
                   : "Thêm ảnh"}
-            </button>
+            </Button>
             {onCancel ? (
               <Button type="button" variant="outline" onClick={onCancel}>
                 Hủy
@@ -124,4 +134,3 @@ export function GalleryForm({
     </Formik>
   );
 }
-

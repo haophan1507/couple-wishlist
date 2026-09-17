@@ -73,7 +73,7 @@ export function AdminSpecialDaysPage({ page }: { page: number }) {
       </AdminListHeader>
 
       <section>
-        <div className="max-h-[72vh] space-y-3 overflow-y-auto pr-1">
+        <div className="space-y-3 pr-1">
           {items.map((item) => {
             const expanded = editor.isEditingId(item.id);
             return (

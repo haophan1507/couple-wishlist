@@ -2,6 +2,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { WishlistFilter, type WishlistSearch } from "@/components/wishlist-filter";
 import { WishlistCard } from "@/components/wishlist-card";
 import { PaginationControls } from "@/components/ui/pagination-controls";
+import { PageHeader } from "@/components/ui/page-header";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { Container } from "@/components/ui/container";
 import {
@@ -75,15 +76,18 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
     meQuery.isPending ||
     honeyQuery.isPending;
 
+  const header = (
+    <PageHeader
+      title="Wishlist"
+      description="Hai bạn cùng cập nhật món quà, điều muốn có và ý tưởng bất ngờ dành cho nhau."
+    />
+  );
+
   if (isLoading && !meQuery.data && !honeyQuery.data) {
     return (
       <section className="py-10 md:py-12">
         <Container>
-          <h1 className="section-title">Wishlist</h1>
-          <p className="section-subtitle">
-            Hai bạn cùng cập nhật món quà, điều muốn có và ý tưởng bất ngờ dành cho
-            nhau.
-          </p>
+          {header}
           <SectionSkeleton cards={6} />
         </Container>
       </section>
@@ -101,11 +105,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
   return (
     <section className="py-10 md:py-12">
       <Container>
-        <h1 className="section-title">Wishlist</h1>
-        <p className="section-subtitle">
-          Hai bạn cùng cập nhật món quà, điều muốn có và ý tưởng bất ngờ dành cho
-          nhau.
-        </p>
+        {header}
 
         <WishlistFilter
           categories={categoriesQuery.data ?? []}
@@ -122,16 +122,16 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
 
         <div className="mt-10 space-y-10">
           <section>
-            <h2 className="text-2xl font-semibold dark:text-white">
+            <h2 className="text-2xl font-semibold text-foreground">
               Wishlist của {profile?.person_one_name ?? "mình"}
             </h2>
-            <div className="mt-4 max-h-[70vh] overflow-y-auto px-1 pb-5 pt-1">
+            <div className="mt-4 px-1 pb-5 pt-1">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {(meQuery.data?.items ?? []).map((item) => (
                   <WishlistCard key={item.id} item={item} />
                 ))}
                 {!meTotal ? (
-                  <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">
+                  <p className="card p-6 text-sm text-muted-foreground">
                     Chưa có món quà nào.
                   </p>
                 ) : null}
@@ -154,16 +154,16 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold dark:text-white">
+            <h2 className="text-2xl font-semibold text-foreground">
               Wishlist của {profile?.person_two_name ?? "người thương"}
             </h2>
-            <div className="mt-4 max-h-[70vh] overflow-y-auto px-1 pb-5 pt-1">
+            <div className="mt-4 px-1 pb-5 pt-1">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {(honeyQuery.data?.items ?? []).map((item) => (
                   <WishlistCard key={item.id} item={item} />
                 ))}
                 {!honeyTotal ? (
-                  <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">
+                  <p className="card p-6 text-sm text-muted-foreground">
                     Chưa có món quà nào.
                   </p>
                 ) : null}

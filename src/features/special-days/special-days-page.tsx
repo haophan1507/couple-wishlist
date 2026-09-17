@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { LoveCalendar } from "@/components/love-calendar";
 import { SpecialDayCard } from "@/components/special-day-card";
+import { PageHeader } from "@/components/ui/page-header";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { Container } from "@/components/ui/container";
 import {
@@ -25,14 +26,18 @@ export function SpecialDaysPage() {
     queryFn: fetchSpecialDays,
   });
 
+  const header = (
+    <PageHeader
+      title="Ngày đặc biệt"
+      description="Theo dõi hành trình yêu và những cột mốc quan trọng."
+    />
+  );
+
   if (profileQuery.isPending || daysQuery.isPending) {
     return (
       <section className="py-10 md:py-12">
         <Container>
-          <h1 className="section-title">Ngày đặc biệt</h1>
-          <p className="section-subtitle">
-            Theo dõi hành trình yêu và những cột mốc quan trọng.
-          </p>
+          {header}
           <SectionSkeleton cards={6} />
         </Container>
       </section>
@@ -50,37 +55,34 @@ export function SpecialDaysPage() {
   return (
     <section className="py-10 md:py-12">
       <Container>
-        <h1 className="section-title">Ngày đặc biệt</h1>
-        <p className="section-subtitle">
-          Theo dõi hành trình yêu và những cột mốc quan trọng.
-        </p>
+        {header}
 
         <div className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="card p-6">
-            <p className="text-sm text-mocha/70 dark:text-white/55">
+            <p className="text-sm text-muted-foreground">
               Ngày bắt đầu hành trình của chúng mình
             </p>
-            <p className="mt-2 text-3xl font-semibold dark:text-white">
+            <p className="mt-2 text-3xl font-semibold text-foreground">
               {profile?.love_start_date
                 ? format(new Date(profile.love_start_date), "dd/MM/yyyy")
                 : "Chưa cập nhật"}
             </p>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
-                <p className="text-xs text-mocha/60 dark:text-white/45">Số ngày đã yêu</p>
-                <p className="mt-1 text-2xl font-semibold dark:text-white">
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              <div>
+                <p className="text-xs text-muted-foreground">Số ngày đã yêu</p>
+                <p className="mt-1 text-2xl font-semibold text-foreground">
                   {loveStats?.daysInLove ?? "--"}
                 </p>
               </div>
-              <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
-                <p className="text-xs text-mocha/60 dark:text-white/45">Cột mốc tự động</p>
-                <p className="mt-1 text-2xl font-semibold dark:text-white">
+              <div>
+                <p className="text-xs text-muted-foreground">Cột mốc tự động</p>
+                <p className="mt-1 text-2xl font-semibold text-foreground">
                   {loveStats?.milestones.length ?? 0}
                 </p>
               </div>
-              <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
-                <p className="text-xs text-mocha/60 dark:text-white/45">Ngày tự thêm</p>
-                <p className="mt-1 text-2xl font-semibold dark:text-white">
+              <div>
+                <p className="text-xs text-muted-foreground">Ngày tự thêm</p>
+                <p className="mt-1 text-2xl font-semibold text-foreground">
                   {specialDays.length}
                 </p>
               </div>
@@ -88,21 +90,21 @@ export function SpecialDaysPage() {
           </div>
 
           <div className="card p-6">
-            <p className="text-sm text-mocha/70 dark:text-white/55">Cột mốc tiếp theo</p>
+            <p className="text-sm text-muted-foreground">Cột mốc tiếp theo</p>
             {nextMilestone ? (
               <>
-                <h2 className="mt-2 text-2xl font-semibold dark:text-white">
+                <h2 className="mt-2 text-2xl font-semibold text-foreground">
                   {nextMilestone.title}
                 </h2>
-                <p className="mt-2 text-sm text-mocha/75 dark:text-white/55">
+                <p className="mt-2 text-sm text-muted-foreground">
                   {format(nextMilestone.date, "dd/MM/yyyy")}
                 </p>
-                <p className="mt-4 rounded-2xl bg-blush px-4 py-3 text-sm font-medium dark:bg-white/10 dark:text-white/80">
+                <p className="mt-4 text-sm font-medium text-foreground">
                   Còn {nextMilestone.countdown} ngày nữa
                 </p>
               </>
             ) : (
-              <p className="mt-3 text-sm text-mocha/75 dark:text-white/55">
+              <p className="mt-3 text-sm text-muted-foreground">
                 Tất cả cột mốc hiện tại đã đi qua.
               </p>
             )}
@@ -111,7 +113,7 @@ export function SpecialDaysPage() {
 
         {upcomingEvents.length ? (
           <div className="mt-8">
-            <h2 className="text-2xl font-semibold dark:text-white">Sự kiện sắp tới</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Sự kiện sắp tới</h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {upcomingEvents.slice(0, 6).map((event) => (
                 <SpecialDayCard
@@ -128,33 +130,24 @@ export function SpecialDaysPage() {
 
         {coupleFacts.length ? (
           <div className="mt-8">
-            <h2 className="text-2xl font-semibold dark:text-white">
+            <h2 className="text-2xl font-semibold text-foreground">
               Điều thú vị về hai bạn
             </h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               {coupleFacts.map((person) => (
-                <div key={person.name} className="card p-6">
-                  <h3 className="text-xl font-semibold dark:text-white">{person.name}</h3>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-2xl bg-blush p-4 dark:bg-white/5">
-                      <p className="text-xs text-mocha/60 dark:text-white/45">Tuổi</p>
-                      <p className="mt-1 text-lg font-semibold dark:text-white">
-                        {person.age ?? "--"}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl bg-blush p-4 dark:bg-white/5 sm:col-span-2">
-                      <p className="text-xs text-mocha/60 dark:text-white/45">Yêu thích</p>
-                      <p className="mt-1 text-sm font-medium dark:text-white">
-                        {person.favorite || "Chưa cập nhật"}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl bg-blush p-4 dark:bg-white/5 sm:col-span-3">
-                      <p className="text-xs text-mocha/60 dark:text-white/45">Sở thích</p>
-                      <p className="mt-1 text-sm font-medium dark:text-white">
-                        {person.hobby || "Chưa cập nhật"}
-                      </p>
-                    </div>
-                  </div>
+                <div key={person.name} className="card space-y-2 p-6">
+                  <h3 className="text-xl font-semibold text-foreground">
+                    {person.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Tuổi: {person.age ?? "--"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Yêu thích: {person.favorite || "Chưa cập nhật"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Sở thích: {person.hobby || "Chưa cập nhật"}
+                  </p>
                 </div>
               ))}
             </div>
@@ -162,8 +155,8 @@ export function SpecialDaysPage() {
         ) : null}
 
         <div className="mt-10">
-          <h2 className="text-2xl font-semibold dark:text-white">Lịch tình yêu</h2>
-          <p className="mt-2 text-sm text-mocha/70 dark:text-white/55">
+          <h2 className="text-2xl font-semibold text-foreground">Lịch tình yêu</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
             Xem các ngày trong tháng này và chi tiết cột mốc yêu cùng các ngày đặc biệt.
           </p>
           <div className="mt-4">

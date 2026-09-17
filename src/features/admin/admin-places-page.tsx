@@ -96,12 +96,12 @@ function PlaceForm({
           defaultValue={item.title}
           required
         />
-        <input
-          name="slug"
-          placeholder="slug-tu-chinh (không bắt buộc)"
-          defaultValue={item.slug}
-        />
+        <select name="status" defaultValue={item.status} aria-label="Trạng thái địa điểm">
+          <option value="planned">Dự định</option>
+          <option value="visited">Đã đi</option>
+        </select>
       </div>
+      <input type="hidden" name="slug" defaultValue={item.slug} />
 
       <textarea
         name="description"
@@ -110,18 +110,12 @@ function PlaceForm({
         defaultValue={item.description}
       />
 
-      <div className="grid gap-3 md:grid-cols-2">
-        <select name="status" defaultValue={item.status} aria-label="Trạng thái địa điểm">
-          <option value="planned">Dự định</option>
-          <option value="visited">Đã đi</option>
-        </select>
-        <input
-          name="visit_date"
-          type="date"
-          defaultValue={item.visit_date}
-          aria-label="Ngày ghé thăm"
-        />
-      </div>
+      <input
+        name="visit_date"
+        type="date"
+        defaultValue={item.visit_date}
+        aria-label="Ngày ghé thăm"
+      />
 
       {showLocationPicker ? (
         <PlaceMapPicker
@@ -141,15 +135,12 @@ function PlaceForm({
         />
       )}
 
-      <div className="grid gap-3 md:grid-cols-2">
-        <div className="space-y-2">
-          <AdminImagePreview
-            path={item.cover_image_path || null}
-            alt={item.title || "Ảnh cover địa điểm"}
-          />
-          <input type="file" name="cover_image_file" accept="image/*" aria-label="Ảnh cover" />
-        </div>
-        <div />
+      <div className="space-y-2">
+        <AdminImagePreview
+          path={item.cover_image_path || null}
+          alt={item.title || "Ảnh cover địa điểm"}
+        />
+        <input type="file" name="cover_image_file" accept="image/*" aria-label="Ảnh cover" />
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
@@ -172,7 +163,7 @@ function PlaceForm({
           <textarea
             name="gallery_captions"
             rows={4}
-            placeholder="Mỗi dòng là caption cho một ảnh theo đúng thứ tự file"
+            placeholder="Mỗi dòng là caption cho một ảnh (theo thứ tự). Có thể sửa caption ảnh cũ mà không cần tải lại."
             defaultValue={item.gallery_captions}
           />
         </div>
@@ -262,7 +253,7 @@ export function AdminPlacesPage({ page }: { page: number }) {
       </AdminListHeader>
 
       <section>
-        <div className="max-h-[72vh] space-y-3 overflow-y-auto pr-1">
+        <div className="space-y-3 pr-1">
           {places.map((place) => {
             const expanded = editor.isEditingId(place.id);
             const location =

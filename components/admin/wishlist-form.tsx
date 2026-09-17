@@ -4,6 +4,9 @@ import { useMemo, useRef } from "react";
 import { Formik } from "formik";
 import { AdminImagePreview } from "@/components/admin/admin-image-preview";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Textarea } from "@/components/ui/textarea";
 import { WISHLIST_CATEGORY_OPTIONS } from "@/lib/constants/wishlist";
 import { upsertWishlistItemFn } from "@/src/server/wishlist";
 
@@ -132,12 +135,12 @@ export function WishlistForm({
       {(formik) => (
         <form
           onSubmit={formik.handleSubmit}
-          className="grid gap-2 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5"
+          className="grid gap-4 rounded-2xl border border-border bg-card/60 p-4"
         >
           <input type="hidden" name="id" value={formik.values.id ?? ""} />
 
-          <div className="grid gap-2 md:grid-cols-2">
-            <select
+          <div className="grid gap-4 md:grid-cols-2">
+            <NativeSelect
               name="owner_type"
               aria-label="Người nhận quà"
               value={formik.values.owner_type}
@@ -146,8 +149,8 @@ export function WishlistForm({
             >
               <option value="me">Quà cho {personOneName}</option>
               <option value="honey">Quà cho {personTwoName}</option>
-            </select>
-            <input
+            </NativeSelect>
+            <Input
               name="title"
               placeholder="Tiêu đề"
               value={formik.values.title}
@@ -157,7 +160,7 @@ export function WishlistForm({
             />
           </div>
 
-          <textarea
+          <Textarea
             name="description"
             rows={2}
             placeholder="Mô tả"
@@ -171,9 +174,9 @@ export function WishlistForm({
             alt={item.title || "Ảnh wishlist"}
           />
 
-          <div className="grid gap-2 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             <input type="hidden" name="existing_image_path" value={formik.values.image_path ?? ""} />
-            <input
+            <Input
               type="file"
               name="image_file"
               accept="image/*"
@@ -182,7 +185,7 @@ export function WishlistForm({
                 imageFileRef.current = event.currentTarget.files?.[0] ?? null;
               }}
             />
-            <textarea
+            <Textarea
               name="product_urls"
               rows={3}
               placeholder="Link sản phẩm (không bắt buộc, mỗi dòng một link https://...)"
@@ -192,8 +195,8 @@ export function WishlistForm({
             />
           </div>
 
-          <div className="grid gap-2 md:grid-cols-2">
-            <input
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input
               name="price_min"
               type="number"
               placeholder="Giá thấp nhất"
@@ -201,7 +204,7 @@ export function WishlistForm({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
-            <input
+            <Input
               name="price_max"
               type="number"
               placeholder="Giá cao nhất"
@@ -211,12 +214,12 @@ export function WishlistForm({
             />
           </div>
 
-          <div className="grid gap-2 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2">
-              <span className="block text-xs font-medium text-mocha/65 dark:text-white/50">
+              <span className="block text-sm font-medium text-foreground/80">
                 Danh mục quà
               </span>
-              <select
+              <NativeSelect
                 name="category_preset"
                 value={formik.values.category_preset}
                 onChange={formik.handleChange}
@@ -229,9 +232,9 @@ export function WishlistForm({
                   </option>
                 ))}
                 <option value="other">Khác (tự nhập)</option>
-              </select>
+              </NativeSelect>
               {formik.values.category_preset === "other" ? (
-                <input
+                <Input
                   name="category_custom"
                   placeholder="Nhập danh mục riêng"
                   value={formik.values.category_custom}
@@ -245,10 +248,10 @@ export function WishlistForm({
             </label>
 
             <label className="space-y-2">
-              <span className="block text-xs font-medium text-mocha/65 dark:text-white/50">
+              <span className="block text-sm font-medium text-foreground/80">
                 Mức độ ưu tiên
               </span>
-              <select
+              <NativeSelect
                 name="priority"
                 value={formik.values.priority}
                 onChange={formik.handleChange}
@@ -257,12 +260,12 @@ export function WishlistForm({
                 <option value="low">Ưu tiên thấp</option>
                 <option value="medium">Ưu tiên trung bình</option>
                 <option value="high">Ưu tiên cao</option>
-              </select>
+              </NativeSelect>
             </label>
           </div>
 
-          <div className="grid gap-2 md:grid-cols-[1fr_180px]">
-            <textarea
+          <div className="grid gap-4 md:grid-cols-[1fr_180px]">
+            <Textarea
               name="note"
               rows={2}
               placeholder="Ghi chú"
@@ -270,7 +273,7 @@ export function WishlistForm({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
-            <select
+            <NativeSelect
               name="status"
               aria-label="Trạng thái wishlist"
               value={formik.values.status}
@@ -279,19 +282,15 @@ export function WishlistForm({
             >
               <option value="available">Có sẵn</option>
               <option value="gifted">Đã tặng</option>
-            </select>
+            </NativeSelect>
           </div>
 
           {formik.status ? (
-            <p className="text-sm text-rose-700 dark:text-rose-300">{String(formik.status)}</p>
+            <p className="text-sm text-destructive">{String(formik.status)}</p>
           ) : null}
 
           <div className="flex flex-wrap gap-2">
-            <button
-              type="submit"
-              disabled={formik.isSubmitting}
-              className="w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 disabled:opacity-60 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90"
-            >
+            <Button type="submit" disabled={formik.isSubmitting}>
               {formik.isSubmitting
                 ? isEditing
                   ? "Đang cập nhật..."
@@ -299,7 +298,7 @@ export function WishlistForm({
                 : isEditing
                   ? "Cập nhật"
                   : "Thêm món"}
-            </button>
+            </Button>
             {onCancel ? (
               <Button type="button" variant="outline" onClick={onCancel}>
                 Hủy

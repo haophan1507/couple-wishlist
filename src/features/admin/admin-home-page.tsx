@@ -12,8 +12,8 @@ import { sendManualEmailFn } from "@/src/server/notifications";
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-medium text-mocha/80 dark:text-white/70">
+    <label className="block space-y-2">
+      <span className="block text-sm font-medium text-foreground/80">
         {label}
       </span>
       {children}
@@ -74,7 +74,7 @@ export function AdminHomePage() {
           Tổng quan không gian riêng của hai bạn: wishlist, kỷ niệm quà, ngày đặc biệt,
           ảnh và địa điểm yêu thương.
         </p>
-        <div className="mt-4 grid gap-3 md:grid-cols-5">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-5">
           {[
             ["Wishlist", counts?.wishlist ?? 0],
             ["Ngày đặc biệt", counts?.specialDays ?? 0],
@@ -82,9 +82,9 @@ export function AdminHomePage() {
             ["Kỷ niệm quà", counts?.giftHistory ?? 0],
             ["Bản đồ yêu thương", counts?.places ?? 0],
           ].map(([label, value]) => (
-            <div key={label as string} className="rounded-2xl bg-blush p-4 dark:bg-white/5">
-              <p className="text-sm text-mocha/70 dark:text-white/55">{label}</p>
-              <p className="mt-1 text-2xl font-semibold dark:text-white">{value}</p>
+            <div key={label as string}>
+              <p className="text-sm text-muted-foreground">{label}</p>
+              <p className="mt-1 text-2xl font-semibold text-foreground">{value}</p>
             </div>
           ))}
         </div>

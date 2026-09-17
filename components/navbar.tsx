@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { Button } from "@/components/ui/button";
 import { NavLinks } from "@/components/nav-links";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileMenu } from "@/components/mobile-menu";
@@ -8,24 +9,21 @@ import { APP_NAME } from "@/lib/constants/app";
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-30 border-b border-white/60 bg-cream/80 backdrop-blur-sm dark:border-white/10 dark:bg-[#1e1a1c]/80">
+    <header className="sticky top-0 z-30 border-b border-border/80 bg-background/80 backdrop-blur-sm">
       <Container className="flex h-16 items-center justify-between">
         <Link
           to="/"
-          className="flex items-center gap-2 text-lg font-semibold font-(--font-heading) dark:text-white"
+          className="flex items-center gap-2 font-(--font-heading) text-lg font-semibold text-foreground"
         >
           <Heart className="h-5 w-5 text-rose" />
           {APP_NAME}
         </Link>
-        <nav className="hidden items-center gap-2 md:flex md:gap-4">
+        <nav className="hidden items-center gap-2 md:flex md:gap-3">
           <NavLinks />
           <ThemeToggle />
-          <Link
-            to="/login"
-            className="rounded-full border border-mocha/20 px-4 py-2 text-sm hover:bg-white dark:border-white/20 dark:text-white/80 dark:hover:bg-white/10"
-          >
-            Quản trị
-          </Link>
+          <Button asChild variant="outline" size="sm" className="rounded-full px-4">
+            <Link to="/login">Quản trị</Link>
+          </Button>
         </nav>
         <MobileMenu />
       </Container>
