@@ -13,7 +13,7 @@ import {
 import { parseWishlistProductUrls } from "@/lib/utils/wishlist-links";
 import { deleteWishlistItemFn } from "@/src/server/wishlist";
 
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 10;
 
 const priorityLabels = {
   low: "Ưu tiên thấp",

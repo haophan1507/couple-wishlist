@@ -12,7 +12,7 @@ import {
 } from "@/lib/data/client-queries";
 import { deleteSpecialDayFn } from "@/src/server/special-days";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 const typeLabels: Record<string, string> = {
   birthday: "Sinh nhật",

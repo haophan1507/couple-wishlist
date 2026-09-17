@@ -15,7 +15,7 @@ import {
 } from "@/lib/data/client-queries";
 import { deleteGiftHistoryItemFn } from "@/src/server/gift-history";
 
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 10;
 
 const statusLabels = {
   received: "Đã nhận",

@@ -12,7 +12,7 @@ import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { fetchAdminPlacesPage, queryKeys } from "@/lib/data/client-queries";
 import { deletePlaceMemoryFn, upsertPlaceMemoryFn } from "@/src/server/places";
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 10;
 
 type PlaceFormItem = {
   id: string;

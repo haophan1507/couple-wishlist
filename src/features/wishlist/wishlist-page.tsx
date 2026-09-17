@@ -11,7 +11,7 @@ import {
   queryKeys,
 } from "@/lib/data/client-queries";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 10;
 
 type WishlistPageProps = {
   search: WishlistSearch;

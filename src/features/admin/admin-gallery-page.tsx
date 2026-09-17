@@ -9,7 +9,7 @@ import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { fetchAdminGalleryPage, queryKeys } from "@/lib/data/client-queries";
 import { deleteGalleryItemFn } from "@/src/server/gallery";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 10;
 
 export function AdminGalleryPage({ page }: { page: number }) {
   const queryClient = useQueryClient();

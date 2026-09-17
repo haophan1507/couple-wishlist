@@ -5,7 +5,7 @@ import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { Container } from "@/components/ui/container";
 import { fetchGalleryPage, queryKeys } from "@/lib/data/client-queries";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 10;
 
 type GalleryPageProps = {
   page: number;

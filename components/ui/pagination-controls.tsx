@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils/cn";
 
 type PaginationControlsProps = {
@@ -9,22 +10,20 @@ type PaginationControlsProps = {
   className?: string;
 };
 
-function createHref(
-  basePath: string,
-  page: number,
+function buildSearch(
   searchParams: Record<string, string | undefined>,
   pageParam: string,
+  page: number,
 ) {
-  const params = new URLSearchParams();
+  const search: Record<string, string | undefined> = {};
   for (const [key, value] of Object.entries(searchParams)) {
     if (!value || key === pageParam) continue;
-    params.set(key, value);
+    search[key] = value;
   }
   if (page > 1) {
-    params.set(pageParam, String(page));
+    search[pageParam] = String(page);
   }
-  const query = params.toString();
-  return query ? `${basePath}?${query}` : basePath;
+  return search;
 }
 
 export function PaginationControls({
@@ -56,20 +55,23 @@ export function PaginationControls({
       className={cn("mt-4 flex items-center justify-center gap-2", className)}
       aria-label="Pagination"
     >
-      <a
-        href={createHref(basePath, prevPage, searchParams, pageParam)}
+      <Link
+        to={basePath}
+        search={buildSearch(searchParams, pageParam, prevPage)}
         aria-disabled={currentPage === 1}
+        disabled={currentPage === 1}
         className={cn(
           buttonClass,
           currentPage === 1 ? "pointer-events-none opacity-45" : "",
         )}
       >
         Trước
-      </a>
+      </Link>
       {pages.map((page) => (
-        <a
+        <Link
           key={page}
-          href={createHref(basePath, page, searchParams, pageParam)}
+          to={basePath}
+          search={buildSearch(searchParams, pageParam, page)}
           aria-current={page === currentPage ? "page" : undefined}
           className={cn(
             buttonClass,
@@ -79,18 +81,20 @@ export function PaginationControls({
           )}
         >
           {page}
-        </a>
+        </Link>
       ))}
-      <a
-        href={createHref(basePath, nextPage, searchParams, pageParam)}
+      <Link
+        to={basePath}
+        search={buildSearch(searchParams, pageParam, nextPage)}
         aria-disabled={currentPage === totalPages}
+        disabled={currentPage === totalPages}
         className={cn(
           buttonClass,
           currentPage === totalPages ? "pointer-events-none opacity-45" : "",
         )}
       >
         Sau
-      </a>
+      </Link>
     </nav>
   );
 }
