@@ -56,7 +56,7 @@ export async function uploadImageFile(options: {
   }
 
   if (!finalBuffer || finalBuffer.byteLength > rule.maxSizeBytes) {
-    const maxSizeMb = Math.floor(rule.maxSizeBytes / (1024 * 1024));
+    const maxSizeMb = Math.round((rule.maxSizeBytes / (1024 * 1024)) * 10) / 10;
     throw new Error(`Ảnh sau tối ưu vẫn lớn hơn ${maxSizeMb} MB. Vui lòng chọn ảnh nhỏ hơn.`);
   }
 
