@@ -3,6 +3,7 @@ import sharp from "sharp";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { STORAGE_BUCKET, STORAGE_RULES } from "@/lib/storage/constants";
 import { buildStoragePath } from "@/lib/storage/paths";
+import { toThumbStoragePath } from "@/lib/storage/public-url";
 import { validateImageFile } from "@/lib/storage/validation";
 
 type StorageTarget =
@@ -41,7 +42,7 @@ export async function uploadImageFile(options: {
         withoutEnlargement: true,
       });
 
-    const qualityLevels = [84, 78, 72, 66, 60];
+    const qualityLevels = [78, 72, 66, 60, 55];
 
     for (const quality of qualityLevels) {
       const candidate = await pipeline.clone().webp({ quality, effort: 4 }).toBuffer();
@@ -66,6 +67,29 @@ export async function uploadImageFile(options: {
 
   if (error) {
     throw new Error(`Tải ảnh lên thất bại: ${error.message}`);
+  }
+
+  const thumbPath = toThumbStoragePath(path);
+  try {
+    const thumbBuffer = await sharp(finalBuffer, { failOn: "none" })
+      .resize({ width: 480, height: 480, fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 70, effort: 4 })
+      .toBuffer();
+
+    const { error: thumbError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(thumbPath, thumbBuffer, { contentType: "image/webp", upsert: true });
+
+    if (thumbError) {
+      await supabase.storage.from(STORAGE_BUCKET).remove([path]);
+      throw new Error(`Tải ảnh thumb thất bại: ${thumbError.message}`);
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith("Tải ảnh thumb thất bại:")) {
+      throw error;
+    }
+    await supabase.storage.from(STORAGE_BUCKET).remove([path]);
+    throw new Error("Tải ảnh thumb thất bại: không thể xử lý thumb.");
   }
 
   return {
