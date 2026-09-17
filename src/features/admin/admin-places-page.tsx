@@ -1,8 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
-import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { AdminImagePreview } from "@/components/admin/admin-image-preview";
+import { AdminItemRow } from "@/components/admin/admin-item-row";
+import { AdminListHeader } from "@/components/admin/admin-list-header";
 import { EditPlaceLocation } from "@/components/admin/edit-place-location";
 import { PlaceMapPicker } from "@/components/admin/place-map-picker";
+import { useAdminEditorMode } from "@/components/admin/use-admin-editor-mode";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { fetchAdminPlacesPage, queryKeys } from "@/lib/data/client-queries";
@@ -44,10 +47,12 @@ const defaultValues: PlaceFormItem = {
 
 function PlaceForm({
   item = defaultValues,
+  coverImageUrl,
   showLocationPicker = true,
   onSuccess,
 }: {
   item?: PlaceFormItem;
+  coverImageUrl?: string | null;
   showLocationPicker?: boolean;
   onSuccess?: () => void;
 }) {
@@ -136,7 +141,13 @@ function PlaceForm({
       )}
 
       <div className="grid gap-3 md:grid-cols-2">
-        <input type="file" name="cover_image_file" accept="image/*" aria-label="Ảnh cover" />
+        <div className="space-y-2">
+          <AdminImagePreview
+            url={coverImageUrl}
+            alt={item.title || "Ảnh cover địa điểm"}
+          />
+          <input type="file" name="cover_image_file" accept="image/*" aria-label="Ảnh cover" />
+        </div>
         <div />
       </div>
 
@@ -189,6 +200,7 @@ function PlaceForm({
 
 export function AdminPlacesPage({ page }: { page: number }) {
   const queryClient = useQueryClient();
+  const editor = useAdminEditorMode();
   const listQuery = useQuery({
     queryKey: queryKeys.adminPlacesPage({ page, pageSize: PAGE_SIZE }),
     queryFn: () => fetchAdminPlacesPage(page, PAGE_SIZE),
@@ -217,59 +229,73 @@ export function AdminPlacesPage({ page }: { page: number }) {
   const safePage = Math.min(page, totalPages);
   const places = listQuery.data?.items ?? [];
 
+  const handleSaved = () => {
+    invalidate();
+    editor.close();
+  };
+
   return (
     <>
-      <section className="card p-6">
-        <h1 className="text-2xl font-semibold dark:text-white">Bản đồ yêu thương</h1>
-        <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">
-          Quản lý những nơi đã đi và những nơi còn muốn cùng nhau ghé đến.
-        </p>
-        <div className="mt-4">
-          <PlaceForm onSuccess={invalidate} />
-        </div>
-      </section>
+      <AdminListHeader
+        title="Quản lý Địa điểm"
+        description="Quản lý những nơi đã đi và những nơi còn muốn cùng nhau ghé đến."
+        isCreating={editor.isCreating}
+        onToggleCreate={() => (editor.isCreating ? editor.close() : editor.openCreate())}
+      >
+        {editor.isCreating ? (
+          <div className="mt-4">
+            <PlaceForm showLocationPicker onSuccess={handleSaved} />
+          </div>
+        ) : null}
+      </AdminListHeader>
 
       <section>
         <div className="max-h-[72vh] space-y-3 overflow-y-auto pr-1">
-          {places.map((place) => (
-            <div key={place.id} className="card p-4">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-medium dark:text-white">{place.title}</p>
-                  <p className="mt-1 text-xs text-mocha/65 dark:text-white/45">
-                    {place.location_name} •{" "}
-                    {place.status === "visited" ? "Đã đi" : "Dự định"} •{" "}
-                    {place.images.length} ảnh chi tiết
-                  </p>
-                </div>
-                <ConfirmDeleteButton
-                  itemName={place.title}
-                  onConfirm={() => deleteMutation.mutate(place.id)}
-                />
-              </div>
-              <PlaceForm
-                showLocationPicker={false}
-                onSuccess={invalidate}
-                item={{
-                  id: place.id,
-                  title: place.title,
-                  slug: place.slug ?? "",
-                  description: place.description ?? "",
-                  status: place.status,
-                  visit_date: place.visit_date ?? "",
-                  location_name: place.location_name,
-                  latitude: place.latitude?.toString() ?? "",
-                  longitude: place.longitude?.toString() ?? "",
-                  city: place.city ?? "",
-                  country: place.country ?? "",
-                  cover_image_path: place.cover_image_path ?? "",
-                  gallery_captions: place.images
-                    .map((image) => image.caption ?? "")
-                    .join("\n"),
+          {places.map((place) => {
+            const expanded = editor.isEditingId(place.id);
+            const location =
+              [place.city, place.country].filter(Boolean).join(" / ") ||
+              place.location_name;
+            return (
+              <AdminItemRow
+                key={place.id}
+                title={place.title}
+                imageUrl={place.cover_image_url}
+                meta={`${place.status} · ${location}`}
+                isExpanded={expanded}
+                onEdit={() => (expanded ? editor.close() : editor.openEdit(place.id))}
+                onDelete={async () => {
+                  await deleteMutation.mutateAsync(place.id);
+                  if (editor.isEditingId(place.id)) editor.close();
                 }}
-              />
-            </div>
-          ))}
+              >
+                {expanded ? (
+                  <PlaceForm
+                    showLocationPicker
+                    coverImageUrl={place.cover_image_url}
+                    onSuccess={handleSaved}
+                    item={{
+                      id: place.id,
+                      title: place.title,
+                      slug: place.slug ?? "",
+                      description: place.description ?? "",
+                      status: place.status,
+                      visit_date: place.visit_date ?? "",
+                      location_name: place.location_name,
+                      latitude: place.latitude?.toString() ?? "",
+                      longitude: place.longitude?.toString() ?? "",
+                      city: place.city ?? "",
+                      country: place.country ?? "",
+                      cover_image_path: place.cover_image_path ?? "",
+                      gallery_captions: place.images
+                        .map((image) => image.caption ?? "")
+                        .join("\n"),
+                    }}
+                  />
+                ) : null}
+              </AdminItemRow>
+            );
+          })}
           {!places.length ? (
             <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">
               Chưa có địa điểm nào trong bản đồ yêu thương.
