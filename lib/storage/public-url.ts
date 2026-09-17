@@ -1,6 +1,7 @@
 import { STORAGE_BUCKET } from "@/lib/storage/constants";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { getSupabasePublicEnv } from "@/lib/supabase/public-env";
 
+/** Safe on client and server — builds the public Storage URL without service role. */
 export function getPublicStorageUrl(path: string | null) {
   if (!path) {
     return null;
@@ -10,7 +11,7 @@ export function getPublicStorageUrl(path: string | null) {
     return path;
   }
 
-  const supabase = createSupabaseAdminClient();
-  const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path);
-  return data.publicUrl;
+  const { supabaseUrl } = getSupabasePublicEnv();
+  const normalized = path.replace(/^\/+/, "");
+  return `${supabaseUrl}/storage/v1/object/public/${STORAGE_BUCKET}/${normalized}`;
 }

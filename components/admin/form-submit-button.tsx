@@ -1,7 +1,6 @@
-"use client";
-
 import { useFormStatus } from "react-dom";
-import { cn } from "@/lib/utils/cn";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type FormSubmitButtonProps = {
   idleLabel: string;
@@ -9,19 +8,21 @@ type FormSubmitButtonProps = {
   className?: string;
 };
 
-export function FormSubmitButton({ idleLabel, loadingLabel, className }: FormSubmitButtonProps) {
+export function FormSubmitButton({
+  idleLabel,
+  loadingLabel,
+  className,
+}: FormSubmitButtonProps) {
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <Button
       type="submit"
       disabled={pending}
-      className={cn(
-        "w-fit rounded-xl bg-mocha px-4 py-2 text-sm text-white transition hover:opacity-95 dark:bg-white dark:text-[#1e1a1c] dark:hover:bg-white/90",
-        className,
-      )}
+      size="lg"
+      className={cn("w-fit rounded-xl px-4", className)}
     >
       {pending ? loadingLabel : idleLabel}
-    </button>
+    </Button>
   );
 }

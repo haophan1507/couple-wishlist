@@ -1,0 +1,150 @@
+import { requireAdminServer } from "@/lib/auth/require-admin-server";
+import { deleteStorageFile } from "@/lib/storage/delete";
+import { uploadImageFile } from "@/lib/storage/upload";
+import { getOptionalFile } from "@/lib/storage/validation";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { giftHistorySchema } from "@/lib/validation";
+import { createFormDataServerFn } from "@/src/server/form-data";
+
+export const upsertGiftHistoryItemFn = createFormDataServerFn().handler(
+  async ({ data: formData }) => {
+    await requireAdminServer();
+    const id = String(formData.get("id") ?? "");
+    const photoFile = getOptionalFile(formData, "photo_file");
+    const parsed = giftHistorySchema.safeParse({
+      recipient_owner_type: formData.get("recipient_owner_type"),
+      gift_name: formData.get("gift_name"),
+      giver_name: formData.get("giver_name"),
+      received_date: formData.get("received_date"),
+      special_day_id: formData.get("special_day_id"),
+      note: formData.get("note"),
+      existing_photo_path: formData.get("existing_photo_path"),
+      wishlist_item_id: formData.get("wishlist_item_id"),
+      status: formData.get("status"),
+    });
+
+    if (!parsed.success) {
+      throw new Error("Dữ liệu lịch sử quà tặng không hợp lệ.");
+    }
+
+    const payload = {
+      recipient_owner_type: parsed.data.recipient_owner_type,
+      gift_name: parsed.data.gift_name,
+      giver_name: parsed.data.giver_name,
+      received_date: parsed.data.received_date,
+      special_day_id: parsed.data.special_day_id || null,
+      note: parsed.data.note || null,
+      wishlist_item_id: parsed.data.wishlist_item_id || null,
+      status: parsed.data.status,
+      updated_at: new Date().toISOString(),
+    };
+
+    const supabase = createSupabaseAdminClient();
+    const { data: existing, error: existingError } = id
+      ? await supabase
+          .from("gift_history_items")
+          .select("wishlist_item_title, photo_path")
+          .eq("id", id)
+          .maybeSingle()
+      : { data: null, error: null };
+
+    if (existingError) {
+      throw new Error("Không thể đọc dữ liệu lịch sử quà hiện tại.");
+    }
+
+    const existingRow = existing as {
+      wishlist_item_title: string | null;
+      photo_path: string | null;
+    } | null;
+
+    let nextPhotoPath =
+      parsed.data.existing_photo_path || existingRow?.photo_path || null;
+    let wishlistItemTitle = existingRow?.wishlist_item_title ?? null;
+
+    if (payload.wishlist_item_id) {
+      const { data: wishlistItem, error: wishlistItemError } = await supabase
+        .from("wishlist_items")
+        .select("id, title")
+        .eq("id", payload.wishlist_item_id)
+        .maybeSingle();
+
+      if (wishlistItemError) {
+        throw new Error("Không thể đọc món quà trong wishlist được liên kết.");
+      }
+
+      wishlistItemTitle =
+        (wishlistItem as { title: string } | null)?.title ?? wishlistItemTitle;
+    }
+
+    if (photoFile) {
+      const uploaded = await uploadImageFile({
+        file: photoFile,
+        target: "giftHistory",
+        entityId: id || undefined,
+      });
+      nextPhotoPath = uploaded.path;
+    }
+
+    const finalPayload = {
+      ...payload,
+      photo_path: nextPhotoPath,
+      photo_alt: parsed.data.gift_name,
+      wishlist_item_title: wishlistItemTitle,
+    };
+
+    if (id) {
+      const { error } = await supabase
+        .from("gift_history_items")
+        .update(finalPayload)
+        .eq("id", id);
+      if (error) throw new Error(`Cập nhật lịch sử quà thất bại: ${error.message}`);
+    } else {
+      const { error } = await supabase
+        .from("gift_history_items")
+        .insert(finalPayload);
+      if (error) throw new Error(`Thêm lịch sử quà thất bại: ${error.message}`);
+    }
+
+    if (payload.wishlist_item_id) {
+      const { error } = await supabase
+        .from("wishlist_items")
+        .delete()
+        .eq("id", payload.wishlist_item_id);
+      if (error) {
+        throw new Error(
+          `Đã lưu lịch sử quà nhưng không thể xóa món trong wishlist: ${error.message}`,
+        );
+      }
+    }
+
+    if (
+      photoFile &&
+      existingRow?.photo_path &&
+      existingRow.photo_path !== nextPhotoPath
+    ) {
+      await deleteStorageFile(existingRow.photo_path);
+    }
+
+    return { ok: true as const };
+  },
+);
+
+export const deleteGiftHistoryItemFn = createFormDataServerFn().handler(
+  async ({ data: formData }) => {
+    await requireAdminServer();
+    const id = String(formData.get("id") ?? "");
+    const supabase = createSupabaseAdminClient();
+    const { data: existing, error } = await supabase
+      .from("gift_history_items")
+      .delete()
+      .eq("id", id)
+      .select("photo_path")
+      .maybeSingle();
+
+    if (error) throw new Error(`Xóa lịch sử quà thất bại: ${error.message}`);
+    await deleteStorageFile(
+      (existing as { photo_path: string | null } | null)?.photo_path,
+    );
+    return { ok: true as const };
+  },
+);

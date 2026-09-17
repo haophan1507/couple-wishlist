@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
-import type { PlaceMemoryEntry } from "@/lib/data/queries";
+import type { PlaceMemoryEntry } from "@/lib/data/client-queries";
 import { cn } from "@/lib/utils/cn";
 
 const WIKIMEDIA_TILE_URL = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=vi";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { Gift } from "lucide-react";
 
 type WishlistPreviewProps = {
@@ -15,8 +15,13 @@ export function WishlistPreview({ title, count, giftedCount }: WishlistPreviewPr
         <Gift className="h-5 w-5 text-rose" />
       </div>
       <p className="mt-2 text-sm text-mocha/75 dark:text-white/60">{count} món quà</p>
-      <p className="mt-1 text-sm text-mocha/75 dark:text-white/60">{giftedCount} món đã được tặng</p>
-      <Link href="/wishlist" className="mt-5 inline-block text-sm font-medium text-mocha underline-offset-4 hover:underline dark:text-white/80">
+      <p className="mt-1 text-sm text-mocha/75 dark:text-white/60">
+        {giftedCount} món đã được tặng
+      </p>
+      <Link
+        to="/wishlist"
+        className="mt-5 inline-block text-sm font-medium text-mocha underline-offset-4 hover:underline dark:text-white/80"
+      >
         Mở wishlist
       </Link>
     </div>

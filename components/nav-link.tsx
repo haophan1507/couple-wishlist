@@ -1,32 +1,51 @@
-"use client";
-
-import Link from "next/link";
-import { useLinkStatus } from "next/link";
-import { useEffect, type ComponentProps, type ReactNode } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { useNavigationPending } from "@/components/navigation-pending";
 import { cn } from "@/lib/utils/cn";
 
-type NavLinkProps = ComponentProps<typeof Link> & {
+type NavLinkProps = {
+  to: string;
   children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+  "aria-current"?: "page" | undefined;
 };
 
-function NavLinkPending({ children }: { children: ReactNode }) {
-  const { pending } = useLinkStatus();
+function NavLinkPending({
+  children,
+  isPending,
+}: {
+  children: ReactNode;
+  isPending: boolean;
+}) {
   const { setLinkPending } = useNavigationPending();
 
   useEffect(() => {
-    if (!pending) return;
+    if (!isPending) return;
     setLinkPending(true);
     return () => setLinkPending(false);
-  }, [pending, setLinkPending]);
+  }, [isPending, setLinkPending]);
 
-  return <span className={cn(pending && "opacity-55")}>{children}</span>;
+  return <span className={cn(isPending && "opacity-55")}>{children}</span>;
 }
 
-export function NavLink({ children, className, ...props }: NavLinkProps) {
+export function NavLink({ children, className, to, onClick, ...props }: NavLinkProps) {
+  const isPending = useRouterState({
+    select: (state) =>
+      state.status === "pending" &&
+      state.resolvedLocation?.pathname !== state.location.pathname &&
+      state.location.pathname === to,
+  });
+
   return (
-    <Link {...props} className={cn(className, "transition-opacity")}>
-      <NavLinkPending>{children}</NavLinkPending>
+    <Link
+      to={to}
+      onClick={onClick}
+      className={cn(className, "transition-opacity")}
+      {...props}
+    >
+      <NavLinkPending isPending={isPending}>{children}</NavLinkPending>
     </Link>
   );
 }

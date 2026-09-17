@@ -1,16 +1,12 @@
-"use client";
-
-import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { CalendarDays, Heart, MapPinned, MapPin } from "lucide-react";
-import type { PlaceMemoryEntry } from "@/lib/data/queries";
+import type { PlaceMemoryEntry } from "@/lib/data/client-queries";
 import { cn } from "@/lib/utils/cn";
 import { PlaceDetailsSheet } from "@/components/place-details-sheet";
 import { HeartDiagram } from "@/components/heart-diagram";
 
-const DynamicRealMapView = dynamic(
-  () => import("@/components/real-map-view").then((mod) => mod.RealMapView),
-  { ssr: false },
+const DynamicRealMapView = lazy(() =>
+  import("@/components/real-map-view").then((mod) => ({ default: mod.RealMapView })),
 );
 
 type Mode = "heart" | "map";
@@ -100,12 +96,22 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
             )
           ) : (
             <div className="relative">
-              <DynamicRealMapView
-                places={places}
-                selectedPlaceId={selectedPlaceId}
-                onSelect={setSelectedPlaceId}
-                className="h-[560px] md:h-[660px] xl:h-[760px]"
-              />
+              <Suspense
+                fallback={
+                  <div className="flex h-[560px] items-center justify-center rounded-4xl bg-blush/40 md:h-[660px] xl:h-[760px] dark:bg-white/5">
+                    <p className="text-sm text-mocha/70 dark:text-white/55">
+                      Đang tải bản đồ...
+                    </p>
+                  </div>
+                }
+              >
+                <DynamicRealMapView
+                  places={places}
+                  selectedPlaceId={selectedPlaceId}
+                  onSelect={setSelectedPlaceId}
+                  className="h-[560px] md:h-[660px] xl:h-[760px]"
+                />
+              </Suspense>
             </div>
           )}
         </section>

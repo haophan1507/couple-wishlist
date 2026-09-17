@@ -2,8 +2,8 @@
 
 import { useMemo, useRef } from "react";
 import { Formik } from "formik";
-import { useRouter } from "next/navigation";
 import { WISHLIST_CATEGORY_OPTIONS } from "@/lib/constants/wishlist";
+import { upsertWishlistItemFn } from "@/src/server/wishlist";
 
 type WishlistFormItem = {
   id: string;
@@ -39,6 +39,7 @@ type WishlistFormProps = {
   item?: WishlistFormItem;
   personOneName: string;
   personTwoName: string;
+  onSuccess?: () => void;
 };
 
 type FormValues = WishlistFormItem & {
@@ -75,8 +76,8 @@ export function WishlistForm({
   item = defaultValues,
   personOneName,
   personTwoName,
+  onSuccess,
 }: WishlistFormProps) {
-  const router = useRouter();
   const imageFileRef = useRef<File | null>(null);
   const isEditing = Boolean(item.id);
   const initialValues = useMemo(() => createInitialValues(item), [item]);
@@ -106,25 +107,18 @@ export function WishlistForm({
         }
 
         try {
-          const response = await fetch("/api/admin/wishlist", {
-            method: "POST",
-            body: formData,
-          });
-          const result = (await response.json()) as { ok?: boolean; message?: string };
-
-          if (!response.ok || !result.ok) {
-            throw new Error(result.message || "Không thể lưu món quà lúc này.");
-          }
-
+          await upsertWishlistItemFn({ data: formData });
           imageFileRef.current = null;
           helpers.setStatus(undefined);
-          router.refresh();
+          onSuccess?.();
           if (!isEditing) {
             helpers.resetForm();
           }
         } catch (error) {
           helpers.setStatus(
-            error instanceof Error ? error.message : "Không thể lưu món quà lúc này.",
+            error instanceof Error
+              ? error.message
+              : "Không thể lưu món quà lúc này.",
           );
         } finally {
           helpers.setSubmitting(false);

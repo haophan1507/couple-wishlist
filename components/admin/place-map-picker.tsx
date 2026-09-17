@@ -1,22 +1,14 @@
-"use client";
-
-import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { LoaderCircle, MapPin, Search } from "lucide-react";
+import { reverseGeocodeFn, searchLocationsFn } from "@/src/server/geo";
 
 const WIKIMEDIA_TILE_URL = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=vi";
 const OSM_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
-const DynamicPlaceMapCanvas = dynamic(
-  () => import("@/components/admin/place-map-canvas").then((mod) => mod.PlaceMapCanvas),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-[320px] items-center justify-center text-sm text-mocha/60 dark:text-white/45">
-        Đang tải bản đồ...
-      </div>
-    ),
-  },
+const DynamicPlaceMapCanvas = lazy(() =>
+  import("@/components/admin/place-map-canvas").then((mod) => ({
+    default: mod.PlaceMapCanvas,
+  })),
 );
 
 type SearchResult = {
@@ -86,18 +78,9 @@ export function PlaceMapPicker({
     setShowResults(true);
 
     try {
-      const response = await fetch(
-        `/api/location-search?q=${encodeURIComponent(trimmedQuery)}`,
-        { signal: controller.signal },
-      );
-      const payload = (await response.json()) as {
-        results?: SearchResult[];
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(payload.error || "Không thể tìm địa điểm.");
-      }
+      const payload = await searchLocationsFn({
+        data: { q: trimmedQuery },
+      });
 
       setResults(payload.results ?? []);
       setShowResults(true);
@@ -105,7 +88,11 @@ export function PlaceMapPicker({
       if ((error as Error).name === "AbortError") {
         return;
       }
-      setSearchError("Không thể tìm địa điểm lúc này.");
+      setSearchError(
+        error instanceof Error
+          ? error.message
+          : "Không thể tìm địa điểm lúc này.",
+      );
       setResults([]);
       setShowResults(true);
     } finally {
@@ -135,18 +122,12 @@ export function PlaceMapPicker({
     nextLongitude: number,
   ) => {
     try {
-      const response = await fetch(
-        `/api/reverse-geocode?lat=${nextLatitude}&lng=${nextLongitude}`,
-      );
-      const payload = (await response.json()) as {
-        locationName?: string;
-        city?: string;
-        country?: string;
-      };
-
-      if (!response.ok) {
-        return;
-      }
+      const payload = await reverseGeocodeFn({
+        data: {
+          lat: String(nextLatitude),
+          lng: String(nextLongitude),
+        },
+      });
 
       if (payload.locationName) {
         setLocationName(payload.locationName);
@@ -161,7 +142,7 @@ export function PlaceMapPicker({
         setCountry(payload.country);
       }
     } catch {
-      // Keep current values if reverse geocoding fails.
+      // Ignore reverse geocode failures; coordinates still work.
     }
   };
 
@@ -300,26 +281,34 @@ export function PlaceMapPicker({
 
           <div className="relative">
           <div className="overflow-hidden rounded-3xl border border-white/70 dark:border-white/10">
-            <DynamicPlaceMapCanvas
-              center={center}
-              zoom={initialLatitude && initialLongitude ? 8 : 5}
-              latitude={latitude}
-              longitude={longitude}
-              tileUrl={useFallbackTile ? OSM_TILE_URL : WIKIMEDIA_TILE_URL}
-              attribution={
-                useFallbackTile
-                  ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
+            <Suspense
+              fallback={
+                <div className="flex h-[320px] items-center justify-center text-sm text-mocha/60 dark:text-white/45">
+                  Đang tải bản đồ...
+                </div>
               }
-              onTileError={() => {
-                setUseFallbackTile(true);
-              }}
-              onPick={(coords) => {
-                setLatitude(coords.latitude);
-                setLongitude(coords.longitude);
-                void reverseGeocode(coords.latitude, coords.longitude);
-              }}
-            />
+            >
+              <DynamicPlaceMapCanvas
+                center={center}
+                zoom={initialLatitude && initialLongitude ? 8 : 5}
+                latitude={latitude}
+                longitude={longitude}
+                tileUrl={useFallbackTile ? OSM_TILE_URL : WIKIMEDIA_TILE_URL}
+                attribution={
+                  useFallbackTile
+                    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
+                }
+                onTileError={() => {
+                  setUseFallbackTile(true);
+                }}
+                onPick={(coords) => {
+                  setLatitude(coords.latitude);
+                  setLongitude(coords.longitude);
+                  void reverseGeocode(coords.latitude, coords.longitude);
+                }}
+              />
+            </Suspense>
           </div>
           </div>
         </div>

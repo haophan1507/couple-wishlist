@@ -1,9 +1,6 @@
-"use client";
-
-import Image from "next/image";
 import { format } from "date-fns";
 import { CalendarDays, Heart, MapPin, Route } from "lucide-react";
-import type { PlaceMemoryEntry } from "@/lib/data/queries";
+import type { PlaceMemoryEntry } from "@/lib/data/client-queries";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80";
@@ -47,7 +44,12 @@ export function PlaceDetailsSheet({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-end bg-black/35 backdrop-blur-xs md:items-stretch">
-      <button type="button" aria-label="Đóng chi tiết" className="absolute inset-0" onClick={onClose} />
+      <button
+        type="button"
+        aria-label="Đóng chi tiết"
+        className="absolute inset-0"
+        onClick={onClose}
+      />
       <aside className="relative z-10 h-[85vh] w-full overflow-y-auto rounded-t-4xl bg-cream p-6 shadow-soft dark:bg-[#1e1a1c] md:h-auto md:w-[440px] md:rounded-none md:rounded-l-4xl">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -75,11 +77,17 @@ export function PlaceDetailsSheet({
           </div>
           <div className="rounded-2xl bg-blush/80 p-4 dark:bg-white/5">
             <p className="inline-flex items-center gap-2 text-xs text-mocha/55 dark:text-white/45">
-              {place.status === "visited" ? <CalendarDays className="h-3.5 w-3.5" /> : <Route className="h-3.5 w-3.5" />}
+              {place.status === "visited" ? (
+                <CalendarDays className="h-3.5 w-3.5" />
+              ) : (
+                <Route className="h-3.5 w-3.5" />
+              )}
               {place.status === "visited" ? "Ngày ghé thăm" : "Trạng thái"}
             </p>
             <p className="mt-2 text-sm font-medium dark:text-white">
-              {place.visit_date ? format(new Date(place.visit_date), "dd/MM/yyyy") : "Đang lên kế hoạch"}
+              {place.visit_date
+                ? format(new Date(place.visit_date), "dd/MM/yyyy")
+                : "Đang lên kế hoạch"}
             </p>
           </div>
         </div>
@@ -90,21 +98,24 @@ export function PlaceDetailsSheet({
               <Heart className="h-3.5 w-3.5" />
               Cảm xúc lưu lại
             </p>
-            <p className="mt-2 text-sm leading-6 text-mocha/85 dark:text-white/75">{place.description}</p>
+            <p className="mt-2 text-sm leading-6 text-mocha/85 dark:text-white/75">
+              {place.description}
+            </p>
           </div>
         ) : null}
 
         {allImages.length ? (
           <div className="mt-5 space-y-3">
             {allImages.map((image) => (
-              <figure key={image.id} className="overflow-hidden rounded-2xl bg-white/80 dark:bg-white/5">
+              <figure
+                key={image.id}
+                className="overflow-hidden rounded-2xl bg-white/80 dark:bg-white/5"
+              >
                 <div className="relative h-56 w-full">
-                  <Image
+                  <img
                     src={image.image_url ?? FALLBACK_IMAGE}
                     alt={image.image_alt ?? place.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 40vw"
-                    className="object-cover"
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
                 </div>
                 {image.caption ? (

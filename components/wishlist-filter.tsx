@@ -1,42 +1,33 @@
-"use client";
-
-import { useRouter, useSearchParams } from "next/navigation";
-import { useRef, useCallback, useTransition } from "react";
+import { useRef } from "react";
 import { Search, Loader2 } from "lucide-react";
+
+export type WishlistSearch = {
+  category?: string;
+  q?: string;
+  mePage?: string;
+  honeyPage?: string;
+};
 
 type WishlistFilterProps = {
   categories: string[];
+  search: WishlistSearch;
+  isFetching?: boolean;
+  onSearchChange: (patch: Partial<Pick<WishlistSearch, "category" | "q">>) => void;
 };
 
-export function WishlistFilter({ categories }: WishlistFilterProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+export function WishlistFilter({
+  categories,
+  search,
+  isFetching,
+  onSearchChange,
+}: WishlistFilterProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const updateParams = useCallback(
-    (key: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value) {
-        params.set(key, value);
-      } else {
-        params.delete(key);
-      }
-      const qs = params.toString();
-      startTransition(() => {
-        router.replace(qs ? `?${qs}` : "/wishlist", { scroll: false });
-      });
-    },
-    [router, searchParams, startTransition]
-  );
 
   const handleSearch = (value: string) => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => updateParams("q", value), 350);
-  };
-
-  const handleCategory = (value: string) => {
-    updateParams("category", value);
+    timerRef.current = setTimeout(() => {
+      onSearchChange({ q: value || undefined });
+    }, 350);
   };
 
   return (
@@ -46,7 +37,7 @@ export function WishlistFilter({ categories }: WishlistFilterProps) {
         <input
           type="text"
           placeholder="Tìm theo tên hoặc mô tả..."
-          defaultValue={searchParams.get("q") ?? ""}
+          defaultValue={search.q ?? ""}
           onChange={(e) => handleSearch(e.target.value)}
           className="pl-9!"
         />
@@ -54,8 +45,10 @@ export function WishlistFilter({ categories }: WishlistFilterProps) {
       <div className="relative">
         <select
           aria-label="Lọc theo danh mục"
-          defaultValue={searchParams.get("category") ?? ""}
-          onChange={(e) => handleCategory(e.target.value)}
+          value={search.category ?? ""}
+          onChange={(e) =>
+            onSearchChange({ category: e.target.value || undefined })
+          }
         >
           <option value="">Tất cả danh mục</option>
           {categories.map((category) => (
@@ -64,7 +57,7 @@ export function WishlistFilter({ categories }: WishlistFilterProps) {
             </option>
           ))}
         </select>
-        {isPending ? (
+        {isFetching ? (
           <Loader2 className="absolute right-10 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-rose" />
         ) : null}
       </div>

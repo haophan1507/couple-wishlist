@@ -2,8 +2,7 @@
 
 import { useRef } from "react";
 import { Formik } from "formik";
-import { useRouter } from "next/navigation";
-import { upsertGalleryItemAction } from "@/app/actions/gallery";
+import { upsertGalleryItemFn } from "@/src/server/gallery";
 
 type GalleryFormValues = {
   id: string;
@@ -21,10 +20,11 @@ const defaultValues: GalleryFormValues = {
 
 export function GalleryForm({
   item = defaultValues,
+  onSuccess,
 }: {
   item?: GalleryFormValues;
+  onSuccess?: () => void;
 }) {
-  const router = useRouter();
   const imageFileRef = useRef<File | null>(null);
   const isEditing = Boolean(item.id);
 
@@ -44,9 +44,9 @@ export function GalleryForm({
         }
 
         try {
-          await upsertGalleryItemAction(formData);
+          await upsertGalleryItemFn({ data: formData });
           imageFileRef.current = null;
-          router.refresh();
+          onSuccess?.();
           if (!isEditing) {
             helpers.resetForm();
           }

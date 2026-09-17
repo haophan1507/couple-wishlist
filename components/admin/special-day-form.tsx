@@ -1,8 +1,7 @@
 "use client";
 
 import { Formik } from "formik";
-import { useRouter } from "next/navigation";
-import { upsertSpecialDayAction } from "@/app/actions/special-days";
+import { upsertSpecialDayFn } from "@/src/server/special-days";
 
 type SpecialDayFormValues = {
   id: string;
@@ -22,10 +21,11 @@ const defaultValues: SpecialDayFormValues = {
 
 export function SpecialDayForm({
   item = defaultValues,
+  onSuccess,
 }: {
   item?: SpecialDayFormValues;
+  onSuccess?: () => void;
 }) {
-  const router = useRouter();
   const isEditing = Boolean(item.id);
 
   return (
@@ -41,8 +41,8 @@ export function SpecialDayForm({
         formData.set("type", values.type);
 
         try {
-          await upsertSpecialDayAction(formData);
-          router.refresh();
+          await upsertSpecialDayFn({ data: formData });
+          onSuccess?.();
           if (!isEditing) {
             helpers.resetForm();
           }

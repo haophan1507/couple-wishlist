@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { Formik } from "formik";
-import { useRouter } from "next/navigation";
+import { upsertGiftHistoryItemFn } from "@/src/server/gift-history";
 
 type GiftHistoryFormValues = {
   id: string;
@@ -36,14 +36,15 @@ export function GiftHistoryForm({
   personTwoName,
   specialDays,
   wishlistItems,
+  onSuccess,
 }: {
   item?: GiftHistoryFormValues;
   personOneName: string;
   personTwoName: string;
   specialDays: Array<{ id: string; title: string }>;
   wishlistItems: Array<{ id: string; title: string; owner_type: "me" | "honey" }>;
+  onSuccess?: () => void;
 }) {
-  const router = useRouter();
   const photoFileRef = useRef<File | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const isEditing = Boolean(item.id);
@@ -70,21 +71,13 @@ export function GiftHistoryForm({
         }
 
         try {
-          const response = await fetch("/api/admin/gift-history", {
-            method: "POST",
-            body: formData,
-          });
-          const result = (await response.json()) as { ok?: boolean; message?: string };
-
-          if (!response.ok || !result.ok) {
-            throw new Error(result.message || "Không thể lưu lịch sử quà.");
-          }
+          await upsertGiftHistoryItemFn({ data: formData });
 
           photoFileRef.current = null;
           if (photoInputRef.current) {
             photoInputRef.current.value = "";
           }
-          router.refresh();
+          onSuccess?.();
           if (!isEditing) {
             helpers.resetForm();
           }

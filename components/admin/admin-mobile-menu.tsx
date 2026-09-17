@@ -1,15 +1,13 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { usePathname } from "next/navigation";
-import { signOutAction } from "@/app/actions/auth";
+import { useRouterState } from "@tanstack/react-router";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { NavLink } from "@/components/nav-link";
 import { ADMIN_NAV_LINKS } from "@/lib/constants/app";
 import { cn } from "@/lib/utils/cn";
 
 export function AdminMobileMenu() {
-  const pathname = usePathname();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -47,12 +45,13 @@ export function AdminMobileMenu() {
                 const active =
                   link.href === "/admin"
                     ? pathname === "/admin"
-                    : pathname === link.href || pathname.startsWith(`${link.href}/`);
+                    : pathname === link.href ||
+                      pathname.startsWith(`${link.href}/`);
 
                 return (
                   <NavLink
                     key={link.href}
-                    href={link.href}
+                    to={link.href}
                     onClick={() => setOpen(false)}
                     className={cn(
                       "block rounded-xl px-3 py-2.5 text-sm font-medium transition",
@@ -68,14 +67,19 @@ export function AdminMobileMenu() {
               })}
             </nav>
 
-            <form action={signOutAction} className="mt-2 border-t border-mocha/10 pt-2 dark:border-white/10">
+            <div className="mt-2 border-t border-mocha/10 pt-2 dark:border-white/10">
               <button
-                type="submit"
+                type="button"
                 className="block w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium text-mocha/80 transition hover:bg-white/80 dark:text-white/75 dark:hover:bg-white/5"
+                onClick={async () => {
+                  const supabase = createSupabaseBrowserClient();
+                  await supabase.auth.signOut();
+                  window.location.href = "/";
+                }}
               >
                 Đăng xuất
               </button>
-            </form>
+            </div>
           </div>
         </>
       ) : null}

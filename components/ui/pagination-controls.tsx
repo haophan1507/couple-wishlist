@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
 
 type PaginationControlsProps = {
@@ -53,16 +52,22 @@ export function PaginationControls({
     "inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-mocha/15 bg-white px-3 text-sm text-mocha transition hover:bg-blush dark:border-white/15 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10";
 
   return (
-    <nav className={cn("mt-4 flex items-center justify-center gap-2", className)} aria-label="Pagination">
-      <Link
+    <nav
+      className={cn("mt-4 flex items-center justify-center gap-2", className)}
+      aria-label="Pagination"
+    >
+      <a
         href={createHref(basePath, prevPage, searchParams, pageParam)}
         aria-disabled={currentPage === 1}
-        className={cn(buttonClass, currentPage === 1 ? "pointer-events-none opacity-45" : "")}
+        className={cn(
+          buttonClass,
+          currentPage === 1 ? "pointer-events-none opacity-45" : "",
+        )}
       >
         Trước
-      </Link>
+      </a>
       {pages.map((page) => (
-        <Link
+        <a
           key={page}
           href={createHref(basePath, page, searchParams, pageParam)}
           aria-current={page === currentPage ? "page" : undefined}
@@ -74,9 +79,9 @@ export function PaginationControls({
           )}
         >
           {page}
-        </Link>
+        </a>
       ))}
-      <Link
+      <a
         href={createHref(basePath, nextPage, searchParams, pageParam)}
         aria-disabled={currentPage === totalPages}
         className={cn(
@@ -85,7 +90,7 @@ export function PaginationControls({
         )}
       >
         Sau
-      </Link>
+      </a>
     </nav>
   );
 }

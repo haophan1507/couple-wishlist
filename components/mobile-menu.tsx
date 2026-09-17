@@ -1,8 +1,5 @@
-"use client";
-
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { NavLink } from "@/components/nav-link";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -11,7 +8,7 @@ import { cn } from "@/lib/utils/cn";
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -45,18 +42,19 @@ export function MobileMenu() {
                 const active =
                   link.href === "/"
                     ? pathname === "/"
-                    : pathname === link.href || pathname.startsWith(`${link.href}/`);
+                    : pathname === link.href ||
+                      pathname.startsWith(`${link.href}/`);
 
                 return (
                   <li key={link.href}>
                     <NavLink
-                      href={link.href}
+                      to={link.href}
                       onClick={() => setOpen(false)}
                       className={cn(
                         "block rounded-xl px-4 py-2.5 text-sm font-medium transition",
                         active
                           ? "bg-blush text-mocha dark:bg-white/10 dark:text-white"
-                          : "text-mocha/75 hover:bg-white/70 dark:text-white/70 dark:hover:bg-white/5"
+                          : "text-mocha/75 hover:bg-white/70 dark:text-white/70 dark:hover:bg-white/5",
                       )}
                       aria-current={active ? "page" : undefined}
                     >
@@ -69,7 +67,8 @@ export function MobileMenu() {
             <div className="mt-3 flex items-center gap-3 border-t border-mocha/10 px-4 pt-3 dark:border-white/10">
               <ThemeToggle />
               <Link
-                href="/login"
+                to="/login"
+                onClick={() => setOpen(false)}
                 className="rounded-full border border-mocha/20 px-4 py-2 text-sm hover:bg-white dark:border-white/20 dark:text-white/80 dark:hover:bg-white/10"
               >
                 Quản trị
