@@ -192,7 +192,7 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
                     fill={circleFill}
                     stroke={circleStroke}
                     strokeWidth="2.8"
-                    className="transition-all duration-200"
+                    className="transition-[r,fill,stroke] duration-200"
                   />
                   <Heart
                     x={isActive ? -8 : -7.2}
@@ -201,7 +201,7 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
                     height={isActive ? 16 : 14.4}
                     fill={heartColor}
                     stroke={heartColor}
-                    className="transition-all duration-200"
+                    className="transition-[x,y,fill,stroke] duration-200"
                   />
                 </g>
               );

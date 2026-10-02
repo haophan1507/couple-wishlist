@@ -8,6 +8,13 @@ import { Container } from "@/components/ui/container";
 import { fetchCoupleProfile, fetchSpecialDays, queryKeys } from "@/lib/data/client-queries";
 import { getCoupleFacts, getLoveStats, getTimelineEvents } from "@/lib/data/special-day-utils";
 
+const specialDaysPageHeader = (
+  <PageHeader
+    title="Ngày đặc biệt"
+    description="Theo dõi hành trình yêu và những cột mốc quan trọng."
+  />
+);
+
 export function SpecialDaysPage() {
   const profileQuery = useQuery({
     queryKey: queryKeys.coupleProfile,
@@ -18,18 +25,11 @@ export function SpecialDaysPage() {
     queryFn: fetchSpecialDays,
   });
 
-  const header = (
-    <PageHeader
-      title="Ngày đặc biệt"
-      description="Theo dõi hành trình yêu và những cột mốc quan trọng."
-    />
-  );
-
   if (profileQuery.isPending || daysQuery.isPending) {
     return (
       <section className="py-10 md:py-12">
         <Container>
-          {header}
+          {specialDaysPageHeader}
           <SectionSkeleton cards={6} />
         </Container>
       </section>
@@ -47,7 +47,7 @@ export function SpecialDaysPage() {
   return (
     <section className="py-10 md:py-12">
       <Container>
-        {header}
+        {specialDaysPageHeader}
 
         <div className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="card p-6">

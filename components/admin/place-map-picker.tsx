@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { LoaderCircle, MapPin, Search } from "lucide-react";
 import { reverseGeocodeFn, searchLocationsFn } from "@/src/server/geo";
 
@@ -19,6 +19,250 @@ type SearchResult = {
   country: string;
 };
 
+type PickerState = {
+  latitude: number | null;
+  longitude: number | null;
+  locationName: string;
+  city: string;
+  country: string;
+  searchQuery: string;
+  results: SearchResult[];
+  searching: boolean;
+  searchError: string | null;
+  showResults: boolean;
+  useFallbackTile: boolean;
+};
+
+type PickerAction =
+  | { type: "query-changed"; query: string }
+  | { type: "search-cleared" }
+  | { type: "search-started" }
+  | { type: "search-succeeded"; results: SearchResult[] }
+  | { type: "search-failed"; message: string }
+  | { type: "search-finished" }
+  | { type: "result-selected"; result: SearchResult }
+  | { type: "coordinates-cleared" }
+  | { type: "map-picked"; latitude: number; longitude: number }
+  | { type: "geocoded"; locationName?: string; city?: string; country?: string }
+  | { type: "location-name-changed"; value: string }
+  | { type: "city-changed"; value: string }
+  | { type: "country-changed"; value: string }
+  | { type: "results-shown" }
+  | { type: "tile-failed" };
+
+function pickerReducer(state: PickerState, action: PickerAction): PickerState {
+  switch (action.type) {
+    case "query-changed":
+      return {
+        ...state,
+        searchQuery: action.query,
+        searchError: null,
+        showResults: true,
+        results: action.query.trim().length < 2 ? [] : state.results,
+      };
+    case "search-cleared":
+      return { ...state, results: [], searchError: null };
+    case "search-started":
+      return { ...state, searching: true, searchError: null, showResults: true };
+    case "search-succeeded":
+      return { ...state, results: action.results, showResults: true };
+    case "search-failed":
+      return { ...state, searchError: action.message, results: [], showResults: true };
+    case "search-finished":
+      return { ...state, searching: false };
+    case "result-selected":
+      return {
+        ...state,
+        locationName: action.result.displayName,
+        searchQuery: action.result.displayName,
+        city: action.result.city,
+        country: action.result.country,
+        latitude: Number(action.result.latitude.toFixed(6)),
+        longitude: Number(action.result.longitude.toFixed(6)),
+        showResults: false,
+      };
+    case "coordinates-cleared":
+      return {
+        ...state,
+        latitude: null,
+        longitude: null,
+        results: [],
+        searchError: null,
+        showResults: false,
+      };
+    case "map-picked":
+      return { ...state, latitude: action.latitude, longitude: action.longitude };
+    case "geocoded":
+      return {
+        ...state,
+        locationName: action.locationName || state.locationName,
+        searchQuery: action.locationName || state.searchQuery,
+        city: action.city || state.city,
+        country: action.country || state.country,
+      };
+    case "location-name-changed":
+      return { ...state, locationName: action.value };
+    case "city-changed":
+      return { ...state, city: action.value };
+    case "country-changed":
+      return { ...state, country: action.value };
+    case "results-shown":
+      return { ...state, showResults: true };
+    case "tile-failed":
+      return { ...state, useFallbackTile: true };
+    default:
+      return state;
+  }
+}
+
+function PlaceSearchPanel({
+  searchQuery,
+  searching,
+  searchError,
+  showResults,
+  results,
+  onQueryChange,
+  onFocus,
+  onSubmitSearch,
+  onSelectResult,
+}: {
+  searchQuery: string;
+  searching: boolean;
+  searchError: string | null;
+  showResults: boolean;
+  results: SearchResult[];
+  onQueryChange: (query: string) => void;
+  onFocus: () => void;
+  onSubmitSearch: () => void;
+  onSelectResult: (result: SearchResult) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <label className="block space-y-2">
+        <span className="text-sm font-medium text-mocha/80 dark:text-white/70">Tìm địa điểm</span>
+        <div className="flex items-center gap-3 rounded-xl border border-mocha/15 bg-white/92 px-5 py-3 shadow-soft backdrop-blur-sm dark:border-white/10 dark:bg-white/8">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blush/80 dark:bg-white/10">
+            <Search className="h-4 w-4 text-muted-foreground dark:text-white/60" />
+          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(event) => onQueryChange(event.target.value)}
+            onFocus={onFocus}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                onSubmitSearch();
+              }
+            }}
+            placeholder="Ví dụ: Hồ Tây, Đà Lạt"
+            className="block w-full placeholder:text-muted-foreground dark:placeholder:text-white/35"
+            style={{
+              all: "unset",
+              display: "block",
+              width: "100%",
+              fontSize: "15px",
+              lineHeight: "1.35",
+              color: "inherit",
+              caretColor: "#d96a7b",
+            }}
+          />
+          {searching ? (
+            <LoaderCircle className="h-4 w-4 animate-spin text-muted-foreground dark:text-white/50" />
+          ) : null}
+        </div>
+      </label>
+
+      {showResults ? (
+        <div
+          className="max-h-72 overflow-y-auto overscroll-contain rounded-3xl border border-mocha/10 bg-white/96 shadow-soft backdrop-blur-sm dark:border-white/10 dark:bg-[#241f22]/96"
+          onWheelCapture={(event) => event.stopPropagation()}
+          onTouchMoveCapture={(event) => event.stopPropagation()}
+        >
+          {searchError ? (
+            <p className="px-3 py-3 text-sm text-rose-700 dark:text-rose-300">{searchError}</p>
+          ) : null}
+          {!searching && !searchError && searchQuery.trim().length >= 2 && !results.length ? (
+            <p className="px-3 py-3 text-sm text-muted-foreground dark:text-white/55">
+              Không tìm thấy kết quả phù hợp.
+            </p>
+          ) : null}
+          {results.map((result) => (
+            <button
+              key={`${result.latitude}-${result.longitude}-${result.displayName}`}
+              type="button"
+              onClick={() => onSelectResult(result)}
+              className="flex w-full items-start gap-3 border-t border-mocha/8 px-4 py-3 text-left transition first:border-t-0 hover:bg-blush/60 dark:border-white/10 dark:hover:bg-white/5"
+            >
+              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blush/80 dark:bg-white/10">
+                <MapPin className="h-4 w-4 text-rose" />
+              </div>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-medium dark:text-white">
+                  {result.displayName}
+                </span>
+                <span className="mt-1 block text-xs text-muted-foreground dark:text-white/45">
+                  {result.city || "Chưa rõ thành phố"}
+                  {result.country ? ` • ${result.country}` : ""}
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function PlaceLocationFields({
+  locationName,
+  city,
+  country,
+  onLocationNameChange,
+  onCityChange,
+  onCountryChange,
+}: {
+  locationName: string;
+  city: string;
+  country: string;
+  onLocationNameChange: (value: string) => void;
+  onCityChange: (value: string) => void;
+  onCountryChange: (value: string) => void;
+}) {
+  return (
+    <div className="grid gap-3 md:grid-cols-3">
+      <label className="block space-y-2">
+        <span className="text-sm font-medium text-mocha/80 dark:text-white/70">Tên địa điểm</span>
+        <input
+          name="location_name"
+          placeholder="Ví dụ: Hồ Xuân Hương"
+          value={locationName}
+          onChange={(event) => onLocationNameChange(event.target.value)}
+          required
+        />
+      </label>
+      <label className="block space-y-2">
+        <span className="text-sm font-medium text-mocha/80 dark:text-white/70">Thành phố</span>
+        <input
+          name="city"
+          placeholder="Ví dụ: Đà Lạt"
+          value={city}
+          onChange={(event) => onCityChange(event.target.value)}
+        />
+      </label>
+      <label className="block space-y-2">
+        <span className="text-sm font-medium text-mocha/80 dark:text-white/70">Quốc gia</span>
+        <input
+          name="country"
+          placeholder="Ví dụ: Việt Nam"
+          value={country}
+          onChange={(event) => onCountryChange(event.target.value)}
+        />
+      </label>
+    </div>
+  );
+}
+
 export function PlaceMapPicker({
   defaultLocationName,
   defaultCity,
@@ -37,63 +281,62 @@ export function PlaceMapPicker({
     defaultLatitude && !Number.isNaN(Number(defaultLatitude)) ? Number(defaultLatitude) : null;
   const initialLongitude =
     defaultLongitude && !Number.isNaN(Number(defaultLongitude)) ? Number(defaultLongitude) : null;
-  const [latitude, setLatitude] = useState<number | null>(initialLatitude);
-  const [longitude, setLongitude] = useState<number | null>(initialLongitude);
-  const [locationName, setLocationName] = useState(defaultLocationName ?? "");
-  const [city, setCity] = useState(defaultCity ?? "");
-  const [country, setCountry] = useState(defaultCountry ?? "");
-  const [searchQuery, setSearchQuery] = useState(defaultLocationName ?? "");
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-  const [showResults, setShowResults] = useState(false);
-  const [useFallbackTile, setUseFallbackTile] = useState(false);
+  const [state, dispatch] = useReducer(pickerReducer, {
+    latitude: initialLatitude,
+    longitude: initialLongitude,
+    locationName: defaultLocationName ?? "",
+    city: defaultCity ?? "",
+    country: defaultCountry ?? "",
+    searchQuery: defaultLocationName ?? "",
+    results: [],
+    searching: false,
+    searchError: null,
+    showResults: false,
+    useFallbackTile: false,
+  });
 
   const center = useMemo<[number, number]>(
     () =>
-      typeof latitude === "number" && typeof longitude === "number"
-        ? [latitude, longitude]
+      typeof state.latitude === "number" && typeof state.longitude === "number"
+        ? [state.latitude, state.longitude]
         : [16.047079, 108.20623],
-    [latitude, longitude],
+    [state.latitude, state.longitude],
   );
 
-  const runSearch = async (query: string) => {
+  const runSearch = useCallback(async (query: string) => {
     const trimmedQuery = query.trim();
 
     if (trimmedQuery.length < 2) {
-      setResults([]);
-      setSearchError(null);
+      dispatch({ type: "search-cleared" });
       return;
     }
 
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
-    setSearching(true);
-    setSearchError(null);
-    setShowResults(true);
+    dispatch({ type: "search-started" });
 
     try {
       const payload = await searchLocationsFn({
         data: { q: trimmedQuery },
       });
 
-      setResults(payload.results ?? []);
-      setShowResults(true);
+      dispatch({ type: "search-succeeded", results: payload.results ?? [] });
     } catch (error) {
       if ((error as Error).name === "AbortError") {
         return;
       }
-      setSearchError(error instanceof Error ? error.message : "Không thể tìm địa điểm lúc này.");
-      setResults([]);
-      setShowResults(true);
+      dispatch({
+        type: "search-failed",
+        message: error instanceof Error ? error.message : "Không thể tìm địa điểm lúc này.",
+      });
     } finally {
-      setSearching(false);
+      dispatch({ type: "search-finished" });
     }
-  };
+  }, []);
 
   useEffect(() => {
-    const trimmedQuery = searchQuery.trim();
+    const trimmedQuery = state.searchQuery.trim();
 
     if (trimmedQuery.length < 2) {
       abortRef.current?.abort();
@@ -107,7 +350,7 @@ export function PlaceMapPicker({
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [searchQuery]);
+  }, [state.searchQuery, runSearch]);
 
   const reverseGeocode = async (nextLatitude: number, nextLongitude: number) => {
     try {
@@ -118,18 +361,12 @@ export function PlaceMapPicker({
         },
       });
 
-      if (payload.locationName) {
-        setLocationName(payload.locationName);
-        setSearchQuery(payload.locationName);
-      }
-
-      if (payload.city) {
-        setCity(payload.city);
-      }
-
-      if (payload.country) {
-        setCountry(payload.country);
-      }
+      dispatch({
+        type: "geocoded",
+        locationName: payload.locationName || undefined,
+        city: payload.city || undefined,
+        country: payload.country || undefined,
+      });
     } catch {
       // Ignore reverse geocode failures; coordinates still work.
     }
@@ -148,13 +385,7 @@ export function PlaceMapPicker({
         </div>
         <button
           type="button"
-          onClick={() => {
-            setLatitude(null);
-            setLongitude(null);
-            setResults([]);
-            setSearchError(null);
-            setShowResults(false);
-          }}
+          onClick={() => dispatch({ type: "coordinates-cleared" })}
           className="rounded-lg border border-mocha/15 px-3 py-1.5 text-xs text-muted-foreground hover:bg-white dark:border-white/10 dark:text-white/65 dark:hover:bg-white/5"
         >
           Xóa tọa độ
@@ -162,95 +393,22 @@ export function PlaceMapPicker({
       </div>
 
       <div className="space-y-4">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3 rounded-xl border border-mocha/15 bg-white/92 px-5 py-3 shadow-soft backdrop-blur-sm dark:border-white/10 dark:bg-white/8">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blush/80 dark:bg-white/10">
-              <Search className="h-4 w-4 text-muted-foreground dark:text-white/60" />
-            </div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(event) => {
-                const nextQuery = event.target.value;
-                setSearchQuery(nextQuery);
-                setSearchError(null);
-                setShowResults(true);
-
-                if (nextQuery.trim().length < 2) {
-                  abortRef.current?.abort();
-                  setResults([]);
-                }
-              }}
-              onFocus={() => setShowResults(true)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  void runSearch(searchQuery);
-                }
-              }}
-              placeholder="Tìm địa điểm để thả tim lên bản đồ"
-              className="block w-full placeholder:text-muted-foreground dark:placeholder:text-white/35"
-              style={{
-                all: "unset",
-                display: "block",
-                width: "100%",
-                fontSize: "15px",
-                lineHeight: "1.35",
-                color: "inherit",
-                caretColor: "#d96a7b",
-              }}
-            />
-            {searching ? (
-              <LoaderCircle className="h-4 w-4 animate-spin text-muted-foreground dark:text-white/50" />
-            ) : null}
-          </div>
-
-          {showResults ? (
-            <div
-              className="max-h-72 overflow-y-auto overscroll-contain rounded-3xl border border-mocha/10 bg-white/96 shadow-soft backdrop-blur-sm dark:border-white/10 dark:bg-[#241f22]/96"
-              onWheelCapture={(event) => event.stopPropagation()}
-              onTouchMoveCapture={(event) => event.stopPropagation()}
-            >
-              {searchError ? (
-                <p className="px-3 py-3 text-sm text-rose-700 dark:text-rose-300">{searchError}</p>
-              ) : null}
-              {!searching && !searchError && searchQuery.trim().length >= 2 && !results.length ? (
-                <p className="px-3 py-3 text-sm text-muted-foreground dark:text-white/55">
-                  Không tìm thấy kết quả phù hợp.
-                </p>
-              ) : null}
-              {results.map((result) => (
-                <button
-                  key={`${result.latitude}-${result.longitude}-${result.displayName}`}
-                  type="button"
-                  onClick={() => {
-                    setLocationName(result.displayName);
-                    setSearchQuery(result.displayName);
-                    setCity(result.city);
-                    setCountry(result.country);
-                    setLatitude(Number(result.latitude.toFixed(6)));
-                    setLongitude(Number(result.longitude.toFixed(6)));
-                    setShowResults(false);
-                  }}
-                  className="flex w-full items-start gap-3 border-t border-mocha/8 px-4 py-3 text-left transition first:border-t-0 hover:bg-blush/60 dark:border-white/10 dark:hover:bg-white/5"
-                >
-                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blush/80 dark:bg-white/10">
-                    <MapPin className="h-4 w-4 text-rose" />
-                  </div>
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium dark:text-white">
-                      {result.displayName}
-                    </span>
-                    <span className="mt-1 block text-xs text-muted-foreground dark:text-white/45">
-                      {result.city || "Chưa rõ thành phố"}
-                      {result.country ? ` • ${result.country}` : ""}
-                    </span>
-                  </span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
+        <PlaceSearchPanel
+          searchQuery={state.searchQuery}
+          searching={state.searching}
+          searchError={state.searchError}
+          showResults={state.showResults}
+          results={state.results}
+          onQueryChange={(query) => {
+            if (query.trim().length < 2) {
+              abortRef.current?.abort();
+            }
+            dispatch({ type: "query-changed", query });
+          }}
+          onFocus={() => dispatch({ type: "results-shown" })}
+          onSubmitSearch={() => void runSearch(state.searchQuery)}
+          onSelectResult={(result) => dispatch({ type: "result-selected", result })}
+        />
 
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3 px-1">
@@ -272,20 +430,21 @@ export function PlaceMapPicker({
                 <DynamicPlaceMapCanvas
                   center={center}
                   zoom={initialLatitude && initialLongitude ? 8 : 5}
-                  latitude={latitude}
-                  longitude={longitude}
-                  tileUrl={useFallbackTile ? OSM_TILE_URL : WIKIMEDIA_TILE_URL}
+                  latitude={state.latitude}
+                  longitude={state.longitude}
+                  tileUrl={state.useFallbackTile ? OSM_TILE_URL : WIKIMEDIA_TILE_URL}
                   attribution={
-                    useFallbackTile
+                    state.useFallbackTile
                       ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                       : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; Wikimedia Maps'
                   }
-                  onTileError={() => {
-                    setUseFallbackTile(true);
-                  }}
+                  onTileError={() => dispatch({ type: "tile-failed" })}
                   onPick={(coords) => {
-                    setLatitude(coords.latitude);
-                    setLongitude(coords.longitude);
+                    dispatch({
+                      type: "map-picked",
+                      latitude: coords.latitude,
+                      longitude: coords.longitude,
+                    });
                     void reverseGeocode(coords.latitude, coords.longitude);
                   }}
                 />
@@ -295,35 +454,22 @@ export function PlaceMapPicker({
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3">
-        <input
-          name="location_name"
-          placeholder="Tên địa điểm"
-          value={locationName}
-          onChange={(event) => setLocationName(event.target.value)}
-          required
-        />
-        <input
-          name="city"
-          placeholder="Thành phố"
-          value={city}
-          onChange={(event) => setCity(event.target.value)}
-        />
-        <input
-          name="country"
-          placeholder="Quốc gia"
-          value={country}
-          onChange={(event) => setCountry(event.target.value)}
-        />
-      </div>
+      <PlaceLocationFields
+        locationName={state.locationName}
+        city={state.city}
+        country={state.country}
+        onLocationNameChange={(value) => dispatch({ type: "location-name-changed", value })}
+        onCityChange={(value) => dispatch({ type: "city-changed", value })}
+        onCountryChange={(value) => dispatch({ type: "country-changed", value })}
+      />
 
-      <input type="hidden" name="latitude" value={latitude ?? ""} readOnly />
-      <input type="hidden" name="longitude" value={longitude ?? ""} readOnly />
+      <input type="hidden" name="latitude" value={state.latitude ?? ""} readOnly />
+      <input type="hidden" name="longitude" value={state.longitude ?? ""} readOnly />
 
       <div className="rounded-xl border border-dashed border-mocha/15 bg-white/60 px-4 py-3 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/5 dark:text-white/55">
-        {typeof latitude === "number" && typeof longitude === "number" ? (
+        {typeof state.latitude === "number" && typeof state.longitude === "number" ? (
           <span>
-            Tọa độ đã chọn: {latitude.toFixed(6)}, {longitude.toFixed(6)}
+            Tọa độ đã chọn: {state.latitude.toFixed(6)}, {state.longitude.toFixed(6)}
           </span>
         ) : (
           <span>Chưa chọn tọa độ trên bản đồ.</span>

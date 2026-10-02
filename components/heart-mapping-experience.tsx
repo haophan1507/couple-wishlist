@@ -16,7 +16,7 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const timelinePlaces = useMemo(
     () =>
-      places.sort((a, b) => {
+      places.toSorted((a, b) => {
         const aDate = a.visit_date ?? a.created_at;
         const bDate = b.visit_date ?? b.created_at;
         return aDate.localeCompare(bDate) || a.id.localeCompare(b.id);
@@ -103,7 +103,9 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
               <Suspense
                 fallback={
                   <div className="flex h-[560px] items-center justify-center rounded-xl bg-blush/40 md:h-[660px] xl:h-[760px] dark:bg-white/5">
-                    <p className="text-sm text-muted-foreground dark:text-white/55">Đang tải bản đồ...</p>
+                    <p className="text-sm text-muted-foreground dark:text-white/55">
+                      Đang tải bản đồ...
+                    </p>
                   </div>
                 }
               >
@@ -129,7 +131,9 @@ export function HeartMappingExperience({ places }: { places: PlaceMemoryEntry[] 
                 </p>
               </div>
               <div className="py-3 sm:px-4 xl:px-0">
-                <p className="text-xs text-muted-foreground dark:text-white/45">Dự định tiếp theo</p>
+                <p className="text-xs text-muted-foreground dark:text-white/45">
+                  Dự định tiếp theo
+                </p>
                 <p className="mt-1 text-2xl font-semibold dark:text-white">
                   {places.filter((place) => place.status === "planned").length}
                 </p>

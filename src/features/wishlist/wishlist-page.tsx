@@ -15,6 +15,13 @@ import {
 
 const PAGE_SIZE = 10;
 
+const wishlistPageHeader = (
+  <PageHeader
+    title="Wishlist"
+    description="Hai bạn cùng cập nhật món quà, điều muốn có và ý tưởng bất ngờ dành cho nhau."
+  />
+);
+
 type WishlistPageProps = {
   search: WishlistSearch;
   onSearchChange: (patch: Partial<WishlistSearch>) => void;
@@ -82,18 +89,11 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
     meQuery.isPending ||
     honeyQuery.isPending;
 
-  const header = (
-    <PageHeader
-      title="Wishlist"
-      description="Hai bạn cùng cập nhật món quà, điều muốn có và ý tưởng bất ngờ dành cho nhau."
-    />
-  );
-
   if (isLoading && !meQuery.data && !honeyQuery.data) {
     return (
       <section className="py-10 md:py-12">
         <Container>
-          {header}
+          {wishlistPageHeader}
           <SectionSkeleton cards={6} />
         </Container>
       </section>
@@ -113,7 +113,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
   return (
     <section className="py-10 md:py-12">
       <Container>
-        {header}
+        {wishlistPageHeader}
 
         <WishlistFilter
           categories={categoriesQuery.data ?? []}

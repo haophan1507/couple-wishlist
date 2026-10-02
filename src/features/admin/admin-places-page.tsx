@@ -87,20 +87,34 @@ function PlaceForm({
       <input type="hidden" name="existing_cover_image_path" defaultValue={item.cover_image_path} />
 
       <div className="grid gap-3 md:grid-cols-2">
-        <input name="title" placeholder="Tên kỷ niệm địa điểm" defaultValue={item.title} required />
-        <select name="status" defaultValue={item.status} aria-label="Trạng thái địa điểm">
-          <option value="planned">Dự định</option>
-          <option value="visited">Đã đi</option>
-        </select>
+        <label className="block space-y-2">
+          <span className="text-sm font-medium text-mocha/80 dark:text-white/70">Tên kỷ niệm</span>
+          <input
+            name="title"
+            placeholder="Ví dụ: Biển Nha Trang"
+            defaultValue={item.title}
+            required
+          />
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm font-medium text-mocha/80 dark:text-white/70">Trạng thái</span>
+          <select name="status" defaultValue={item.status}>
+            <option value="planned">Dự định</option>
+            <option value="visited">Đã đi</option>
+          </select>
+        </label>
       </div>
       <input type="hidden" name="slug" defaultValue={item.slug} />
 
-      <textarea
-        name="description"
-        rows={3}
-        placeholder="Mô tả cảm xúc hoặc kỷ niệm ở nơi này"
-        defaultValue={item.description}
-      />
+      <label className="block space-y-2">
+        <span className="text-sm font-medium text-mocha/80 dark:text-white/70">Mô tả</span>
+        <textarea
+          name="description"
+          rows={3}
+          placeholder="Cảm xúc hoặc kỷ niệm ở nơi này"
+          defaultValue={item.description}
+        />
+      </label>
 
       <input
         name="visit_date"
@@ -151,12 +165,17 @@ function PlaceForm({
           </p>
         </div>
         <div className="space-y-2">
-          <textarea
-            name="gallery_captions"
-            rows={4}
-            placeholder="Mỗi dòng là caption cho một ảnh (theo thứ tự). Có thể sửa caption ảnh cũ mà không cần tải lại."
-            defaultValue={item.gallery_captions}
-          />
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-mocha/80 dark:text-white/70">
+              Chú thích ảnh
+            </span>
+            <textarea
+              name="gallery_captions"
+              rows={4}
+              placeholder="Mỗi dòng là caption cho một ảnh (theo thứ tự). Có thể sửa caption ảnh cũ mà không cần tải lại."
+              defaultValue={item.gallery_captions}
+            />
+          </label>
         </div>
       </div>
 

@@ -74,7 +74,7 @@ export function WishlistCard({ item }: { item: PublicWishlistItem }) {
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground/80 underline-offset-2 hover:underline"
               >
-                Link {index + 1}
+                Xem sản phẩm {index + 1}
                 <ExternalLink className="h-3 w-3" />
               </a>
             ))}

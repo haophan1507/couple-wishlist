@@ -7,9 +7,17 @@ import { fetchAdminCounts, fetchCoupleProfile, queryKeys } from "@/lib/data/clie
 import { upsertCoupleProfileFn } from "@/src/server/couple-profile";
 import { sendManualEmailFn } from "@/src/server/notifications";
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
+function Field({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor?: string;
+  children: ReactNode;
+}) {
   return (
-    <label className="block space-y-2">
+    <label htmlFor={htmlFor} className="block space-y-2">
       <span className="block text-sm font-medium text-foreground/80">{label}</span>
       {children}
     </label>
@@ -58,6 +66,34 @@ export function AdminHomePage() {
   const profile = profileQuery.data;
   const counts = countsQuery.data;
 
+  const handleProfileSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setProfilePending(true);
+    setProfileError(null);
+    void upsertCoupleProfileFn({ data: new FormData(event.currentTarget) })
+      .then(() => {
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.coupleProfile,
+        });
+      })
+      .catch((error) => {
+        setProfileError(error instanceof Error ? error.message : "Không thể lưu hồ sơ.");
+      })
+      .finally(() => setProfilePending(false));
+  };
+
+  const handleEmailSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    emailMutation.mutate({
+      data: {
+        recipients: String(formData.get("manual_email_recipients") ?? ""),
+        subject: String(formData.get("subject") ?? ""),
+        customMessage: String(formData.get("manual_email_message") ?? ""),
+      },
+    });
+  };
+
   return (
     <>
       <section className="card p-6">
@@ -88,24 +124,7 @@ export function AdminHomePage() {
           Hiển thị ở trang chủ và dùng để tự động tính cột mốc yêu nhau.
         </p>
 
-        <form
-          className="mt-6 space-y-6"
-          onSubmit={(event: FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            setProfilePending(true);
-            setProfileError(null);
-            void upsertCoupleProfileFn({ data: new FormData(event.currentTarget) })
-              .then(() => {
-                void queryClient.invalidateQueries({
-                  queryKey: queryKeys.coupleProfile,
-                });
-              })
-              .catch((error) => {
-                setProfileError(error instanceof Error ? error.message : "Không thể lưu hồ sơ.");
-              })
-              .finally(() => setProfilePending(false));
-          }}
-        >
+        <form className="mt-6 space-y-6" onSubmit={handleProfileSubmit}>
           <div>
             <h3 className="text-lg font-semibold dark:text-white">Thiết lập chung</h3>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -142,8 +161,9 @@ export function AdminHomePage() {
                 </>
               </Field>
               <div className="md:col-span-2">
-                <Field label="Câu chuyện của hai bạn">
+                <Field label="Câu chuyện của hai bạn" htmlFor="couple-story">
                   <textarea
+                    id="couple-story"
                     name="story"
                     rows={5}
                     placeholder="Viết vài dòng về hành trình của hai bạn..."
@@ -224,21 +244,12 @@ export function AdminHomePage() {
             <div className="mt-3 space-y-3">
               <form
                 className="grid gap-3 rounded-xl border border-border p-4"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  const formData = new FormData(event.currentTarget);
-                  emailMutation.mutate({
-                    data: {
-                      recipients: String(formData.get("manual_email_recipients") ?? ""),
-                      subject: String(formData.get("subject") ?? ""),
-                      customMessage: String(formData.get("manual_email_message") ?? ""),
-                    },
-                  });
-                }}
+                onSubmit={handleEmailSubmit}
               >
                 <div className="grid gap-3 md:grid-cols-2">
-                  <Field label="Người nhận">
+                  <Field label="Người nhận" htmlFor="manual-email-recipients">
                     <input
+                      id="manual-email-recipients"
                       name="manual_email_recipients"
                       type="text"
                       placeholder="email@example.com, email-2@example.com"
@@ -248,8 +259,9 @@ export function AdminHomePage() {
                     <input name="subject" type="text" placeholder={APP_NAME} />
                   </Field>
                 </div>
-                <Field label="Nội dung">
+                <Field label="Nội dung" htmlFor="manual-email-message">
                   <textarea
+                    id="manual-email-message"
                     name="manual_email_message"
                     rows={4}
                     placeholder="Nhập nội dung muốn gửi..."

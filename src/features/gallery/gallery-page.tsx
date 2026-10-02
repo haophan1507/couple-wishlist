@@ -8,6 +8,13 @@ import { fetchGalleryPage, queryKeys } from "@/lib/data/client-queries";
 
 const PAGE_SIZE = 10;
 
+const galleryPageHeader = (
+  <PageHeader
+    title="Khoảnh khắc"
+    description="Những bức ảnh và kỷ niệm nhỏ hai bạn muốn giữ lại."
+  />
+);
+
 type GalleryPageProps = {
   page: number;
 };
@@ -19,18 +26,11 @@ export function GalleryPage({ page }: GalleryPageProps) {
     placeholderData: keepPreviousData,
   });
 
-  const header = (
-    <PageHeader
-      title="Khoảnh khắc"
-      description="Những bức ảnh và kỷ niệm nhỏ hai bạn muốn giữ lại."
-    />
-  );
-
   if (listQuery.isPending && !listQuery.data) {
     return (
       <section className="py-10 md:py-12">
         <Container>
-          {header}
+          {galleryPageHeader}
           <SectionSkeleton cards={6} />
         </Container>
       </section>
@@ -44,7 +44,7 @@ export function GalleryPage({ page }: GalleryPageProps) {
   return (
     <section className="py-10 md:py-12">
       <Container>
-        {header}
+        {galleryPageHeader}
         <div className="mt-8">
           <GalleryGrid items={listQuery.data?.items ?? []} />
         </div>

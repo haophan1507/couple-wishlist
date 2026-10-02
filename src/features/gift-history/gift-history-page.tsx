@@ -14,6 +14,13 @@ import {
 
 const PAGE_SIZE = 10;
 
+const giftHistoryPageHeader = (
+  <PageHeader
+    title="Kỷ niệm quà"
+    description="Nhật ký nhỏ về những món quà hai bạn đã nhận và gửi."
+  />
+);
+
 type GiftHistoryPageProps = {
   page: number;
 };
@@ -33,18 +40,11 @@ export function GiftHistoryPage({ page }: GiftHistoryPageProps) {
     placeholderData: keepPreviousData,
   });
 
-  const header = (
-    <PageHeader
-      title="Kỷ niệm quà"
-      description="Nhật ký nhỏ về những món quà hai bạn đã nhận và gửi."
-    />
-  );
-
   if ((profileQuery.isPending || statsQuery.isPending || listQuery.isPending) && !listQuery.data) {
     return (
       <section className="py-10 md:py-12">
         <Container>
-          {header}
+          {giftHistoryPageHeader}
           <SectionSkeleton cards={6} />
         </Container>
       </section>
@@ -63,7 +63,7 @@ export function GiftHistoryPage({ page }: GiftHistoryPageProps) {
   return (
     <section className="py-10 md:py-12">
       <Container>
-        {header}
+        {giftHistoryPageHeader}
 
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           <div className="card p-5">
