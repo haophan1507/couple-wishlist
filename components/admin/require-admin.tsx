@@ -1,35 +1,37 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { getAdminSession, getAuthUser } from "@/lib/auth/session";
 import { PageLoading } from "@/components/ui/page-loading";
 
 export function RequireAdmin({ children }: { children: ReactNode }) {
-  const navigate = useNavigate();
-  const href = useRouterState({ select: (state) => state.location.href });
+  const router = useRouter();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
+    // Read href once: depending on it would re-run this effect after navigating to /login and loop forever.
+    const redirectTo = router.state.location.href;
 
     async function check() {
       const user = await getAuthUser();
+      if (cancelled) return;
       if (!user) {
-        await navigate({
+        await router.navigate({
           to: "/login",
-          search: { redirect: href, error: undefined },
+          search: { redirect: redirectTo, error: undefined },
+          replace: true,
         });
         return;
       }
 
       const admin = await getAdminSession();
+      if (cancelled) return;
       if (!admin) {
-        await navigate({ to: "/unauthorized" });
+        await router.navigate({ to: "/unauthorized", replace: true });
         return;
       }
 
-      if (!cancelled) {
-        setReady(true);
-      }
+      setReady(true);
     }
 
     void check();
@@ -37,7 +39,7 @@ export function RequireAdmin({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [href, navigate]);
+  }, [router]);
 
   if (!ready) {
     return (
