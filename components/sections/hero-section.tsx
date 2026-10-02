@@ -20,23 +20,23 @@ export function HeroSection({ names, coverImagePath, coverImageUrl, story }: Her
       <Container>
         <div className="grid gap-6 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
           <div className="card flex flex-col justify-center p-8 md:p-12">
-            <h1 className="font-(--font-heading) text-4xl leading-tight text-foreground md:text-6xl">
+            <h1 className="font-heading text-4xl leading-tight text-foreground md:text-6xl">
               {names}
             </h1>
-            <p className="mt-4 max-w-xl text-muted-foreground md:text-lg">
+            <p className="mt-4 max-w-xl text-pretty text-muted-foreground md:text-lg">
               {story ?? APP_SHORT_DESCRIPTION}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="rounded-full px-5">
+              <Button asChild size="lg" className="px-5">
                 <Link to="/wishlist">Mở wishlist</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="rounded-full px-5">
+              <Button asChild variant="outline" size="lg" className="px-5">
                 <Link to="/special-days">Xem ngày đặc biệt</Link>
               </Button>
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-3xl border border-border bg-card p-2 shadow-soft dark:shadow-none">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card">
             <AppImage
               path={coverImagePath}
               src={coverImagePath ? undefined : (coverImageUrl ?? FALLBACK_COVER)}
@@ -44,8 +44,7 @@ export function HeroSection({ names, coverImagePath, coverImageUrl, story }: Her
               variant="display"
               aspect="wide"
               priority
-              className="min-h-[280px] rounded-2xl sm:min-h-[360px]"
-              imgClassName="rounded-2xl"
+              className="min-h-[280px] sm:min-h-[360px]"
             />
           </div>
         </div>

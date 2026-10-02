@@ -42,7 +42,7 @@ export function AdminItemRow({
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium dark:text-white">{title}</p>
           {meta ? (
-            <div className="mt-1 text-xs text-mocha/65 dark:text-white/50">{meta}</div>
+            <div className="mt-1 text-xs text-muted-foreground dark:text-white/50">{meta}</div>
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-2">

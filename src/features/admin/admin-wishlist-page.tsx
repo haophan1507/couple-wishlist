@@ -132,7 +132,7 @@ export function AdminWishlistPage({ page }: AdminWishlistPageProps) {
             );
           })}
           {!items.length ? (
-            <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">
+            <p className="card p-6 text-sm text-muted-foreground dark:text-white/50">
               Chưa có món quà nào.
             </p>
           ) : null}

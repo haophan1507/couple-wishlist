@@ -61,7 +61,7 @@ export function ThemeToggle() {
         document.documentElement.classList.toggle("dark", next === "dark");
         window.dispatchEvent(new Event("themechange"));
       }}
-      className="rounded-full border border-mocha/20 p-2 text-mocha/80 transition hover:bg-white dark:border-white/20 dark:text-white/80 dark:hover:bg-white/10"
+      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-mocha/80 transition hover:bg-white dark:border-white/20 dark:text-white/80 dark:hover:bg-white/10"
     >
       {!mounted ? (
         <span className="block h-4 w-4 opacity-0" />

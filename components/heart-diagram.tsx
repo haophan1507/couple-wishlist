@@ -226,7 +226,7 @@ export function HeartDiagram({ sections, selectedId, onSelect, className }: Hear
                   fontSize={18}
                   fill="#5c3a45"
                   fontWeight={800}
-                  className="font-(--font-heading)"
+                  className="font-heading"
                 >
                   {section.title.length > 24 ? `${section.title.slice(0, 23)}...` : section.title}
                 </text>

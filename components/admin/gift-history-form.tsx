@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { Formik } from "formik";
 import { AdminImagePreview } from "@/components/admin/admin-image-preview";
 import { Button } from "@/components/ui/button";
+import { FileInput } from "@/components/ui/file-input";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
@@ -84,6 +85,7 @@ export function GiftHistoryForm({
           photoFileRef.current = null;
           if (photoInputRef.current) {
             photoInputRef.current.value = "";
+            photoInputRef.current.dispatchEvent(new Event("change", { bubbles: true }));
           }
           onSuccess?.();
           if (!isEditing) {
@@ -99,7 +101,7 @@ export function GiftHistoryForm({
       {(formik) => (
         <form
           onSubmit={formik.handleSubmit}
-          className="grid gap-4 rounded-2xl border border-border bg-card/60 p-4"
+          className="grid gap-4 rounded-xl border border-border bg-card/60 p-4"
         >
           <input type="hidden" name="id" value={formik.values.id} />
           <div className="grid gap-4 md:grid-cols-2">
@@ -202,9 +204,8 @@ export function GiftHistoryForm({
               path={item.photo_path || null}
               alt={item.gift_name || "Ảnh kỷ niệm quà"}
             />
-            <Input
+            <FileInput
               ref={photoInputRef}
-              type="file"
               name="photo_file"
               accept="image/*"
               className="mt-2"

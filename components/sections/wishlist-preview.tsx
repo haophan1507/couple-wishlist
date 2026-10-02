@@ -14,13 +14,13 @@ export function WishlistPreview({ title, count, giftedCount }: WishlistPreviewPr
         <h3 className="text-lg font-semibold dark:text-white">{title}</h3>
         <Gift className="h-5 w-5 text-rose" />
       </div>
-      <p className="mt-2 text-sm text-mocha/75 dark:text-white/60">{count} món quà</p>
-      <p className="mt-1 text-sm text-mocha/75 dark:text-white/60">
+      <p className="mt-2 text-sm text-muted-foreground dark:text-white/60">{count} món quà</p>
+      <p className="mt-1 text-sm text-muted-foreground dark:text-white/60">
         {giftedCount} món đã được tặng
       </p>
       <Link
         to="/wishlist"
-        className="mt-5 inline-block text-sm font-medium text-mocha underline-offset-4 hover:underline dark:text-white/80"
+        className="mt-3 inline-flex min-h-8 items-center text-sm font-medium text-mocha underline-offset-4 hover:underline dark:text-white/80"
       >
         Mở wishlist
       </Link>

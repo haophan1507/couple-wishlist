@@ -4,6 +4,7 @@ import { useMemo, useRef } from "react";
 import { Formik } from "formik";
 import { AdminImagePreview } from "@/components/admin/admin-image-preview";
 import { Button } from "@/components/ui/button";
+import { FileInput } from "@/components/ui/file-input";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
@@ -133,7 +134,7 @@ export function WishlistForm({
       {(formik) => (
         <form
           onSubmit={formik.handleSubmit}
-          className="grid gap-4 rounded-2xl border border-border bg-card/60 p-4"
+          className="grid gap-4 rounded-xl border border-border bg-card/60 p-4"
         >
           <input type="hidden" name="id" value={formik.values.id ?? ""} />
 
@@ -175,8 +176,7 @@ export function WishlistForm({
               name="existing_image_path"
               value={formik.values.image_path ?? ""}
             />
-            <Input
-              type="file"
+            <FileInput
               name="image_file"
               accept="image/*"
               aria-label="Ảnh sản phẩm"

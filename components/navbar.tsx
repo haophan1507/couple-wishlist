@@ -13,15 +13,15 @@ export function Navbar() {
       <Container className="flex h-16 items-center justify-between">
         <Link
           to="/"
-          className="flex items-center gap-2 font-(--font-heading) text-lg font-semibold text-foreground"
+          className="flex shrink-0 items-center gap-2 py-1 font-heading text-lg font-semibold whitespace-nowrap text-foreground"
         >
           <Heart className="h-5 w-5 text-rose" />
           {APP_NAME}
         </Link>
-        <nav className="hidden items-center gap-2 md:flex md:gap-3">
+        <nav className="hidden items-center gap-3 xl:flex">
           <NavLinks />
           <ThemeToggle />
-          <Button asChild variant="outline" size="sm" className="rounded-full px-4">
+          <Button asChild variant="outline" size="sm" className="h-8 px-4 text-sm">
             <Link to="/login">Quản trị</Link>
           </Button>
         </nav>

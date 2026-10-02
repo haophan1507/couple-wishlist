@@ -61,7 +61,7 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
           <button
             type="button"
             onClick={() => setCurrentMonth((value) => subMonths(value, 1))}
-            className="rounded-full border border-mocha/15 p-2 hover:bg-white/70 dark:border-white/10 dark:hover:bg-white/10"
+            className="rounded-lg border border-mocha/15 p-2 hover:bg-secondary dark:border-white/10 dark:hover:bg-white/10"
             aria-label="Tháng trước"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -70,14 +70,14 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
           <button
             type="button"
             onClick={() => setCurrentMonth((value) => addMonths(value, 1))}
-            className="rounded-full border border-mocha/15 p-2 hover:bg-white/70 dark:border-white/10 dark:hover:bg-white/10"
+            className="rounded-lg border border-mocha/15 p-2 hover:bg-secondary dark:border-white/10 dark:hover:bg-white/10"
             aria-label="Tháng sau"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="grid grid-cols-7 gap-2 text-center text-xs font-medium text-mocha/60 dark:text-white/45">
+        <div className="grid grid-cols-7 gap-2 text-center text-xs font-medium text-muted-foreground dark:text-white/45">
           {weekDays.map((day) => (
             <div key={day} className="py-2">
               {day}
@@ -87,7 +87,7 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
             <div
               key={day.date.toISOString()}
               className={[
-                "min-h-24 rounded-2xl border p-2 text-left",
+                "min-h-24 rounded-xl border p-2 text-left",
                 day.inCurrentMonth
                   ? "border-mocha/10 bg-white/60 dark:border-white/10 dark:bg-white/5"
                   : "border-transparent bg-transparent opacity-40",
@@ -99,18 +99,19 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
                 {day.events.slice(0, 2).map((event) => (
                   <div
                     key={event.id}
+                    title={event.title}
                     className={[
-                      "rounded-xl px-2 py-1 text-[11px] font-medium",
+                      "h-2 w-2 rounded-full bg-rose sm:h-auto sm:w-auto sm:rounded-lg sm:px-1.5 sm:py-0.5 sm:text-xs sm:leading-tight sm:font-medium sm:break-words",
                       event.source === "milestone"
-                        ? "bg-rose/15 text-mocha dark:bg-rose/20 dark:text-white"
-                        : "bg-blush text-mocha dark:bg-white/10 dark:text-white/85",
+                        ? "sm:bg-rose/15 text-mocha dark:sm:bg-rose/20 dark:text-white"
+                        : "sm:bg-blush text-mocha dark:sm:bg-white/10 dark:text-white/85",
                     ].join(" ")}
                   >
-                    {event.title}
+                    <span className="sr-only sm:not-sr-only">{event.title}</span>
                   </div>
                 ))}
                 {day.events.length > 2 ? (
-                  <div className="text-[11px] text-mocha/55 dark:text-white/45">
+                  <div className="text-xs text-muted-foreground dark:text-white/45">
                     +{day.events.length - 2} sự kiện
                   </div>
                 ) : null}
@@ -127,7 +128,7 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
             visibleEvents.map((day) => (
               <div
                 key={day.date.toISOString()}
-                className="rounded-2xl bg-blush/70 p-4 dark:bg-white/5"
+                className="rounded-xl bg-blush/70 p-4 dark:bg-white/5"
               >
                 <p className="text-sm font-semibold dark:text-white">
                   {format(day.date, "dd/MM/yyyy")}
@@ -138,13 +139,13 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium dark:text-white">{event.title}</p>
                         {event.badge ? (
-                          <span className="rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-medium dark:bg-white/10 dark:text-white/70">
+                          <span className="rounded-full bg-white/70 px-2 py-0.5 text-xs font-medium dark:bg-white/10 dark:text-white/70">
                             {event.badge}
                           </span>
                         ) : null}
                       </div>
                       {event.description ? (
-                        <p className="text-xs text-mocha/70 dark:text-white/55">
+                        <p className="text-xs text-muted-foreground dark:text-white/55">
                           {event.description}
                         </p>
                       ) : null}
@@ -154,7 +155,7 @@ export function LoveCalendar({ events }: { events: LoveCalendarEvent[] }) {
               </div>
             ))
           ) : (
-            <p className="text-sm text-mocha/70 dark:text-white/55">
+            <p className="text-sm text-muted-foreground dark:text-white/55">
               Không có sự kiện nào trong tháng này.
             </p>
           )}

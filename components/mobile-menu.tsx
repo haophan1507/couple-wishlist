@@ -18,12 +18,12 @@ export function MobileMenu() {
   }, [open]);
 
   return (
-    <div className="md:hidden">
+    <div className="xl:hidden">
       <button
         type="button"
         aria-label={open ? "Đóng menu" : "Mở menu"}
         onClick={() => setOpen(!open)}
-        className="rounded-full border border-border p-2 text-muted-foreground transition hover:bg-background hover:text-foreground"
+        className="rounded-lg border border-border p-2 text-muted-foreground transition hover:bg-secondary/60 hover:text-foreground"
       >
         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
@@ -68,7 +68,7 @@ export function MobileMenu() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="rounded-full border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
+                className="rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
               >
                 Quản trị
               </Link>

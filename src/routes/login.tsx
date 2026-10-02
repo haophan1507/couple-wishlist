@@ -25,10 +25,10 @@ function LoginPage() {
     <section className="min-h-screen py-16">
       <Container className="max-w-md">
         <div className="card p-8">
-          <h1 className="text-3xl font-semibold font-(--font-heading) dark:text-white">
+          <h1 className="text-3xl font-heading font-semibold dark:text-white">
             Đăng nhập quản trị
           </h1>
-          <p className="mt-2 text-sm text-mocha/70 dark:text-white/55">
+          <p className="mt-2 text-sm text-muted-foreground dark:text-white/55">
             Đăng nhập để quản lý wishlist, ngày đặc biệt, địa điểm và khoảnh khắc.
           </p>
 

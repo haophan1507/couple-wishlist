@@ -10,3 +10,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.tsbuildinfo
+.agents/skills/ui-ux/
+skills-lock.json

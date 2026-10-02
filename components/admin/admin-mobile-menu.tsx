@@ -37,7 +37,7 @@ export function AdminMobileMenu() {
             onClick={() => setOpen(false)}
           />
           <div className="fixed inset-x-3 bottom-20 z-40 rounded-3xl border border-white/80 bg-cream/95 p-3 shadow-soft backdrop-blur-sm dark:border-white/10 dark:bg-[#1e1a1c]/95">
-            <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.14em] text-mocha/55 dark:text-white/45">
+            <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground dark:text-white/45">
               Điều hướng quản trị
             </p>
             <nav className="space-y-1">
@@ -56,7 +56,7 @@ export function AdminMobileMenu() {
                       "block rounded-xl px-3 py-2.5 text-sm font-medium transition",
                       active
                         ? "bg-blush text-mocha dark:bg-white/10 dark:text-white"
-                        : "text-mocha/75 hover:bg-white/80 dark:text-white/70 dark:hover:bg-white/5",
+                        : "text-muted-foreground hover:bg-white/80 dark:text-white/70 dark:hover:bg-white/5",
                     )}
                     aria-current={active ? "page" : undefined}
                   >

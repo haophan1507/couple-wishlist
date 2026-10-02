@@ -11,7 +11,7 @@ function UnauthorizedPage() {
       <Container className="max-w-xl">
         <div className="card p-8 text-center">
           <h1 className="text-2xl font-semibold dark:text-white">Không có quyền truy cập</h1>
-          <p className="mt-2 text-sm text-mocha/70 dark:text-white/50">
+          <p className="mt-2 text-sm text-muted-foreground dark:text-white/50">
             Tài khoản của bạn không có quyền quản trị.
           </p>
           <Link

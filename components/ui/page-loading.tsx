@@ -15,11 +15,11 @@ export function PageLoading({ title, description, cards = 3 }: PageLoadingProps)
         <div className="min-h-[58vh]">
           <div className="flex items-center gap-2 text-rose">
             <Heart className="h-4 w-4 animate-pulse" />
-            <h2 className="font-(--font-heading) text-2xl font-semibold dark:text-white">
+            <h2 className="font-heading text-2xl font-semibold dark:text-white">
               {title}
             </h2>
           </div>
-          <p className="mt-2 text-sm text-mocha/70 dark:text-white/50">{description}</p>
+          <p className="mt-2 text-sm text-muted-foreground dark:text-white/50">{description}</p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: cards }).map((_, index) => (

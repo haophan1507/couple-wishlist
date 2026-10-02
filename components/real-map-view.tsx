@@ -107,7 +107,7 @@ export function RealMapView({
         ))}
       </MapContainer>
       {!points.length ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-cream/80 text-sm text-mocha/65 dark:bg-[#1e1a1c]/80 dark:text-white/55">
+        <div className="absolute inset-0 flex items-center justify-center bg-cream/80 text-sm text-muted-foreground dark:bg-[#1e1a1c]/80 dark:text-white/55">
           Chưa có địa điểm nào có tọa độ để hiển thị trên bản đồ.
         </div>
       ) : null}

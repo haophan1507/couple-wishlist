@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent, type ReactNode } from "react";
+import { FileInput } from "@/components/ui/file-input";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { APP_NAME } from "@/lib/constants/app";
 import { fetchAdminCounts, fetchCoupleProfile, queryKeys } from "@/lib/data/client-queries";
@@ -61,11 +62,11 @@ export function AdminHomePage() {
     <>
       <section className="card p-6">
         <h1 className="text-2xl font-semibold dark:text-white">Bảng điều khiển</h1>
-        <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">
+        <p className="mt-1 text-sm text-muted-foreground dark:text-white/55">
           Tổng quan không gian riêng của hai bạn: wishlist, kỷ niệm quà, ngày đặc biệt, ảnh và địa
           điểm yêu thương.
         </p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-5">
+        <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-4 md:grid-cols-5">
           {[
             ["Wishlist", counts?.wishlist ?? 0],
             ["Ngày đặc biệt", counts?.specialDays ?? 0],
@@ -83,7 +84,7 @@ export function AdminHomePage() {
 
       <section className="card p-6">
         <h2 className="text-xl font-semibold dark:text-white">Hồ sơ cặp đôi</h2>
-        <p className="mt-1 text-sm text-mocha/70 dark:text-white/55">
+        <p className="mt-1 text-sm text-muted-foreground dark:text-white/55">
           Hiển thị ở trang chủ và dùng để tự động tính cột mốc yêu nhau.
         </p>
 
@@ -105,7 +106,7 @@ export function AdminHomePage() {
               .finally(() => setProfilePending(false));
           }}
         >
-          <div className="rounded-3xl border border-mocha/10 bg-blush/50 p-5 dark:border-white/10 dark:bg-white/5">
+          <div>
             <h3 className="text-lg font-semibold dark:text-white">Thiết lập chung</h3>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <Field label="Tên người thứ nhất">
@@ -137,7 +138,7 @@ export function AdminHomePage() {
                     name="existing_cover_image_path"
                     defaultValue={profile?.cover_image_path ?? ""}
                   />
-                  <input type="file" name="cover_image_file" accept="image/*" />
+                  <FileInput name="cover_image_file" accept="image/*" />
                 </>
               </Field>
               <div className="md:col-span-2">
@@ -153,8 +154,8 @@ export function AdminHomePage() {
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-3xl border border-mocha/10 bg-white/60 p-5 dark:border-white/10 dark:bg-white/5">
+          <div className="grid gap-x-8 gap-y-6 border-t border-border pt-5 md:grid-cols-2">
+            <div>
               <h3 className="text-lg font-semibold dark:text-white">
                 {profile?.person_one_name || "Người thứ nhất"}
               </h3>
@@ -177,7 +178,7 @@ export function AdminHomePage() {
                 </Field>
               </div>
             </div>
-            <div className="rounded-3xl border border-mocha/10 bg-white/60 p-5 dark:border-white/10 dark:bg-white/5">
+            <div>
               <h3 className="text-lg font-semibold dark:text-white">
                 {profile?.person_two_name || "Người thứ hai"}
               </h3>
@@ -217,12 +218,12 @@ export function AdminHomePage() {
 
         <div className="mt-6 border-t border-mocha/10 pt-4 dark:border-white/10">
           <details className="group">
-            <summary className="cursor-pointer text-xs text-mocha/55 hover:text-mocha/75 dark:text-white/45">
+            <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground dark:text-white/45">
               Công cụ hệ thống
             </summary>
             <div className="mt-3 space-y-3">
               <form
-                className="grid gap-3 rounded-2xl border border-mocha/10 bg-white/50 p-4 dark:border-white/10 dark:bg-white/5"
+                className="grid gap-3 rounded-xl border border-border p-4"
                 onSubmit={(event) => {
                   event.preventDefault();
                   const formData = new FormData(event.currentTarget);
@@ -257,7 +258,7 @@ export function AdminHomePage() {
                 <button
                   type="submit"
                   disabled={emailMutation.isPending}
-                  className="w-fit rounded-lg px-3 py-1.5 text-xs text-mocha/70 ring-1 ring-mocha/20 hover:bg-white dark:text-white/70 dark:ring-white/20"
+                  className="w-fit rounded-lg px-3 py-1.5 text-xs text-muted-foreground ring-1 ring-mocha/20 hover:bg-white dark:text-white/70 dark:ring-white/20"
                 >
                   {emailMutation.isPending ? "Đang gửi..." : "Gửi email"}
                 </button>

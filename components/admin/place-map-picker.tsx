@@ -142,7 +142,7 @@ export function PlaceMapPicker({
           <p className="text-sm font-medium text-mocha/80 dark:text-white/70">
             Chọn vị trí trên bản đồ
           </p>
-          <p className="mt-1 text-xs text-mocha/60 dark:text-white/45">
+          <p className="mt-1 text-xs text-muted-foreground dark:text-white/45">
             Tìm địa điểm, bấm lên bản đồ hoặc kéo marker để cập nhật tọa độ, thành phố và quốc gia.
           </p>
         </div>
@@ -155,7 +155,7 @@ export function PlaceMapPicker({
             setSearchError(null);
             setShowResults(false);
           }}
-          className="rounded-full border border-mocha/15 px-3 py-1.5 text-xs text-mocha/70 hover:bg-white dark:border-white/10 dark:text-white/65 dark:hover:bg-white/5"
+          className="rounded-lg border border-mocha/15 px-3 py-1.5 text-xs text-muted-foreground hover:bg-white dark:border-white/10 dark:text-white/65 dark:hover:bg-white/5"
         >
           Xóa tọa độ
         </button>
@@ -163,9 +163,9 @@ export function PlaceMapPicker({
 
       <div className="space-y-4">
         <div className="space-y-3">
-          <div className="flex items-center gap-3 rounded-full border border-mocha/12 bg-white/92 px-5 py-3 shadow-soft backdrop-blur-sm dark:border-white/10 dark:bg-white/8">
+          <div className="flex items-center gap-3 rounded-xl border border-mocha/15 bg-white/92 px-5 py-3 shadow-soft backdrop-blur-sm dark:border-white/10 dark:bg-white/8">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blush/80 dark:bg-white/10">
-              <Search className="h-4 w-4 text-mocha/55 dark:text-white/60" />
+              <Search className="h-4 w-4 text-muted-foreground dark:text-white/60" />
             </div>
             <input
               type="text"
@@ -189,7 +189,7 @@ export function PlaceMapPicker({
                 }
               }}
               placeholder="Tìm địa điểm để thả tim lên bản đồ"
-              className="block w-full placeholder:text-mocha/45 dark:placeholder:text-white/35"
+              className="block w-full placeholder:text-muted-foreground dark:placeholder:text-white/35"
               style={{
                 all: "unset",
                 display: "block",
@@ -201,7 +201,7 @@ export function PlaceMapPicker({
               }}
             />
             {searching ? (
-              <LoaderCircle className="h-4 w-4 animate-spin text-mocha/50 dark:text-white/50" />
+              <LoaderCircle className="h-4 w-4 animate-spin text-muted-foreground dark:text-white/50" />
             ) : null}
           </div>
 
@@ -215,7 +215,7 @@ export function PlaceMapPicker({
                 <p className="px-3 py-3 text-sm text-rose-700 dark:text-rose-300">{searchError}</p>
               ) : null}
               {!searching && !searchError && searchQuery.trim().length >= 2 && !results.length ? (
-                <p className="px-3 py-3 text-sm text-mocha/65 dark:text-white/55">
+                <p className="px-3 py-3 text-sm text-muted-foreground dark:text-white/55">
                   Không tìm thấy kết quả phù hợp.
                 </p>
               ) : null}
@@ -241,7 +241,7 @@ export function PlaceMapPicker({
                     <span className="block truncate text-sm font-medium dark:text-white">
                       {result.displayName}
                     </span>
-                    <span className="mt-1 block text-xs text-mocha/60 dark:text-white/45">
+                    <span className="mt-1 block text-xs text-muted-foreground dark:text-white/45">
                       {result.city || "Chưa rõ thành phố"}
                       {result.country ? ` • ${result.country}` : ""}
                     </span>
@@ -255,7 +255,7 @@ export function PlaceMapPicker({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3 px-1">
             <p className="text-sm font-medium text-mocha/80 dark:text-white/70">Bản đồ chọn điểm</p>
-            <p className="text-xs text-mocha/55 dark:text-white/45">
+            <p className="text-xs text-muted-foreground dark:text-white/45">
               Cuộn chuột để zoom, kéo marker để chỉnh
             </p>
           </div>
@@ -264,7 +264,7 @@ export function PlaceMapPicker({
             <div className="overflow-hidden rounded-3xl border border-white/70 dark:border-white/10">
               <Suspense
                 fallback={
-                  <div className="flex h-[320px] items-center justify-center text-sm text-mocha/60 dark:text-white/45">
+                  <div className="flex h-[320px] items-center justify-center text-sm text-muted-foreground dark:text-white/45">
                     Đang tải bản đồ...
                   </div>
                 }
@@ -320,7 +320,7 @@ export function PlaceMapPicker({
       <input type="hidden" name="latitude" value={latitude ?? ""} readOnly />
       <input type="hidden" name="longitude" value={longitude ?? ""} readOnly />
 
-      <div className="rounded-2xl border border-dashed border-mocha/15 bg-white/60 px-4 py-3 text-sm text-mocha/65 dark:border-white/10 dark:bg-white/5 dark:text-white/55">
+      <div className="rounded-xl border border-dashed border-mocha/15 bg-white/60 px-4 py-3 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/5 dark:text-white/55">
         {typeof latitude === "number" && typeof longitude === "number" ? (
           <span>
             Tọa độ đã chọn: {latitude.toFixed(6)}, {longitude.toFixed(6)}

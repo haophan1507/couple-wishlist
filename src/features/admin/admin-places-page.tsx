@@ -7,6 +7,7 @@ import { EditPlaceLocation } from "@/components/admin/edit-place-location";
 import { PlaceMapPicker } from "@/components/admin/place-map-picker";
 import { useAdminEditorMode } from "@/components/admin/use-admin-editor-mode";
 import { Button } from "@/components/ui/button";
+import { FileInput } from "@/components/ui/file-input";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { fetchAdminPlacesPage, queryKeys } from "@/lib/data/client-queries";
@@ -80,7 +81,7 @@ function PlaceForm({
   return (
     <form
       onSubmit={(event) => void handleSubmit(event)}
-      className="grid gap-3 rounded-2xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5"
+      className="grid gap-3 rounded-xl border border-mocha/10 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5"
     >
       <input type="hidden" name="id" defaultValue={item.id} />
       <input type="hidden" name="existing_cover_image_path" defaultValue={item.cover_image_path} />
@@ -131,22 +132,21 @@ function PlaceForm({
           path={item.cover_image_path || null}
           alt={item.title || "Ảnh cover địa điểm"}
         />
-        <input type="file" name="cover_image_file" accept="image/*" aria-label="Ảnh cover" />
+        <FileInput name="cover_image_file" accept="image/*" aria-label="Ảnh cover" />
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-mocha/80 dark:text-white/70">
+          <span className="block text-sm font-medium text-mocha/80 dark:text-white/70">
             Ảnh chi tiết
-            <input
-              type="file"
-              name="gallery_image_files"
-              accept="image/*"
-              multiple
-              className="mt-2 block w-full font-normal"
-            />
-          </label>
-          <p className="text-xs text-mocha/60 dark:text-white/45">
+          </span>
+          <FileInput
+            name="gallery_image_files"
+            accept="image/*"
+            multiple
+            aria-label="Ảnh chi tiết"
+          />
+          <p className="text-xs text-muted-foreground dark:text-white/45">
             Nếu tải ảnh mới khi chỉnh sửa, bộ ảnh cũ sẽ được thay thế toàn bộ.
           </p>
         </div>
@@ -282,7 +282,7 @@ export function AdminPlacesPage({ page }: { page: number }) {
             );
           })}
           {!places.length ? (
-            <p className="card p-6 text-sm text-mocha/70 dark:text-white/50">
+            <p className="card p-6 text-sm text-muted-foreground dark:text-white/50">
               Chưa có địa điểm nào trong bản đồ yêu thương.
             </p>
           ) : null}

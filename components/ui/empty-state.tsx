@@ -20,7 +20,7 @@ export function EmptyState({ title, description, icon, className }: EmptyStatePr
     <Empty className={cn("card border-solid p-8", className)}>
       <EmptyHeader>
         {icon ? <EmptyMedia variant="icon">{icon}</EmptyMedia> : null}
-        <EmptyTitle className="font-(--font-heading) text-base">{title}</EmptyTitle>
+        <EmptyTitle className="font-heading text-base">{title}</EmptyTitle>
         {description ? <EmptyDescription>{description}</EmptyDescription> : null}
       </EmptyHeader>
     </Empty>

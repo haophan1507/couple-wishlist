@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { Formik } from "formik";
 import { AdminImagePreview } from "@/components/admin/admin-image-preview";
 import { Button } from "@/components/ui/button";
+import { FileInput } from "@/components/ui/file-input";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { upsertGalleryItemFn } from "@/src/server/gallery";
@@ -55,6 +56,7 @@ export function GalleryForm({
           imageFileRef.current = null;
           if (imageInputRef.current) {
             imageInputRef.current.value = "";
+            imageInputRef.current.dispatchEvent(new Event("change", { bubbles: true }));
           }
           onSuccess?.();
           if (!isEditing) {
@@ -70,15 +72,14 @@ export function GalleryForm({
       {(formik) => (
         <form
           onSubmit={formik.handleSubmit}
-          className="grid gap-4 rounded-2xl border border-border bg-card/60 p-4"
+          className="grid gap-4 rounded-xl border border-border bg-card/60 p-4"
         >
           <input type="hidden" name="id" value={formik.values.id ?? ""} />
           <input type="hidden" name="existing_image_path" value={formik.values.image_path ?? ""} />
           <FormField label="Ảnh kỷ niệm">
             <AdminImagePreview path={item.image_path || null} alt={item.caption || "Ảnh kỷ niệm"} />
-            <Input
+            <FileInput
               ref={imageInputRef}
-              type="file"
               name="image_file"
               accept="image/*"
               className="mt-2"

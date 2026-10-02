@@ -65,7 +65,7 @@ export function SpecialDayForm({
       {(formik) => (
         <form
           onSubmit={formik.handleSubmit}
-          className="grid gap-4 rounded-2xl border border-border bg-card/60 p-4"
+          className="grid gap-4 rounded-xl border border-border bg-card/60 p-4"
         >
           <input type="hidden" name="id" value={formik.values.id ?? ""} />
           <FormField label="Tiêu đề">
