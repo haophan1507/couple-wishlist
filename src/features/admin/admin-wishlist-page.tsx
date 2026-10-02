@@ -3,8 +3,14 @@ import { AdminItemRow } from "@/components/admin/admin-item-row";
 import { AdminListHeader } from "@/components/admin/admin-list-header";
 import { useAdminEditorMode } from "@/components/admin/use-admin-editor-mode";
 import { WishlistForm } from "@/components/admin/wishlist-form";
+import { NativeSelect } from "@/components/ui/native-select";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
+import {
+  DEFAULT_WISHLIST_STATUS_FILTER,
+  WISHLIST_STATUS_FILTER_OPTIONS,
+  type WishlistStatusFilter,
+} from "@/lib/constants/wishlist";
 import { fetchAdminWishlistPage, fetchCoupleProfile, queryKeys } from "@/lib/data/client-queries";
 import { parseWishlistProductUrls } from "@/lib/utils/wishlist-links";
 import { deleteWishlistItemFn } from "@/src/server/wishlist";
@@ -24,9 +30,11 @@ const statusLabels = {
 
 type AdminWishlistPageProps = {
   page: number;
+  status: WishlistStatusFilter;
+  onStatusChange: (status: WishlistStatusFilter) => void;
 };
 
-export function AdminWishlistPage({ page }: AdminWishlistPageProps) {
+export function AdminWishlistPage({ page, status, onStatusChange }: AdminWishlistPageProps) {
   const queryClient = useQueryClient();
   const editor = useAdminEditorMode();
 
@@ -35,8 +43,8 @@ export function AdminWishlistPage({ page }: AdminWishlistPageProps) {
     queryFn: fetchCoupleProfile,
   });
   const listQuery = useQuery({
-    queryKey: queryKeys.adminWishlistPage({ page, pageSize: PAGE_SIZE }),
-    queryFn: () => fetchAdminWishlistPage(page, PAGE_SIZE),
+    queryKey: queryKeys.adminWishlistPage({ page, pageSize: PAGE_SIZE, status }),
+    queryFn: () => fetchAdminWishlistPage(page, PAGE_SIZE, status),
   });
 
   const invalidate = () => {
@@ -92,6 +100,23 @@ export function AdminWishlistPage({ page }: AdminWishlistPageProps) {
       </AdminListHeader>
 
       <section>
+        <div className="mb-3 flex justify-end">
+          <NativeSelect
+            aria-label="Lọc theo trạng thái"
+            className="w-full sm:w-56"
+            value={status}
+            onChange={(event) => {
+              editor.close();
+              onStatusChange(event.target.value as WishlistStatusFilter);
+            }}
+          >
+            {WISHLIST_STATUS_FILTER_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </NativeSelect>
+        </div>
         <div className="space-y-3 pr-1">
           {items.map((item) => {
             const expanded = editor.isEditingId(item.id);
@@ -102,6 +127,9 @@ export function AdminWishlistPage({ page }: AdminWishlistPageProps) {
                 imagePath={item.image_path}
                 meta={`${item.owner_type === "me" ? personOneName : personTwoName} · ${priorityLabels[item.priority]} · ${statusLabels[item.status]}`}
                 isExpanded={expanded}
+                editDisabledReason={
+                  item.status === "gifted" ? "Món đã tặng không thể sửa" : undefined
+                }
                 onEdit={() => (expanded ? editor.close() : editor.openEdit(item.id))}
                 onDelete={async () => {
                   await deleteMutation.mutateAsync(item.id);
@@ -141,7 +169,9 @@ export function AdminWishlistPage({ page }: AdminWishlistPageProps) {
           basePath="/admin/wishlist"
           currentPage={safePage}
           totalPages={totalPages}
-          searchParams={{}}
+          searchParams={{
+            status: status === DEFAULT_WISHLIST_STATUS_FILTER ? undefined : status,
+          }}
         />
       </section>
     </>

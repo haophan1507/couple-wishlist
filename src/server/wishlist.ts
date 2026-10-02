@@ -72,14 +72,23 @@ export const upsertWishlistItemFn = createServerFn({ method: "POST" })
 
     const supabase = createSupabaseAdminClient();
     const { data: existing, error: existingError } = id
-      ? await supabase.from("wishlist_items").select("image_path").eq("id", id).maybeSingle()
+      ? await supabase
+          .from("wishlist_items")
+          .select("image_path, status")
+          .eq("id", id)
+          .maybeSingle()
       : { data: null, error: null };
 
     if (existingError) {
       throw new Error("Không thể đọc dữ liệu món quà hiện tại.");
     }
 
-    const existingPath = (existing as { image_path: string | null } | null)?.image_path;
+    const existingRow = existing as { image_path: string | null; status: string } | null;
+    if (existingRow?.status === "gifted") {
+      throw new Error("Món này đã được tặng nên không thể sửa nữa.");
+    }
+
+    const existingPath = existingRow?.image_path;
     let nextImagePath = parsed.data.existing_image_path || existingPath || null;
 
     if (imageFile) {

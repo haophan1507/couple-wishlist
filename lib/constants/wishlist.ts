@@ -21,6 +21,20 @@ export const WISHLIST_CATEGORY_OPTIONS = [
   "Quà tinh thần",
 ] as const;
 
+export const WISHLIST_STATUS_FILTER_OPTIONS = [
+  { value: "available", label: "Chưa tặng" },
+  { value: "gifted", label: "Đã tặng" },
+  { value: "all", label: "Tất cả trạng thái" },
+] as const;
+
+export type WishlistStatusFilter = (typeof WISHLIST_STATUS_FILTER_OPTIONS)[number]["value"];
+
+export const DEFAULT_WISHLIST_STATUS_FILTER: WishlistStatusFilter = "available";
+
+export const WISHLIST_STATUS_FILTER_VALUES = WISHLIST_STATUS_FILTER_OPTIONS.map(
+  (option) => option.value,
+) as [WishlistStatusFilter, ...WishlistStatusFilter[]];
+
 const CATEGORY_IMAGE_MAP: Record<string, string> = {
   "Thời trang":
     "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1200&q=80",

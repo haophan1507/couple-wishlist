@@ -5,6 +5,7 @@ import { PaginationControls } from "@/components/ui/pagination-controls";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { Container } from "@/components/ui/container";
+import { DEFAULT_WISHLIST_STATUS_FILTER } from "@/lib/constants/wishlist";
 import {
   fetchCoupleProfile,
   fetchWishlistCategories,
@@ -22,6 +23,7 @@ type WishlistPageProps = {
 export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
   const category = search.category;
   const q = search.q;
+  const status = search.status ?? DEFAULT_WISHLIST_STATUS_FILTER;
   const mePage = Math.max(1, Number(search.mePage ?? "1") || 1);
   const honeyPage = Math.max(1, Number(search.honeyPage ?? "1") || 1);
 
@@ -40,6 +42,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
       pageSize: PAGE_SIZE,
       q,
       category,
+      status,
     }),
     queryFn: () =>
       fetchWishlistPage({
@@ -48,6 +51,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
         pageSize: PAGE_SIZE,
         query: q,
         category,
+        status,
       }),
     placeholderData: keepPreviousData,
   });
@@ -58,6 +62,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
       pageSize: PAGE_SIZE,
       q,
       category,
+      status,
     }),
     queryFn: () =>
       fetchWishlistPage({
@@ -66,6 +71,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
         pageSize: PAGE_SIZE,
         query: q,
         category,
+        status,
       }),
     placeholderData: keepPreviousData,
   });
@@ -95,6 +101,8 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
   }
 
   const profile = profileQuery.data;
+  const isFiltered = Boolean(q || category || status !== "all");
+  const emptyText = isFiltered ? "Không có món nào khớp bộ lọc." : "Chưa có món quà nào.";
   const meTotal = meQuery.data?.total ?? 0;
   const honeyTotal = honeyQuery.data?.total ?? 0;
   const meTotalPages = Math.max(1, Math.ceil(meTotal / PAGE_SIZE));
@@ -131,7 +139,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
                   <WishlistCard key={item.id} item={item} />
                 ))}
                 {!meTotal ? (
-                  <p className="card p-6 text-sm text-muted-foreground">Chưa có món quà nào.</p>
+                  <p className="card p-6 text-sm text-muted-foreground">{emptyText}</p>
                 ) : null}
               </div>
             </div>
@@ -143,6 +151,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
               searchParams={{
                 category,
                 q,
+                status: search.status,
                 honeyPage:
                   honeyTotalPages > 1 || safeHoneyPage > 1 ? String(safeHoneyPage) : undefined,
               }}
@@ -159,7 +168,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
                   <WishlistCard key={item.id} item={item} />
                 ))}
                 {!honeyTotal ? (
-                  <p className="card p-6 text-sm text-muted-foreground">Chưa có món quà nào.</p>
+                  <p className="card p-6 text-sm text-muted-foreground">{emptyText}</p>
                 ) : null}
               </div>
             </div>
@@ -171,6 +180,7 @@ export function WishlistPage({ search, onSearchChange }: WishlistPageProps) {
               searchParams={{
                 category,
                 q,
+                status: search.status,
                 mePage: meTotalPages > 1 || safeMePage > 1 ? String(safeMePage) : undefined,
               }}
             />

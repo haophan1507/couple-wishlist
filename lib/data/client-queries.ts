@@ -1,3 +1,4 @@
+import type { WishlistStatusFilter } from "@/lib/constants/wishlist";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getPublicStorageUrl } from "@/lib/storage/public-url";
 import { parseWishlistProductUrls } from "@/lib/utils/wishlist-links";
@@ -33,8 +34,9 @@ export const queryKeys = {
     pageSize: number;
     q?: string;
     category?: string;
+    status: WishlistStatusFilter;
   }) => ["wishlist", "page", filters] as const,
-  adminWishlistPage: (filters: { page: number; pageSize: number }) =>
+  adminWishlistPage: (filters: { page: number; pageSize: number; status: WishlistStatusFilter }) =>
     ["admin", "wishlist", filters] as const,
   adminSpecialDaysPage: (filters: { page: number; pageSize: number }) =>
     ["admin", "special-days", filters] as const,
@@ -133,6 +135,7 @@ export async function fetchWishlistPage(filters: {
   pageSize: number;
   category?: string;
   query?: string;
+  status: WishlistStatusFilter;
 }) {
   const supabase = createSupabaseBrowserClient();
   const from = (filters.page - 1) * filters.pageSize;
@@ -144,6 +147,10 @@ export async function fetchWishlistPage(filters: {
     .eq("owner_type", filters.ownerType)
     .order("priority", { ascending: false })
     .order("created_at", { ascending: false });
+
+  if (filters.status !== "all") {
+    request = request.eq("status", filters.status);
+  }
 
   if (filters.category) {
     request = request.eq("category", filters.category);
@@ -166,17 +173,26 @@ export async function fetchWishlistPage(filters: {
   return { items, total: count ?? items.length };
 }
 
-export async function fetchAdminWishlistPage(page: number, pageSize: number) {
+export async function fetchAdminWishlistPage(
+  page: number,
+  pageSize: number,
+  status: WishlistStatusFilter,
+) {
   const supabase = createSupabaseBrowserClient();
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const { data, error, count } = await supabase
+  let request = supabase
     .from("wishlist_items")
     .select("*", { count: "exact", head: false })
     .order("priority", { ascending: false })
-    .order("created_at", { ascending: false })
-    .range(from, to);
+    .order("created_at", { ascending: false });
+
+  if (status !== "all") {
+    request = request.eq("status", status);
+  }
+
+  const { data, error, count } = await request.range(from, to);
 
   if (error) throw error;
 

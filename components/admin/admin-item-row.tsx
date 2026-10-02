@@ -9,6 +9,7 @@ type AdminItemRowProps = {
   imagePath?: string | null;
   itemNameForDelete?: string;
   isExpanded: boolean;
+  editDisabledReason?: string;
   onEdit: () => void;
   onDelete: () => void | Promise<void>;
   children?: ReactNode;
@@ -20,10 +21,13 @@ export function AdminItemRow({
   imagePath,
   itemNameForDelete,
   isExpanded,
+  editDisabledReason,
   onEdit,
   onDelete,
   children,
 }: AdminItemRowProps) {
+  const editDisabled = Boolean(editDisabledReason);
+
   return (
     <div className="card overflow-hidden">
       <div className="flex items-center gap-3 p-4">
@@ -51,13 +55,15 @@ export function AdminItemRow({
             variant={isExpanded ? "secondary" : "outline"}
             size="sm"
             onClick={onEdit}
+            disabled={editDisabled}
+            title={editDisabledReason}
           >
             {isExpanded ? "Đóng" : "Sửa"}
           </Button>
           <ConfirmDeleteButton itemName={itemNameForDelete ?? title} onConfirm={onDelete} />
         </div>
       </div>
-      {isExpanded && children ? (
+      {isExpanded && !editDisabled && children ? (
         <div className="border-t border-mocha/10 p-4 dark:border-white/10">{children}</div>
       ) : null}
     </div>
